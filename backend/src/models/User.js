@@ -18,6 +18,7 @@ const userSchema = new Schema({
     select: false,
     required: true,
   },
+  refreshToken: String,
 }, { timestamps: true });
 
 userSchema.pre("save", async function () {
@@ -27,6 +28,15 @@ userSchema.pre("save", async function () {
 
 userSchema.methods.comparePassword = async function (candidatePassword) {
   return await bcrypt.compare(candidatePassword, this.password);
+};
+
+userSchema.pre("save", async function () {
+  if (!this.isModified("refreshToken")) return;
+  this.refreshToken = await bcrypt.hash(this.refreshToken, 12);
+});
+
+userSchema.methods.compareRefreshToken = async function (candidateRefreshToken) {
+  return await bcrypt.compare(candidateRefreshToken, this.refreshToken);
 };
 
 export default mongoose.model("User", userSchema);
