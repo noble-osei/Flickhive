@@ -1,25 +1,32 @@
 import mongoose, { Schema } from "mongoose";
 import bcrypt from "bcrypt";
 
-const userSchema = new Schema({
-  name: {
-    type: String,
-    trim: true,
-    required: true,
+const userSchema = new Schema(
+  {
+    name: {
+      type: String,
+      trim: true,
+      required: true,
+    },
+    email: {
+      type: String,
+      unique: true,
+      trim: true,
+      required: true,
+    },
+    password: {
+      type: String,
+      select: false,
+      required: true,
+    },
+    refreshToken: {
+      type: String,
+      default: null,
+      select: false,
+    },
   },
-  email: {
-    type: String,
-    unique: true,
-    trim: true,
-    required: true,
-  },
-  password: {
-    type: String,
-    select: false,
-    required: true,
-  },
-  refreshToken: String,
-}, { timestamps: true });
+  { timestamps: true },
+);
 
 userSchema.pre("save", async function () {
   if (!this.isModified("password")) return;
@@ -35,7 +42,9 @@ userSchema.pre("save", async function () {
   this.refreshToken = await bcrypt.hash(this.refreshToken, 12);
 });
 
-userSchema.methods.compareRefreshToken = async function (candidateRefreshToken) {
+userSchema.methods.compareRefreshToken = async function (
+  candidateRefreshToken,
+) {
   return await bcrypt.compare(candidateRefreshToken, this.refreshToken);
 };
 
