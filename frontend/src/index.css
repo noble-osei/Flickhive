@@ -1,0 +1,18 @@
+@import "tailwindcss";
+@plugin "daisyui";
+
+@plugin "daisyui" {
+  themes: false;
+}
+
+/* Flickhive Custom Theme */
+[data-theme="flickhive"] {
+  --color-base-100: #0F0F0F;
+  --color-base-200: #1A1A2E;
+  --color-base-300: #16213E;
+  --color-primary: #4F8EF7;
+  --color-secondary: #7C3AED;
+  --color-accent: #F5C518;
+  --color-error: #EF4444;
+  --color-base-content: #FFFFFF;
+}
