@@ -7,12 +7,16 @@
 
 /* Flickhive Custom Theme */
 [data-theme="flickhive"] {
-  --color-base-100: #0F0F0F;
-  --color-base-200: #1A1A2E;
-  --color-base-300: #16213E;
-  --color-primary: #4F8EF7;
-  --color-secondary: #7C3AED;
-  --color-accent: #F5C518;
-  --color-error: #EF4444;
-  --color-base-content: #FFFFFF;
+  --color-base-100: #0f0f0f;
+  --color-base-200: #1a1a2e;
+  --color-base-300: #16213e;
+  --color-primary: #4f8ef7;
+  --color-secondary: #7c3aed;
+  --color-accent: #f5c518;
+  --color-error: #ef4444;
+  --color-base-content: #ffffff;
+}
+
+@theme {
+  --color-flick-muted: #a0a0b0;
 }
