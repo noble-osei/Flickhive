@@ -1,6 +1,9 @@
-function SearchBar({ setShow }) {
+function SearchBar({ show, setShow }) {
   return (
-    <label className="input border-x-0 bg-base-100 rounded-none w-full outline-none focus-within:shadow-md transition-shadow duration-150">
+    <label
+      className={`input h-full border-x-0 bg-base-100 rounded-none w-full outline-none 
+      focus-within:shadow-md transition-shadow duration-150 z-10 ${show ? "absolute inset-0 bg-base-200 lg:px-8 flex items-center" : "hidden"}`}
+    >
       <style>{`
         input[type="search"]::-webkit-search-cancel-button,
         input[type="search"]::-webkit-search-decoration {
@@ -9,20 +12,19 @@ function SearchBar({ setShow }) {
         }
       `}</style>
       <svg
-        className="h-[1em] opacity-50 text-base-content"
         xmlns="http://www.w3.org/2000/svg"
+        className="h-5 w-5 opacity-50"
+        fill="none"
         viewBox="0 0 24 24"
+        stroke="currentColor"
       >
-        <g
-          strokeLinejoin="round"
+        {" "}
+        <path
           strokeLinecap="round"
-          strokeWidth="2.5"
-          fill="none"
-          stroke="currentColor"
-        >
-          <circle cx="11" cy="11" r="8"></circle>
-          <path d="m21 21-4.3-4.3"></path>
-        </g>
+          strokeLinejoin="round"
+          strokeWidth="2"
+          d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+        />{" "}
       </svg>
       <input
         type="search"

@@ -3,15 +3,12 @@ import { Link } from "react-router-dom";
 import SearchBar from "./SearchBar.jsx";
 
 function Layout({ children }) {
-  const [showSearchBar, setShowSearchBar] = useState(false);
-
   return (
     <div className="drawer">
       <input id="my-drawer" type="checkbox" className="drawer-toggle" />
 
       <div className="drawer-content flex flex-col">
-        <Navbar setShow={setShowSearchBar} />
-        {showSearchBar && <SearchBar setShow={setShowSearchBar} />}
+        <Navbar />
         <main>{children}</main>
       </div>
 
@@ -91,8 +88,15 @@ function PrimaryMenuList() {
 }
 
 function Navbar({ setShow }) {
+  const [showSearchBar, setShowSearchBar] = useState(false);
+  
+  // if (showSearchBar) {
+  //   return 
+  // }
+
   return (
-    <div className="navbar bg-base-200 lg:px-8">
+    <div className="navbar bg-base-200 lg:px-8 relative z-0">
+      <SearchBar show={showSearchBar} setShow={setShowSearchBar} />
       <div className="navbar-start">
         <label
           htmlFor="my-drawer"
@@ -128,7 +132,7 @@ function Navbar({ setShow }) {
       <div className="navbar-end">
         <button
           className="btn btn-ghost btn-circle"
-          onClick={() => setShow(true)}
+          onClick={() => setShowSearchBar(true)}
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
