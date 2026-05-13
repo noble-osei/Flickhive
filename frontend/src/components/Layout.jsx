@@ -87,12 +87,8 @@ function PrimaryMenuList() {
   );
 }
 
-function Navbar({ setShow }) {
+function Navbar() {
   const [showSearchBar, setShowSearchBar] = useState(false);
-  
-  // if (showSearchBar) {
-  //   return 
-  // }
 
   return (
     <div className="navbar bg-base-200 lg:px-8 relative z-0">
