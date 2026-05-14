@@ -105,8 +105,8 @@ export default function HeroSlideshow() {
       ))}
 
       {/* ── Stage ── */}
-      <div className="absolute inset-0 z-10 flex flex-col justify-end p-0 px-5 pb-5.5 lg:p-0 lg:px-16 lg:pb-14 xl:px-24 xl:pb-18">
-        {/* Type + year badge */}
+      <div className="absolute inset-0 z-10 flex flex-col justify-end p-0 px-5 pb-5.5 lg:p-0 lg:px-16 lg:pb-14 xl:px-0 xl:max-w-7xl mx-auto">
+        {/* Type + year badge xl: */}
         <div key={`badge-${animKey}`} className="duration-650 ease-out">
           <BadgeItem optionalStyles={"lg:inline-block hidden"} mediaType={item.media_type} date={item.release_date?.slice(0, 4) || item.first_air_date?.slice(0, 4)} />
         </div>
@@ -149,7 +149,7 @@ export default function HeroSlideshow() {
               </span>
             </div>
 
-            <h2 className="text-white line-clamp-1 lg:line-clamp-2 font-black leading-tight tracking-tight text-[22px] mb-1.5 lg:text-[52px] lg:mb-3.5 xl:text-[64px]">
+            <h2 className="text-white line-clamp-1 lg:line-clamp-2 font-black leading-tight tracking-tight text-[22px] mb-1.5 lg:text-[52px] lg:mb-3.5">
               {displayTitle}
             </h2>
 

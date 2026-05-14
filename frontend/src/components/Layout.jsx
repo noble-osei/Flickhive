@@ -105,65 +105,67 @@ function Navbar() {
   const [showSearchBar, setShowSearchBar] = useState(false);
 
   return (
-    <div className="navbar bg-base-200 lg:px-8 relative z-50 overflow-visible">
-      <SearchBar show={showSearchBar} setShow={setShowSearchBar} />
-      <div className="navbar-start">
-        <label
-          htmlFor="my-drawer"
-          className="btn btn-square btn-ghost lg:hidden"
-        >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 24 24"
-            className="inline-block h-5 w-5 stroke-current"
+    <div className="bg-base-200 w-full">
+      <div className="navbar lg:px-8 relative z-50 overflow-visible xl:px-0 max-w-7xl mx-auto">
+        <SearchBar show={showSearchBar} setShow={setShowSearchBar} />
+        <div className="navbar-start">
+          <label
+            htmlFor="my-drawer"
+            className="btn btn-square btn-ghost lg:hidden"
           >
-            {" "}
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth="2"
-              d="M4 6h16M4 12h16M4 18h16"
-            ></path>{" "}
-          </svg>
-        </label>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              className="inline-block h-5 w-5 stroke-current"
+            >
+              {" "}
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="2"
+                d="M4 6h16M4 12h16M4 18h16"
+              ></path>{" "}
+            </svg>
+          </label>
 
-        <Link to="/" className="text-3xl font-bold">
-          Flick<span className="text-primary">hive</span>
-        </Link>
-      </div>
+          <Link to="/" className="text-3xl font-bold">
+            Flick<span className="text-primary">hive</span>
+          </Link>
+        </div>
 
-      <div className="navbar-center hidden lg:block">
-        <ul className="menu menu-horizontal bg-base-200">
-          <PrimaryMenuList horizontal={true} />
-        </ul>
-      </div>
+        <div className="navbar-center hidden lg:block">
+          <ul className="menu menu-horizontal bg-base-200">
+            <PrimaryMenuList horizontal={true} />
+          </ul>
+        </div>
 
-      <div className="navbar-end">
-        <button
-          className="btn btn-ghost btn-circle"
-          onClick={() => setShowSearchBar(true)}
-        >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            className="h-5 w-5"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
+        <div className="navbar-end">
+          <button
+            className="btn btn-ghost btn-circle"
+            onClick={() => setShowSearchBar(true)}
           >
-            {" "}
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth="2"
-              d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-            />{" "}
-          </svg>
-        </button>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="h-5 w-5"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              {" "}
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="2"
+                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+              />{" "}
+            </svg>
+          </button>
 
-        <Link to="/login" className="btn btn-ghost text-lg rounded-full">
-          Login
-        </Link>
+          <Link to="/login" className="btn btn-ghost text-lg rounded-full">
+            Login
+          </Link>
+        </div>
       </div>
     </div>
   );

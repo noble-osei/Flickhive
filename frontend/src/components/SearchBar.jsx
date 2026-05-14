@@ -1,7 +1,7 @@
 function SearchBar({ show, setShow }) {
   return (
     <label
-      className={`input h-full border-x-0 bg-base-100 rounded-none w-full outline-none 
+      className={`input h-full border-0 bg-base-100 rounded-none w-full outline-none 
       focus-within:shadow-md transition-shadow duration-150 z-100 ${show ? "absolute inset-0 bg-base-200 lg:px-8 flex items-center" : "hidden"}`}
     >
       <style>{`
