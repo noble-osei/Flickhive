@@ -5,7 +5,7 @@ import App from "./App.jsx";
 
 createRoot(document.getElementById("root")).render(
   <StrictMode>
-    <div data-theme="flickhive" className="min-h-screen">
+    <div data-theme="flickhive" className="min-h-screen font-sans">
       <App />
     </div>
   </StrictMode>,
