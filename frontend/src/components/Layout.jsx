@@ -30,56 +30,70 @@ function Layout({ children }) {
   );
 }
 
-function PrimaryMenuList() {
+function PrimaryMenuList({ horizontal = false }) {
+  if (horizontal) {
+    return (
+      <>
+        <li className="dropdown dropdown-hover">
+          <div tabIndex={0} role="button" className="btn btn-ghost h-8 font-semibold">🎬 Movies</div>
+          <ul className="dropdown-content menu bg-base-200 rounded-box -mt-px pt-3 z-50 w-44 shadow">
+            <li className="text-sm text-flick-muted"><Link to="/movies/popular">Popular</Link></li>
+            <li className="text-sm text-flick-muted"><Link to="/movies/trending">Trending</Link></li>
+            <li className="text-sm text-flick-muted"><Link to="/movies/upcoming">Upcoming</Link></li>
+            <li className="text-sm text-flick-muted"><Link to="/movies/now-playing">Now Playing</Link></li>
+          </ul>
+        </li>
+
+        <li className="dropdown dropdown-hover">
+          <div tabIndex={0} role="button" className="btn btn-ghost h-8 font-semibold">📺 TV Shows</div>
+          <ul className="dropdown-content menu bg-base-200 rounded-box -mt-px pt-3 z-50 w-44 shadow">
+            <li className="text-sm text-flick-muted"><Link to="/tv-shows/popular">Popular</Link></li>
+            <li className="text-sm text-flick-muted"><Link to="/tv-shows/top-rated">Top Rated</Link></li>
+            <li className="text-sm text-flick-muted"><Link to="/tv-shows/on-tv">On TV</Link></li>
+            <li className="text-sm text-flick-muted"><Link to="/tv-shows/airing-today">Airing Today</Link></li>
+          </ul>
+        </li>
+
+        <li className="dropdown dropdown-hover">
+          <div tabIndex={0} role="button" className="btn btn-ghost h-8 font-semibold">👨‍🎤 People</div>
+          <ul className="dropdown-content menu bg-base-200 rounded-box -mt-px pt-3 z-50 w-44 shadow">
+            <li className="text-sm text-flick-muted"><Link to="/people/popular">Popular</Link></li>
+          </ul>
+        </li>
+      </>
+    );
+  }
+
+  // vertical (sidebar) — keep using <details> as before
   return (
     <>
       <li>
-        <details closed="true">
+        <details>
           <summary className="font-semibold">🎬 Movies</summary>
           <ul>
-            <li className="text-sm text-flick-muted">
-              <Link to="/movies/popular">Popular</Link>
-            </li>
-            <li className="text-sm text-flick-muted">
-              <Link to="/movies/trending">Trending</Link>
-            </li>
-            <li className="text-sm text-flick-muted">
-              <Link to="/movies/upcoming">Upcoming</Link>
-            </li>
-            <li className="text-sm text-flick-muted">
-              <Link to="/movies/now-playing">Now Playing</Link>
-            </li>
+            <li className="text-sm text-flick-muted"><Link to="/movies/popular">Popular</Link></li>
+            <li className="text-sm text-flick-muted"><Link to="/movies/trending">Trending</Link></li>
+            <li className="text-sm text-flick-muted"><Link to="/movies/upcoming">Upcoming</Link></li>
+            <li className="text-sm text-flick-muted"><Link to="/movies/now-playing">Now Playing</Link></li>
           </ul>
         </details>
       </li>
-
       <li>
-        <details closed="true">
+        <details>
           <summary className="font-semibold">📺 TV Shows</summary>
           <ul>
-            <li className="text-sm text-flick-muted">
-              <Link to="/tv-shows/popular">Popular</Link>
-            </li>
-            <li className="text-sm text-flick-muted">
-              <Link to="/tv-shows/top-rated">Top Rated</Link>
-            </li>
-            <li className="text-sm text-flick-muted">
-              <Link to="/tv-shows/on-tv">On TV</Link>
-            </li>
-            <li className="text-sm text-flick-muted">
-              <Link to="/tv-shows/airing-today">Airing Today</Link>
-            </li>
+            <li className="text-sm text-flick-muted"><Link to="/tv-shows/popular">Popular</Link></li>
+            <li className="text-sm text-flick-muted"><Link to="/tv-shows/top-rated">Top Rated</Link></li>
+            <li className="text-sm text-flick-muted"><Link to="/tv-shows/on-tv">On TV</Link></li>
+            <li className="text-sm text-flick-muted"><Link to="/tv-shows/airing-today">Airing Today</Link></li>
           </ul>
         </details>
       </li>
-
       <li>
-        <details closed="true">
+        <details>
           <summary className="font-semibold">👨‍🎤 People</summary>
           <ul>
-            <li className="text-sm text-flick-muted">
-              <Link to="/people/popular">Popular</Link>
-            </li>
+            <li className="text-sm text-flick-muted"><Link to="/people/popular">Popular</Link></li>
           </ul>
         </details>
       </li>
@@ -91,7 +105,7 @@ function Navbar() {
   const [showSearchBar, setShowSearchBar] = useState(false);
 
   return (
-    <div className="navbar bg-base-200 lg:px-8 relative z-0">
+    <div className="navbar bg-base-200 lg:px-8 relative z-50 overflow-visible">
       <SearchBar show={showSearchBar} setShow={setShowSearchBar} />
       <div className="navbar-start">
         <label
@@ -120,8 +134,8 @@ function Navbar() {
       </div>
 
       <div className="navbar-center hidden lg:block">
-        <ul className="menu lg:menu-horizontal bg-base-200">
-          <PrimaryMenuList />
+        <ul className="menu menu-horizontal bg-base-200">
+          <PrimaryMenuList horizontal={true} />
         </ul>
       </div>
 
