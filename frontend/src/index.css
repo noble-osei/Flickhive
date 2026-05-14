@@ -20,3 +20,8 @@
 @theme {
   --color-flick-muted: #a0a0b0;
 }
+
+@keyframes fill-bar {
+  from { transform: scaleX(0); }
+  to   { transform: scaleX(1); }
+}

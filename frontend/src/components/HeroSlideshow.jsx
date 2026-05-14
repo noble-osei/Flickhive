@@ -24,9 +24,7 @@ export default function HeroSlideshow() {
   const [active, setActive] = useState(0);
   const [animKey, setAnimKey] = useState(0);
   const [paused, setPaused] = useState(false);
-  const [progress, setProgress] = useState(0);
   const timerRef = useRef(null);
-  const rafRef = useRef(null);
   const startRef = useRef(Date.now());
   const genres = useGenres();
 
@@ -55,22 +53,6 @@ export default function HeroSlideshow() {
     timerRef.current = setTimeout(goNext, AUTOPLAY_DELAY);
     return () => clearTimeout(timerRef.current);
   }, [active, paused, goNext]);
-
-  useEffect(() => {
-    if (paused) {
-      cancelAnimationFrame(rafRef.current);
-      return;
-    }
-    startRef.current = Date.now() - (progress / 100) * AUTOPLAY_DELAY;
-    const tick = () => {
-      setProgress(
-        Math.min(((Date.now() - startRef.current) / AUTOPLAY_DELAY) * 100, 100),
-      );
-      rafRef.current = requestAnimationFrame(tick);
-    };
-    rafRef.current = requestAnimationFrame(tick);
-    return () => cancelAnimationFrame(rafRef.current);
-  }, [active, paused]);
 
   if (loading) return <div className={HERO_HEIGHT}>Loading...</div>;
   if (error) return <div className={HERO_HEIGHT}>Error: {error}</div>;
@@ -151,7 +133,7 @@ export default function HeroSlideshow() {
               {item.genre_ids.map((id) => genres?.[id]).filter(Boolean).map((g) => (
                 <span
                   key={g}
-                  className="text-[9px] font-bold tracking-wider uppercase px-2 py-0.5 rounded-full bg-cyan-400/12 text-cyan-400 border border-cyan-400/28 lg:text-[11px] lg:px-3"
+                  className="text-[9px] font-bold tracking-wider uppercase px-2 py-0.5 rounded-full bg-primary/12 text-primary border border-primary/28 lg:text-[11px] lg:px-3"
                 >
                   {g}
                 </span>
@@ -167,7 +149,7 @@ export default function HeroSlideshow() {
               </span>
             </div>
 
-            <h2 className="text-white line-clamp-3 font-black leading-tight tracking-tight text-[22px] mb-1.5 lg:text-[52px] lg:mb-3.5 xl:text-[64px]">
+            <h2 className="text-white line-clamp-1 lg:line-clamp-2 font-black leading-tight tracking-tight text-[22px] mb-1.5 lg:text-[52px] lg:mb-3.5 xl:text-[64px]">
               {displayTitle}
             </h2>
 
@@ -204,15 +186,17 @@ export default function HeroSlideshow() {
               return (
                 <button
                   key={i}
-                  className={`relative overflow-hidden rounded-full h-0.5 shrink-0 cursor-pointer bg-white/20 transition-all duration-300 ease-out lg:h-1 ${isActive ? "lg:w-13" : ""}`}
-                  style={{ width: isActive ? 28 : 12 }}
                   onClick={() => goTo(i)}
+                  aria-label={`Go to slide ${i + 1}`}
+                  className="relative overflow-hidden rounded-full h-0.75 shrink-0 cursor-pointer bg-white/20 transition-[width] duration-350 ease-in-out lg:h-1"
+                  style={{ width: isActive ? 42 : 14 }}
                 >
                   {isActive && (
                     <div
-                      className="absolute inset-y-0 left-0 rounded-full bg-primary"
+                      key={animKey}
+                      className="absolute inset-0 rounded-full bg-primary origin-left"
                       style={{
-                        width: `${progress}%`,
+                        animation: `fill-bar ${AUTOPLAY_DELAY}ms linear forwards`,
                       }}
                     />
                   )}
