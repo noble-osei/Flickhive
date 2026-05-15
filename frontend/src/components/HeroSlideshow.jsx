@@ -6,7 +6,6 @@ import { FaStar } from "react-icons/fa";
 import { FaPlus } from "react-icons/fa6";
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa6";
 import { IoMdInformationCircleOutline } from "react-icons/io";
-import { displayTitle } from "../helpers/media.js";
 
 const AUTOPLAY_DELAY = 6000;
 const SLIDESHOWITEMS = Array(5);
@@ -122,8 +121,8 @@ export default function HeroSlideshow() {
               }
             />
             <img
-              src={`https://image.tmdb.org/t/p/w342${item.poster_path}`}
-              alt={displayTitle(item)}
+              src={`https://image.titem.title? item.title: item.namemdb.org/t/p/w342${item.poster_path}`}
+              alt={item.title? item.title: item.name}
               className="shrink-0 rounded-xl shadow-2xl shadow-black/70 border border-white/13 w-20 h-28 object-cover"
             />
           </div>
@@ -153,7 +152,7 @@ export default function HeroSlideshow() {
             </div>
 
             <h2 className="text-white line-clamp-1 lg:line-clamp-2 font-black leading-tight tracking-tight text-[22px] mb-1.5 lg:text-[52px] lg:mb-3.5">
-              {displayTitle(item)}
+              {item.title? item.title: item.name}
             </h2>
 
             <p className="text-white/55 leading-relaxed line-clamp-2 text-[10.5px] mb-3.5 lg:text-[15px] lg:line-clamp-3 lg:mb-7 lg:text-white/65">
