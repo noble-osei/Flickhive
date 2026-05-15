@@ -12,7 +12,7 @@ function Layout({ children }) {
         <main>{children}</main>
       </div>
 
-      <div className="drawer-side">
+      <div className="drawer-side z-30">
         <label
           htmlFor="my-drawer"
           aria-label="close sidebar"
@@ -106,7 +106,7 @@ function Navbar() {
 
   return (
     <div className="bg-base-200 w-full">
-      <div className="navbar lg:px-8 relative z-50 overflow-visible xl:px-0 max-w-7xl mx-auto">
+      <div className="navbar lg:px-16 relative z-20 overflow-visible xl:px-0 max-w-7xl mx-auto">
         <SearchBar show={showSearchBar} setShow={setShowSearchBar} />
         <div className="navbar-start">
           <label
