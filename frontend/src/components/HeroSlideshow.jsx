@@ -6,14 +6,16 @@ import { FaStar } from "react-icons/fa";
 import { FaPlus } from "react-icons/fa6";
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa6";
 import { IoMdInformationCircleOutline } from "react-icons/io";
+import { displayTitle } from "../helpers/media.js";
 
 const AUTOPLAY_DELAY = 6000;
 const SLIDESHOWITEMS = Array(5);
 const HERO_HEIGHT = "h-115 lg:h-screen lg:max-h-215 lg:min-h-150";
 const BADGE_STYLES =
   "text-[9px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-white/8 border border-white/16 text-white/55 lg:text-[11px] lg:px-3";
-const CHEVRON_STYLES = "flex items-center justify-center shrink-0 rounded-full w-[34px] h-[34px] bg-white/5 border border-white/[0.14] text-white/75 cursor-pointer transition-[background,transform] duration-150 hover:bg-white/15 active:scale-90 lg:w-[44px] lg:h-[44px]";
-const BadgeItem = ({ mediaType, date, optionalStyles="" }) => (
+const CHEVRON_STYLES =
+  "flex items-center justify-center shrink-0 rounded-full w-[34px] h-[34px] bg-white/5 border border-white/[0.14] text-white/75 cursor-pointer transition-[background,transform] duration-150 hover:bg-white/15 active:scale-90 lg:w-[44px] lg:h-[44px]";
+const BadgeItem = ({ mediaType, date, optionalStyles = "" }) => (
   <span className={`mb-2.5 lg:mb-4 ${BADGE_STYLES} ${optionalStyles}`}>
     {mediaType === "tv" ? "series" : "movie"} · {date}
   </span>
@@ -33,7 +35,6 @@ export default function HeroSlideshow() {
       if (index === active) return;
       setActive(index);
       setAnimKey((k) => k + 1);
-      setProgress(0);
       startRef.current = Date.now();
     },
     [active],
@@ -68,18 +69,6 @@ export default function HeroSlideshow() {
   const safeActive = Math.min(active, ITEMS.length - 1);
   const item = ITEMS[safeActive];
 
-  const displayTitle = (() => {
-    if (item.media_type === "movie") {
-      return item.title !== item.original_title
-        ? `${item.title} (${item.original_title})`
-        : item.title;
-    } else {
-      return item.name !== item.original_name
-        ? `${item.name} (${item.original_name})`
-        : item.name;
-    }
-  })();
-
   return (
     <section
       className="relative w-full overflow-hidden bg-slate-950 h-115 lg:h-screen lg:max-h-215 lg:min-h-150"
@@ -108,7 +97,13 @@ export default function HeroSlideshow() {
       <div className="absolute inset-0 z-10 flex flex-col justify-end p-0 px-5 pb-5.5 lg:p-0 lg:px-16 lg:pb-14 xl:px-0 xl:max-w-7xl mx-auto">
         {/* Type + year badge xl: */}
         <div key={`badge-${animKey}`} className="duration-650 ease-out">
-          <BadgeItem optionalStyles={"lg:inline-block hidden"} mediaType={item.media_type} date={item.release_date?.slice(0, 4) || item.first_air_date?.slice(0, 4)} />
+          <BadgeItem
+            optionalStyles={"lg:inline-block hidden"}
+            mediaType={item.media_type}
+            date={
+              item.release_date?.slice(0, 4) || item.first_air_date?.slice(0, 4)
+            }
+          />
         </div>
 
         {/* Main content row (poster + meta) */}
@@ -118,10 +113,17 @@ export default function HeroSlideshow() {
         >
           {/* Poster — hidden on desktop */}
           <div className="lg:hidden overflow-hidden">
-            <BadgeItem optionalStyles="inline-block" mediaType={item.media_type} date={item.release_date?.slice(0, 4) || item.first_air_date?.slice(0, 4)} />
+            <BadgeItem
+              optionalStyles="inline-block"
+              mediaType={item.media_type}
+              date={
+                item.release_date?.slice(0, 4) ||
+                item.first_air_date?.slice(0, 4)
+              }
+            />
             <img
               src={`https://image.tmdb.org/t/p/w342${item.poster_path}`}
-              alt={displayTitle}
+              alt={displayTitle(item)}
               className="shrink-0 rounded-xl shadow-2xl shadow-black/70 border border-white/13 w-20 h-28 object-cover"
             />
           </div>
@@ -130,27 +132,28 @@ export default function HeroSlideshow() {
           <div className="flex-1 min-w-0 lg:max-w-145">
             {/* Genre pills */}
             <div className="flex flex-wrap gap-1.5 mb-2">
-              {item.genre_ids.map((id) => genres?.[id]).filter(Boolean).map((g) => (
-                <span
-                  key={g}
-                  className="text-[9px] font-bold tracking-wider uppercase px-2 py-0.5 rounded-full bg-primary/12 text-primary border border-primary/28 lg:text-[11px] lg:px-3"
-                >
-                  {g}
-                </span>
-              ))}
+              {item.genre_ids
+                .map((id) => genres?.[id])
+                .filter(Boolean)
+                .map((g) => (
+                  <span
+                    key={g}
+                    className="text-[9px] font-bold tracking-wider uppercase px-2 py-0.5 rounded-full bg-primary/12 text-primary border border-primary/28 lg:text-[11px] lg:px-3"
+                  >
+                    {g}
+                  </span>
+                ))}
             </div>
 
             {/* Rating — desktop shows above title */}
             <div className="hidden lg:flex items-center gap-1.5 text-accent font-bold text-[14px] mb-2">
               <FaStar />
               {item.vote_average?.toFixed(1)}
-              <span className="text-white/30 font-normal text-[12px]">
-                /10
-              </span>
+              <span className="text-white/30 font-normal text-[12px]">/10</span>
             </div>
 
             <h2 className="text-white line-clamp-1 lg:line-clamp-2 font-black leading-tight tracking-tight text-[22px] mb-1.5 lg:text-[52px] lg:mb-3.5">
-              {displayTitle}
+              {displayTitle(item)}
             </h2>
 
             <p className="text-white/55 leading-relaxed line-clamp-2 text-[10.5px] mb-3.5 lg:text-[15px] lg:line-clamp-3 lg:mb-7 lg:text-white/65">
