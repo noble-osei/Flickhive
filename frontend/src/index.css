@@ -1,6 +1,5 @@
 @import "tailwindcss";
 @plugin "daisyui";
-
 @plugin "daisyui" {
   themes: false;
 }
@@ -16,7 +15,6 @@
   --color-error: #ef4444;
   --color-base-content: #ffffff;
 }
-
 @theme {
   --color-flick-muted: #a0a0b0;
 }
@@ -24,4 +22,12 @@
 @keyframes fill-bar {
   from { transform: scaleX(0); }
   to   { transform: scaleX(1); }
+}
+
+.no-scrollbar {
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;     /* Firefox */
+}
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
 }
