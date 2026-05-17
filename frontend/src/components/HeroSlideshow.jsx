@@ -10,12 +10,10 @@ import { IoMdInformationCircleOutline } from "react-icons/io";
 const AUTOPLAY_DELAY = 6000;
 const SLIDESHOWITEMS = Array(5);
 const HERO_HEIGHT = "h-115 lg:h-screen lg:max-h-215 lg:min-h-150";
-const BADGE_STYLES =
-  "text-[9px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-white/8 border border-white/16 text-white/55 lg:text-[11px] lg:px-3";
 const CHEVRON_STYLES =
   "flex items-center justify-center shrink-0 rounded-full w-[34px] h-[34px] bg-white/5 border border-white/[0.14] text-white/75 cursor-pointer transition-[background,transform] duration-150 hover:bg-white/15 active:scale-90 lg:w-[44px] lg:h-[44px]";
 const BadgeItem = ({ mediaType, date, optionalStyles = "" }) => (
-  <span className={`mb-2.5 lg:mb-4 ${BADGE_STYLES} ${optionalStyles}`}>
+  <span className={`mb-2.5 lg:mb-4 text-[9px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-white/8 border border-white/16 text-white/55 lg:text-[11px] lg:px-3 ${optionalStyles}`}>
     {mediaType === "tv" ? "series" : "movie"} · {date}
   </span>
 );
@@ -93,7 +91,7 @@ export default function HeroSlideshow() {
       ))}
 
       {/* ── Stage ── */}
-      <div className="absolute inset-0 z-10 flex flex-col justify-end p-0 px-5 pb-5.5 lg:p-0 lg:px-16 lg:pb-14 xl:px-0 xl:max-w-7xl mx-auto">
+      <div className="absolute inset-0 z-10 flex flex-col justify-end px-5 pb-5.5 lg:px-16 lg:pb-14 xl:px-0 xl:max-w-7xl mx-auto">
         {/* Type + year badge xl: */}
         <div key={`badge-${animKey}`} className="duration-650 ease-out">
           <BadgeItem
@@ -121,14 +119,14 @@ export default function HeroSlideshow() {
               }
             />
             <img
-              src={`https://image.titem.title? item.title: item.namemdb.org/t/p/w342${item.poster_path}`}
+              src={`https://image.tmdb.org/t/p/w342${item.poster_path}`}
               alt={item.title? item.title: item.name}
               className="shrink-0 rounded-xl shadow-2xl shadow-black/70 border border-white/13 w-20 h-28 object-cover"
             />
           </div>
 
           {/* Meta */}
-          <div className="flex-1 min-w-0 lg:max-w-145">
+          <div className="flex-1 lg:max-w-145">
             {/* Genre pills */}
             <div className="flex flex-wrap gap-1.5 mb-2">
               {item.genre_ids
@@ -161,7 +159,7 @@ export default function HeroSlideshow() {
 
             {/* Actions */}
             <div className="flex items-center gap-2 flex-wrap">
-              <button className="flex items-center gap-1.5 rounded-full font-semibold bg-white/10 text-white text-[11px] tracking-[0.03em] px-4 py-1.75 border border-white/18 cursor-pointer transition-all duration-150 hover:bg-white/18 hover:scale-[1.02] lg:text-sm lg:px-6 lg:py-3 lg:gap-2">
+              <button className="flex items-center gap-1.5 rounded-full font-semibold bg-white/10 text-white text-[11px] tracking-[0.03em] px-4 py-1.75 border border-white/18 cursor-pointer transition-all duration-150 hover:bg-white/18 lg:text-sm lg:px-6 lg:py-3 lg:gap-2">
                 <IoMdInformationCircleOutline className="text-[15px]" /> More
                 Info
               </button>
