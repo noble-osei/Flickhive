@@ -17,6 +17,7 @@
 }
 @theme {
   --color-flick-muted: #a0a0b0;
+  --breakpoint-xl: 84rem;
 }
 
 @keyframes fill-bar {
