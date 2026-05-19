@@ -1,43 +1,117 @@
+import { useEffect, useState, useRef } from "react";
+import { IoSearchOutline } from "react-icons/io5";
+import useFetch from "../hooks/useFetch.jsx";
+import { SearchMediaCard } from "./MovieCard.jsx";
+
+function useDebounce(query, delay = 500) {
+  const [debouncedQuery, setDebouncedQuery] = useState(query);
+  const [typing, setTyping] = useState(false);
+
+  useEffect(() => {
+    setTyping(true);
+    const timerId = setTimeout(() => {
+      setDebouncedQuery(query);
+      setTyping(false);
+    }, delay);
+
+    return () => {
+      clearTimeout(timerId);
+    };
+  }, [query]);
+
+  return { debouncedQuery, typing };
+}
+
 function SearchBar({ show, setShow }) {
+  const inputRef = useRef(null);
+  const [showResults, setShowResults] = useState(true);
+  const [query, setQuery] = useState("");
+  const { debouncedQuery, typing } = useDebounce(query);
+  const { data, loading } = useFetch(
+    `/search/multi?query=${debouncedQuery}&include_adult=false&page=1`,
+  );
+
+  useEffect(() => {
+    if (show && inputRef.current) inputRef.current.focus();
+  }, [show]);
+
   return (
-    <label
-      className={`input h-full border-0 bg-base-100 rounded-none w-full outline-none 
-      focus-within:shadow-md transition-shadow duration-150 z-100 ${show ? "absolute inset-0 bg-base-200 lg:px-8 flex items-center" : "hidden"}`}
+    <div
+      className={`${
+        !show
+          ? "hidden"
+          : "absolute inset-0 bg-base-200 lg:px-16 flex flex-col xl:px-0 max-w-7xl mx-auto"
+      }`}
     >
-      <style>{`
-        input[type="search"]::-webkit-search-cancel-button,
-        input[type="search"]::-webkit-search-decoration {
-          -webkit-appearance: none;
-          appearance: none;
-        }
-      `}</style>
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        className="h-5 w-5 opacity-50"
-        fill="none"
-        viewBox="0 0 24 24"
-        stroke="currentColor"
+      <label
+        className={`input h-16 border-0 border-b border-white/10 bg-base-200 rounded-none w-full 
+          outline-none focus-within:shadow-md transition-shadow duration-150 z-50`}
       >
-        {" "}
-        <path
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          strokeWidth="2"
-          d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-        />{" "}
-      </svg>
-      <input
-        type="search"
-        className="grow text-flick-muted outline-none"
-        placeholder="Search"
-      />
-      <button
-        className="btn btn-ghost btn-circle btn-sm"
-        onClick={() => setShow(false)}
-      >
-        ✕
-      </button>
-    </label>
+        <style>{`
+          input[type="search"]::-webkit-search-cancel-button,
+          input[type="search"]::-webkit-search-decoration {
+            -webkit-appearance: none;
+            appearance: none;
+          }
+        `}</style>
+        <IoSearchOutline className="h-5 w-5 opacity-50" />
+        <input
+          ref={inputRef}
+          type="search"
+          className="grow text-flick-muted outline-none"
+          placeholder="Search"
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+          onFocus={() => setShowResults(true)}
+        />
+        <button
+          className="btn btn-ghost btn-circle btn-sm"
+          onClick={() => {
+            setShow(false);
+            setQuery("");
+          }}
+        >
+          ✕
+        </button>
+      </label>
+
+      {query.length > 0 && showResults && (
+        <div className="absolute top-16 inset-x-0 lg:inset-x-16 xl:inset-x-0 bg-base-200 shadow-xl 
+          rounded-b-lg">
+          <div
+            aria-label="close modal"
+            onClick={() => setShowResults(false)}
+            className="fixed inset-0 w-screen h-screen bg-black/50 z-10"
+          ></div>
+          <div className="relative flex flex-col z-50">
+            {typing || loading ? (
+              <p className="h-32 flex items-center justify-center">
+                <span className="loading loading-dots loading-xl"></span>
+              </p>
+            ) : (
+              <>
+                {data.results.slice(0, 5).map((r, i) => (
+                  <SearchMediaCard key={r.id || i} item={r} />
+                ))}
+
+                {data.results.length > 0 ? (
+                  data.results.length > 5 && (
+                    <div className="text-sm font-semibold py-3 px-4 hover:bg-secondary/10 
+                      cursor-pointer border-t border-base-300">
+                      See all results for "{query}"
+                    </div>
+                  )
+                ) : (
+                  <div className="py-4 px-4 text-sm opacity-50">
+                    No results found.
+                  </div>
+                )}
+              </>
+            )}
+          </div>
+        </div>
+      )}
+    </div>
   );
 }
 
