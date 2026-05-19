@@ -38,29 +38,65 @@ function PrimaryMenuList({ horizontal = false }) {
     return (
       <>
         <li className="dropdown dropdown-hover">
-          <div tabIndex={0} role="button" className="btn btn-ghost h-8 font-semibold">🎬 Movies</div>
+          <div
+            tabIndex={0}
+            role="button"
+            className="btn btn-ghost h-8 font-semibold"
+          >
+            🎬 Movies
+          </div>
           <ul className="dropdown-content menu bg-base-200 rounded-box -mt-px pt-3 z-50 w-44 shadow">
-            <li className="text-sm text-flick-muted"><Link to="/movies/popular">Popular</Link></li>
-            <li className="text-sm text-flick-muted"><Link to="/movies/trending">Trending</Link></li>
-            <li className="text-sm text-flick-muted"><Link to="/movies/upcoming">Upcoming</Link></li>
-            <li className="text-sm text-flick-muted"><Link to="/movies/now-playing">Now Playing</Link></li>
+            <li className="text-sm text-flick-muted">
+              <Link to="/movies/popular">Popular</Link>
+            </li>
+            <li className="text-sm text-flick-muted">
+              <Link to="/movies/trending">Trending</Link>
+            </li>
+            <li className="text-sm text-flick-muted">
+              <Link to="/movies/upcoming">Upcoming</Link>
+            </li>
+            <li className="text-sm text-flick-muted">
+              <Link to="/movies/now-playing">Now Playing</Link>
+            </li>
           </ul>
         </li>
 
         <li className="dropdown dropdown-hover">
-          <div tabIndex={0} role="button" className="btn btn-ghost h-8 font-semibold">📺 TV Shows</div>
+          <div
+            tabIndex={0}
+            role="button"
+            className="btn btn-ghost h-8 font-semibold"
+          >
+            📺 TV Shows
+          </div>
           <ul className="dropdown-content menu bg-base-200 rounded-box -mt-px pt-3 z-50 w-44 shadow">
-            <li className="text-sm text-flick-muted"><Link to="/tv-shows/popular">Popular</Link></li>
-            <li className="text-sm text-flick-muted"><Link to="/tv-shows/top-rated">Top Rated</Link></li>
-            <li className="text-sm text-flick-muted"><Link to="/tv-shows/on-tv">On TV</Link></li>
-            <li className="text-sm text-flick-muted"><Link to="/tv-shows/airing-today">Airing Today</Link></li>
+            <li className="text-sm text-flick-muted">
+              <Link to="/tv-shows/popular">Popular</Link>
+            </li>
+            <li className="text-sm text-flick-muted">
+              <Link to="/tv-shows/top-rated">Top Rated</Link>
+            </li>
+            <li className="text-sm text-flick-muted">
+              <Link to="/tv-shows/on-tv">On TV</Link>
+            </li>
+            <li className="text-sm text-flick-muted">
+              <Link to="/tv-shows/airing-today">Airing Today</Link>
+            </li>
           </ul>
         </li>
 
         <li className="dropdown dropdown-hover">
-          <div tabIndex={0} role="button" className="btn btn-ghost h-8 font-semibold">👨‍🎤 People</div>
+          <div
+            tabIndex={0}
+            role="button"
+            className="btn btn-ghost h-8 font-semibold"
+          >
+            👨‍🎤 People
+          </div>
           <ul className="dropdown-content menu bg-base-200 rounded-box -mt-px pt-3 z-50 w-44 shadow">
-            <li className="text-sm text-flick-muted"><Link to="/people/popular">Popular</Link></li>
+            <li className="text-sm text-flick-muted">
+              <Link to="/people/popular">Popular</Link>
+            </li>
           </ul>
         </li>
       </>
@@ -74,10 +110,18 @@ function PrimaryMenuList({ horizontal = false }) {
         <details>
           <summary className="font-semibold">🎬 Movies</summary>
           <ul>
-            <li className="text-sm text-flick-muted"><Link to="/movies/popular">Popular</Link></li>
-            <li className="text-sm text-flick-muted"><Link to="/movies/trending">Trending</Link></li>
-            <li className="text-sm text-flick-muted"><Link to="/movies/upcoming">Upcoming</Link></li>
-            <li className="text-sm text-flick-muted"><Link to="/movies/now-playing">Now Playing</Link></li>
+            <li className="text-sm text-flick-muted">
+              <Link to="/movies/popular">Popular</Link>
+            </li>
+            <li className="text-sm text-flick-muted">
+              <Link to="/movies/trending">Trending</Link>
+            </li>
+            <li className="text-sm text-flick-muted">
+              <Link to="/movies/upcoming">Upcoming</Link>
+            </li>
+            <li className="text-sm text-flick-muted">
+              <Link to="/movies/now-playing">Now Playing</Link>
+            </li>
           </ul>
         </details>
       </li>
@@ -85,10 +129,18 @@ function PrimaryMenuList({ horizontal = false }) {
         <details>
           <summary className="font-semibold">📺 TV Shows</summary>
           <ul>
-            <li className="text-sm text-flick-muted"><Link to="/tv-shows/popular">Popular</Link></li>
-            <li className="text-sm text-flick-muted"><Link to="/tv-shows/top-rated">Top Rated</Link></li>
-            <li className="text-sm text-flick-muted"><Link to="/tv-shows/on-tv">On TV</Link></li>
-            <li className="text-sm text-flick-muted"><Link to="/tv-shows/airing-today">Airing Today</Link></li>
+            <li className="text-sm text-flick-muted">
+              <Link to="/tv-shows/popular">Popular</Link>
+            </li>
+            <li className="text-sm text-flick-muted">
+              <Link to="/tv-shows/top-rated">Top Rated</Link>
+            </li>
+            <li className="text-sm text-flick-muted">
+              <Link to="/tv-shows/on-tv">On TV</Link>
+            </li>
+            <li className="text-sm text-flick-muted">
+              <Link to="/tv-shows/airing-today">Airing Today</Link>
+            </li>
           </ul>
         </details>
       </li>
@@ -96,7 +148,9 @@ function PrimaryMenuList({ horizontal = false }) {
         <details>
           <summary className="font-semibold">👨‍🎤 People</summary>
           <ul>
-            <li className="text-sm text-flick-muted"><Link to="/people/popular">Popular</Link></li>
+            <li className="text-sm text-flick-muted">
+              <Link to="/people/popular">Popular</Link>
+            </li>
           </ul>
         </details>
       </li>
@@ -149,8 +203,14 @@ function Navbar() {
 
 function Footer() {
   return (
-    <footer className="bg-base-300/20 w-full border-t border-base-200/40 mt-8 py-8 px-5 lg:px-16 xl:px-0 mx-auto">
-      <div className="flex flex-col sm:flex-row items-center justify-center gap-3 text-sm text-base-content/50">
+    <footer
+      className="bg-base-300/20 w-full border-t border-base-200/40 mt-8 py-8 px-4 lg:px-16 
+      xl:px-0 mx-auto"
+    >
+      <div
+        className="flex flex-col sm:flex-row items-center justify-center gap-3 text-sm 
+        text-base-content/50"
+      >
         <p>© {new Date().getFullYear()} Flickhive</p>
         <p className="flex items-center gap-2">
           Movie and TV data provided by
@@ -158,12 +218,13 @@ function Footer() {
             href="https://www.themoviedb.org"
             target="_blank"
             rel="noreferrer"
-            className="text-base-content/70 hover:text-base-content transition-colors underline underline-offset-2"
+            className="text-base-content/70 hover:text-base-content transition-colors underline 
+              underline-offset-2"
           >
             TMDB
           </a>
         </p>
       </div>
     </footer>
-  )
+  );
 }
