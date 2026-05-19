@@ -9,7 +9,9 @@ function Home() {
   const topRatedMovies = useFetch("/movie/top_rated?page=1");
   const populartTVShow = useFetch("/tv/popular?page=1");
   const hiddenGems = useFetch(
-    "/discover/movie?include_adult=false&include_video=false&page=1&primary_release_date.gte=2010-01-01&sort_by=vote_average.desc&vote_average.gte=7.5&vote_count.gte=300&vote_count.lte=1500&without_genres=99,10755",
+    "/discover/movie?include_adult=false&include_video=false&page=1&\
+    primary_release_date.gte=2010-01-01&sort_by=vote_average.desc&vote_average.gte=7.5&\
+    vote_count.gte=300&vote_count.lte=1500&without_genres=99,10755",
   );
   const minDate = new Date(Date.now() + 24 * 60 * 60 * 1000)
     .toISOString()
@@ -18,7 +20,8 @@ function Home() {
     .toISOString()
     .split("T")[0];
   const comingSoon = useFetch(
-    `/discover/movie?include_adult=false&include_video=false&page=1&sort_by=popularity.desc&with_release_type=2|3&primary_release_date.gte=${minDate}&primary_release_date.lte=${maxDate}`,
+    `/discover/movie?include_adult=false&include_video=false&page=1&sort_by=popularity.desc&\
+    with_release_type=2|3&primary_release_date.gte=${minDate}&primary_release_date.lte=${maxDate}`,
   );
 
   return (
@@ -78,14 +81,16 @@ function Carousel({ title, data }) {
   };
 
   return (
-    <section className="px-5 my-8 lg:px-16 max-w-7xl xl:px-0 mx-auto relative">
+    <section className="px-4 my-8 lg:px-16 max-w-7xl xl:px-0 mx-auto relative">
       <h3 className="text-2xl font-semibold text-base-content mb-2">{title}</h3>
 
       <div className="relative">
         {!atStart && (
           <button
             onClick={() => scroll(-1)}
-            className="absolute -left-4 top-25 z-10 w-9 h-9 rounded-full bg-black/40 hover:bg-black/60 border border-transparent text-base-content flex items-center justify-center transition-colors"
+            className="absolute -left-4 top-25 z-10 w-9 h-9 rounded-full bg-black/40 
+              hover:bg-black/60 border border-transparent text-base-content flex items-center 
+              justify-center transition-colors"
             aria-label="Scroll Left"
           >
             <FaChevronLeft />
@@ -103,7 +108,9 @@ function Carousel({ title, data }) {
         {!atEnd && (
           <button
             onClick={() => scroll(1)}
-            className="absolute -right-4 top-25 z-10 w-9 h-9 rounded-full bg-black/40 hover:bg-black/60 border border-transparent text-base-content flex items-center justify-center transition-colors"
+            className="absolute -right-4 top-25 z-10 w-9 h-9 rounded-full bg-black/40 
+              hover:bg-black/60 border border-transparent text-base-content flex items-center 
+              justify-center transition-colors"
             aria-label="Scroll Right"
           >
             <FaChevronRight />
