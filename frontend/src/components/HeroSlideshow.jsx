@@ -119,7 +119,7 @@ export default function HeroSlideshow() {
               }
             />
             <img
-              src={`https://image.tmdb.org/t/p/w342${item.poster_path}`}
+              src={`https://image.tmdb.org/t/p/w154${item.poster_path}`}
               alt={item.title? item.title: item.name}
               className="shrink-0 rounded-xl shadow-2xl shadow-black/70 border border-white/13 w-20 h-28 object-cover"
             />
