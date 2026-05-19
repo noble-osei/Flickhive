@@ -91,7 +91,7 @@ export default function HeroSlideshow() {
       ))}
 
       {/* ── Stage ── */}
-      <div className="absolute inset-0 z-10 flex flex-col justify-end px-5 pb-5.5 lg:px-16 lg:pb-14 xl:px-0 xl:max-w-7xl mx-auto">
+      <div className="absolute inset-0 z-10 flex flex-col justify-end px-4 pb-5.5 lg:px-16 lg:pb-14 xl:px-0 xl:max-w-7xl mx-auto">
         {/* Type + year badge xl: */}
         <div key={`badge-${animKey}`} className="duration-650 ease-out">
           <BadgeItem
