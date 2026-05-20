@@ -1,20 +1,22 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import useFetch from "../hooks/useFetch.jsx";
 import useGenres from "../hooks/useGenres.jsx";
-import { FaPlay } from "react-icons/fa";
-import { FaStar } from "react-icons/fa";
-import { FaPlus } from "react-icons/fa6";
-import { FaChevronLeft, FaChevronRight } from "react-icons/fa6";
+import { FaPlay, FaStar } from "react-icons/fa";
+import { FaChevronLeft, FaChevronRight, FaPlus } from "react-icons/fa6";
 import { IoMdInformationCircleOutline } from "react-icons/io";
+import { Link } from "react-router-dom";
 
 const AUTOPLAY_DELAY = 6000;
 const SLIDESHOWITEMS = Array(5);
 const HERO_HEIGHT = "h-115 lg:h-screen lg:max-h-215 lg:min-h-150";
-const CHEVRON_STYLES =
-  "flex items-center justify-center shrink-0 rounded-full w-[34px] h-[34px] bg-white/5 border border-white/[0.14] text-white/75 cursor-pointer transition-[background,transform] duration-150 hover:bg-white/15 active:scale-90 lg:w-[44px] lg:h-[44px]";
+const CHEVRON_STYLES = `flex items-center justify-center shrink-0 rounded-full w-[34px] h-[34px] bg-white/5 border 
+  border-white/[0.14] text-white/75 cursor-pointer transition-[background,transform] duration-150
+  hover:bg-white/15 active:scale-90 lg:w-[44px] lg:h-[44px]`;
 const BadgeItem = ({ mediaType, date, optionalStyles = "" }) => (
   <span
-    className={`mb-2.5 lg:mb-4 text-[9px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-white/8 border border-white/16 text-white/55 lg:text-[11px] lg:px-3 ${optionalStyles}`}
+    className={`mb-2.5 lg:mb-4 text-[9px] font-bold uppercase tracking-wider px-2 py-0.5
+      rounded-full bg-white/8 border border-white/16 text-white/55 lg:text-[11px] lg:px-3 
+      ${optionalStyles}`}
   >
     {mediaType === "tv" ? "series" : "movie"} · {date}
   </span>
@@ -58,7 +60,7 @@ export default function HeroSlideshow() {
   if (error) return <div className={HERO_HEIGHT}>Error: {error}</div>;
   if (!data) return <div className={HERO_HEIGHT}>No data available</div>;
 
-  console.log(data)
+  console.log(data);
   const ITEMS = (data?.results || [])
     .filter((r) => r.media_type === "movie" || r.media_type === "tv")
     .slice(0, 5);
@@ -70,7 +72,8 @@ export default function HeroSlideshow() {
 
   return (
     <section
-      className="relative w-full overflow-hidden bg-slate-950 h-115 lg:h-screen lg:max-h-215 lg:min-h-150"
+      className="relative w-full overflow-hidden bg-slate-950 h-115 lg:h-screen lg:max-h-215
+        lg:min-h-150"
       onMouseEnter={() => setPaused(true)}
       onMouseLeave={() => setPaused(false)}
       onTouchStart={() => setPaused(true)}
@@ -80,20 +83,32 @@ export default function HeroSlideshow() {
       {ITEMS.map((it, i) => (
         <div
           key={i}
-          className={`absolute inset-0 transition-opacity duration-900 ease ${i === safeActive ? "opacity-100 z-10" : "opacity-0 z-0"}`}
+          className={`absolute inset-0 transition-opacity duration-900 ease 
+            ${i === safeActive ? "opacity-100 z-10" : "opacity-0 z-0"}`}
         >
           <img
             src={`https://image.tmdb.org/t/p/original${it.backdrop_path}`}
             alt=""
             className="absolute inset-0 w-full h-full object-cover object-top scale-105"
           />
-          <div className="absolute inset-0 bg-linear-to-b from-slate-900/25 via-transparent via-25% to-65% to-slate-950 lg:from-slate-900/20 lg:via-transparent lg:via-20% lg:to-80% lg:to-slate-950" />
-          <div className="absolute inset-0 bg-linear-to-r from-slate-900/85 via-slate-900/30 via-55% to-transparent to-80% lg:from-slate-900/95 lg:via-slate-900/70 lg:via-30% lg:to-transparent lg:to-80%" />
+          <div
+            className="absolute inset-0 bg-linear-to-b from-slate-900/25 via-transparent 
+            via-25% to-65% to-slate-950 lg:from-slate-900/20 lg:via-transparent lg:via-20% 
+            lg:to-80% lg:to-slate-950"
+          />
+          <div
+            className="absolute inset-0 bg-linear-to-r from-slate-900/85 via-slate-900/30 
+            via-55% to-transparent to-80% lg:from-slate-900/95 lg:via-slate-900/70 lg:via-30% 
+            lg:to-transparent lg:to-80%"
+          />
         </div>
       ))}
 
       {/* ── Stage ── */}
-      <div className="absolute inset-0 z-10 flex flex-col justify-end px-4 pb-5.5 lg:px-16 lg:pb-14 xl:px-0 xl:max-w-7xl mx-auto">
+      <div
+        className="absolute inset-0 z-10 flex flex-col justify-end px-4 pb-5.5 lg:px-16 lg:pb-14
+        xl:px-0 xl:max-w-7xl mx-auto"
+      >
         {/* Type + year badge xl: */}
         <div key={`badge-${animKey}`} className="duration-650 ease-out">
           <BadgeItem
@@ -123,7 +138,8 @@ export default function HeroSlideshow() {
             <img
               src={`https://image.tmdb.org/t/p/w154${item.poster_path}`}
               alt={item.title ? item.title : item.name}
-              className="shrink-0 rounded-xl shadow-2xl shadow-black/70 border border-white/13 w-20 h-28 object-cover"
+              className="shrink-0 rounded-xl shadow-2xl shadow-black/70 border border-white/13
+                w-20 h-28 object-cover"
             />
           </div>
 
@@ -137,7 +153,9 @@ export default function HeroSlideshow() {
                 .map((g) => (
                   <span
                     key={g}
-                    className="text-[9px] font-bold tracking-wider uppercase px-2 py-0.5 rounded-full bg-primary/12 text-primary border border-primary/28 lg:text-[11px] lg:px-3"
+                    className="text-[9px] font-bold tracking-wider uppercase px-2 py-0.5 
+                      rounded-full bg-primary/12 text-primary border border-primary/28 
+                      lg:text-[11px] lg:px-3"
                   >
                     {g}
                   </span>
@@ -145,30 +163,54 @@ export default function HeroSlideshow() {
             </div>
 
             {/* Rating — desktop shows above title */}
-            <div className="hidden lg:flex items-center gap-1.5 text-accent font-bold text-[14px] mb-2">
+            <div className="hidden lg:flex items-center gap-1.5 text-accent font-bold text-sm mb-2">
               <FaStar />
               {item.vote_average?.toFixed(1)}
               <span className="text-white/30 font-normal text-[12px]">/10</span>
             </div>
 
-            <h2 className="text-white line-clamp-1 lg:line-clamp-2 font-black leading-tight tracking-tight text-[22px] mb-1.5 lg:text-[52px] lg:mb-3.5">
-              {item.title ? item.title : item.name}
+            <h2
+              className="text-white line-clamp-1 lg:line-clamp-2 font-black leading-tight 
+              tracking-tight text-[22px] mb-1.5 lg:text-[52px] lg:mb-3.5"
+            >
+              <Link
+                to={`/${item.media_type === "movie" ? "movies" : "tv"}/${item.id}`}
+                className="hover:link-primary"
+              >
+                {item.title ? item.title : item.name}
+              </Link>
             </h2>
 
-            <p className="text-white/55 leading-relaxed line-clamp-2 text-[10.5px] mb-3.5 lg:text-[15px] lg:line-clamp-3 lg:mb-7 lg:text-white/65">
+            <p
+              className="text-white/55 leading-relaxed line-clamp-2 text-[10.5px] mb-3.5 
+              lg:text-[15px] lg:line-clamp-3 lg:mb-7 lg:text-white/65"
+            >
               {item.overview}
             </p>
 
             {/* Actions */}
             <div className="flex items-center gap-2 flex-wrap">
-              <button className="flex items-center gap-1.5 rounded-full font-semibold bg-white/10 text-white text-[11px] tracking-[0.03em] px-4 py-1.75 border border-white/18 cursor-pointer transition-all duration-150 hover:bg-white/18 lg:text-sm lg:px-6 lg:py-3 lg:gap-2">
+              <Link
+                to={`/${item.media_type === "movie" ? "movies" : "tv"}/${item.id}`}
+                className="flex items-center gap-1.5 rounded-full font-semibold bg-white/10
+                text-white text-[11px] tracking-[0.03em] px-4 py-1.75 border border-white/18 
+                cursor-pointer transition-all duration-150 hover:bg-white/18 lg:text-sm lg:px-6 
+                lg:py-3 lg:gap-2"
+              >
                 <IoMdInformationCircleOutline className="text-[15px]" /> More
                 Info
-              </button>
-              <button className="flex items-center justify-center rounded-full w-8 h-8 bg-white/10 border border-white/20 text-white cursor-pointer transition-colors duration-150 hover:bg-white/20 lg:w-12 lg:h-12">
+              </Link>
+              <button
+                className="flex items-center justify-center rounded-full w-8 h-8 bg-white/10
+                border border-white/20 text-white cursor-pointer transition-colors duration-150
+                hover:bg-white/20 lg:w-12 lg:h-12"
+              >
                 <FaPlus className="w-3.5 h-3.5" />
               </button>
-              <div className="flex lg:hidden items-center gap-1 font-bold text-accent ml-auto text-xs">
+              <div
+                className="flex lg:hidden items-center gap-1 font-bold text-accent ml-auto
+                text-xs"
+              >
                 <FaStar className="w-3.25 h-3.25" />
                 {item.vote_average?.toFixed(1)}
               </div>
@@ -190,7 +232,8 @@ export default function HeroSlideshow() {
                   key={i}
                   onClick={() => goTo(i)}
                   aria-label={`Go to slide ${i + 1}`}
-                  className="relative overflow-hidden rounded-full h-0.75 shrink-0 cursor-pointer bg-white/20 transition-[width] duration-350 ease-in-out lg:h-1"
+                  className="relative overflow-hidden rounded-full h-0.75 shrink-0 cursor-pointer
+                    bg-white/20 transition-[width] duration-350 ease-in-out lg:h-1"
                   style={{ width: isActive ? 42 : 14 }}
                 >
                   {isActive && (
