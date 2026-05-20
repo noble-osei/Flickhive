@@ -13,7 +13,9 @@ const HERO_HEIGHT = "h-115 lg:h-screen lg:max-h-215 lg:min-h-150";
 const CHEVRON_STYLES =
   "flex items-center justify-center shrink-0 rounded-full w-[34px] h-[34px] bg-white/5 border border-white/[0.14] text-white/75 cursor-pointer transition-[background,transform] duration-150 hover:bg-white/15 active:scale-90 lg:w-[44px] lg:h-[44px]";
 const BadgeItem = ({ mediaType, date, optionalStyles = "" }) => (
-  <span className={`mb-2.5 lg:mb-4 text-[9px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-white/8 border border-white/16 text-white/55 lg:text-[11px] lg:px-3 ${optionalStyles}`}>
+  <span
+    className={`mb-2.5 lg:mb-4 text-[9px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-white/8 border border-white/16 text-white/55 lg:text-[11px] lg:px-3 ${optionalStyles}`}
+  >
     {mediaType === "tv" ? "series" : "movie"} · {date}
   </span>
 );
@@ -56,10 +58,10 @@ export default function HeroSlideshow() {
   if (error) return <div className={HERO_HEIGHT}>Error: {error}</div>;
   if (!data) return <div className={HERO_HEIGHT}>No data available</div>;
 
-  const ITEMS =
-    data.results
-      .filter((r) => r.media_type === "movie" || r.media_type === "tv")
-      .slice(0, 5) || [];
+  console.log(data)
+  const ITEMS = (data?.results || [])
+    .filter((r) => r.media_type === "movie" || r.media_type === "tv")
+    .slice(0, 5);
   if (ITEMS.length === 0)
     return <div className={HERO_HEIGHT}>No items available</div>;
 
@@ -120,7 +122,7 @@ export default function HeroSlideshow() {
             />
             <img
               src={`https://image.tmdb.org/t/p/w154${item.poster_path}`}
-              alt={item.title? item.title: item.name}
+              alt={item.title ? item.title : item.name}
               className="shrink-0 rounded-xl shadow-2xl shadow-black/70 border border-white/13 w-20 h-28 object-cover"
             />
           </div>
@@ -150,7 +152,7 @@ export default function HeroSlideshow() {
             </div>
 
             <h2 className="text-white line-clamp-1 lg:line-clamp-2 font-black leading-tight tracking-tight text-[22px] mb-1.5 lg:text-[52px] lg:mb-3.5">
-              {item.title? item.title: item.name}
+              {item.title ? item.title : item.name}
             </h2>
 
             <p className="text-white/55 leading-relaxed line-clamp-2 text-[10.5px] mb-3.5 lg:text-[15px] lg:line-clamp-3 lg:mb-7 lg:text-white/65">

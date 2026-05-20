@@ -90,12 +90,12 @@ function SearchBar({ show, setShow }) {
               </p>
             ) : (
               <>
-                {data.results.slice(0, 5).map((r, i) => (
+                {data.results?.slice(0, 5).map((r, i) => (
                   <SearchMediaCard key={r.id || i} item={r} />
                 ))}
 
-                {data.results.length > 0 ? (
-                  data.results.length > 5 && (
+                {data.results?.length > 0 ? (
+                  data.results?.length > 5 && (
                     <div className="text-sm font-semibold py-3 px-4 hover:bg-secondary/10 
                       cursor-pointer border-t border-base-300">
                       See all results for "{query}"

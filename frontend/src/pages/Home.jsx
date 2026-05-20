@@ -102,7 +102,7 @@ function Carousel({ title, data }) {
           onScroll={updateChevrons}
           className="flex gap-4 overflow-x-auto py-2 no-scrollbar snap-x snap-proximity scroll-smooth"
         >
-          {data && data.results.map((r, i) => <MovieCard key={i} item={r} />)}
+          {data && data.results?.map((r, i) => <MovieCard key={i} item={r} />)}
         </div>
 
         {!atEnd && (
