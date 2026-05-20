@@ -35,6 +35,11 @@ function SearchBar({ show, setShow }) {
     if (show && inputRef.current) inputRef.current.focus();
   }, [show]);
 
+  const closeSearchBar = () => {
+    setShow(false);
+    setQuery("");
+  };
+
   return (
     <div
       className={`${
@@ -54,7 +59,7 @@ function SearchBar({ show, setShow }) {
             appearance: none;
           }
         `}</style>
-        <IoSearchOutline className="h-5 w-5 opacity-50" />
+        <IoSearchOutline className="h-5 w-5 opacity-50" aria-label="Search" />
         <input
           ref={inputRef}
           type="search"
@@ -66,10 +71,8 @@ function SearchBar({ show, setShow }) {
         />
         <button
           className="btn btn-ghost btn-circle btn-sm"
-          onClick={() => {
-            setShow(false);
-            setQuery("");
-          }}
+          onClick={closeSearchBar}
+          aria-label="Close Search"
         >
           ✕
         </button>
@@ -79,7 +82,7 @@ function SearchBar({ show, setShow }) {
         <div className="absolute top-16 inset-x-0 lg:inset-x-16 xl:inset-x-0 bg-base-200 shadow-xl 
           rounded-b-lg">
           <div
-            aria-label="close modal"
+            aria-label="Close Search Results"
             onClick={() => setShowResults(false)}
             className="fixed inset-0 w-screen h-screen bg-black/50 z-10"
           ></div>
@@ -90,8 +93,8 @@ function SearchBar({ show, setShow }) {
               </p>
             ) : (
               <>
-                {data.results?.slice(0, 5).map((r, i) => (
-                  <SearchMediaCard key={r.id || i} item={r} />
+                {data.results?.slice(0, 5).map((r) => (
+                  <SearchMediaCard key={r.id} item={r} closeSearchBar={closeSearchBar} />
                 ))}
 
                 {data.results?.length > 0 ? (
