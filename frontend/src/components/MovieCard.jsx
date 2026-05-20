@@ -40,7 +40,7 @@ export function SearchMediaCard({ item }) {
         <h4 className="text-sm font-bold line-clamp-1">
           {item.title ? item.title : item.name}
         </h4>
-        <p className="text-sm font-light text-base-content/70 uppercase">
+        <p className="text-xs font-light text-base-content/70 uppercase">
           {item.media_type === "tv" ? "series" : "Movie"} ·{" "}
           {item.release_date?.slice(0, 4) || item.first_air_date?.slice(0, 4)}
         </p>

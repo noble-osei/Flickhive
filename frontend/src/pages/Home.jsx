@@ -9,9 +9,9 @@ function Home() {
   const topRatedMovies = useFetch("/movie/top_rated?page=1");
   const populartTVShow = useFetch("/tv/popular?page=1");
   const hiddenGems = useFetch(
-    "/discover/movie?include_adult=false&include_video=false&page=1&\
-    primary_release_date.gte=2010-01-01&sort_by=vote_average.desc&vote_average.gte=7.5&\
-    vote_count.gte=300&vote_count.lte=1500&without_genres=99,10755",
+    `/discover/movie?include_adult=false&include_video=false&page=1`+ 
+    `&primary_release_date.gte=2010-01-01&sort_by=vote_average.desc&vote_average.gte=7.5` + 
+    `&vote_count.gte=300&vote_count.lte=1500&without_genres=99,10755`,
   );
   const minDate = new Date(Date.now() + 24 * 60 * 60 * 1000)
     .toISOString()
@@ -20,8 +20,8 @@ function Home() {
     .toISOString()
     .split("T")[0];
   const comingSoon = useFetch(
-    `/discover/movie?include_adult=false&include_video=false&page=1&sort_by=popularity.desc&\
-    with_release_type=2|3&primary_release_date.gte=${minDate}&primary_release_date.lte=${maxDate}`,
+    `/discover/movie?include_adult=false&include_video=false&page=1&sort_by=popularity.desc` +
+    `&with_release_type=2|3&primary_release_date.gte=${minDate}&primary_release_date.lte=${maxDate}`,
   );
 
   return (

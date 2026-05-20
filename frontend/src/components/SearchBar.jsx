@@ -83,7 +83,7 @@ function SearchBar({ show, setShow }) {
             onClick={() => setShowResults(false)}
             className="fixed inset-0 w-screen h-screen bg-black/50 z-10"
           ></div>
-          <div className="relative flex flex-col z-50">
+          <div className="relative flex flex-col z-50 bg-base-200 rounded-b-[inherit]">
             {typing || loading ? (
               <p className="h-32 flex items-center justify-center">
                 <span className="loading loading-dots loading-xl"></span>
@@ -97,7 +97,7 @@ function SearchBar({ show, setShow }) {
                 {data.results?.length > 0 ? (
                   data.results?.length > 5 && (
                     <div className="text-sm font-semibold py-3 px-4 hover:bg-secondary/10 
-                      cursor-pointer border-t border-base-300">
+                      cursor-pointer border-t border-base-300 rounded-b-[inherit]">
                       See all results for "{query}"
                     </div>
                   )
