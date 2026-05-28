@@ -9,9 +9,9 @@ export default function Layout({ children }) {
     <div className="drawer">
       <input id="my-drawer" type="checkbox" className="drawer-toggle" />
 
-      <div className="drawer-content flex flex-col">
+      <div className="drawer-content flex flex-col min-h-screen">
         <Navbar />
-        <main>{children}</main>
+        {children}
         <Footer />
       </div>
 
@@ -189,7 +189,7 @@ function Navbar() {
             className="btn btn-ghost btn-circle"
             onClick={() => setShowSearchBar(true)}
           >
-            <IoSearchOutline className="h-5 w-5" />
+            <IoSearchOutline className="h-5 w-5" aria-label="Search" />
           </button>
 
           <Link to="/login" className="btn btn-ghost text-lg rounded-full">
@@ -204,8 +204,7 @@ function Navbar() {
 function Footer() {
   return (
     <footer
-      className="bg-base-300/20 w-full border-t border-base-200/40 mt-8 py-8 px-4 lg:px-16 
-      xl:px-0 mx-auto"
+      className="bg-base-300/20 w-full border-t border-base-200 py-8 px-4 lg:px-16 xl:px-0 mx-auto"
     >
       <div
         className="flex flex-col sm:flex-row items-center justify-center gap-3 text-sm 
