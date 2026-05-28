@@ -2,30 +2,44 @@ import { useEffect, useRef, useState } from "react";
 import HeroSlideShow from "../components/HeroSlideshow.jsx";
 import MovieCard from "../components/MovieCard.jsx";
 import useFetch from "../hooks/useFetch.jsx";
-import { FaChevronLeft, FaChevronRight } from "react-icons/fa6";
+import { LuChevronLeft, LuChevronRight } from "react-icons/lu";
 
 function Home() {
+  const [minDate, setMinDate] = useState("");
+  const [maxDate, setMaxDate] = useState("");
   const trendingToday = useFetch("/trending/all/day");
   const topRatedMovies = useFetch("/movie/top_rated?page=1");
   const populartTVShow = useFetch("/tv/popular?page=1");
   const hiddenGems = useFetch(
-    `/discover/movie?include_adult=false&include_video=false&page=1`+ 
-    `&primary_release_date.gte=2010-01-01&sort_by=vote_average.desc&vote_average.gte=7.5` + 
-    `&vote_count.gte=300&vote_count.lte=1500&without_genres=99,10755`,
+    `/discover/movie?include_adult=false&include_video=false&page=1` +
+      `&primary_release_date.gte=2000-01-01&primary_release_date.lte=2020-12-31` +
+      `&sort_by=vote_average.desc&vote_average.gte=7.2&vote_average.lte=8.2` +
+      `&vote_count.gte=200&vote_count.lte=800&without_genres=99,10755,18` +
+      `&with_original_language=en|fr|ko|ja|es&with_runtime.gte=40`, // broaden beyond Hollywood
   );
-  const minDate = new Date(Date.now() + 24 * 60 * 60 * 1000)
-    .toISOString()
-    .split("T")[0];
-  const maxDate = new Date(Date.now() + 90 * 24 * 60 * 60 * 1000)
-    .toISOString()
-    .split("T")[0];
   const comingSoon = useFetch(
     `/discover/movie?include_adult=false&include_video=false&page=1&sort_by=popularity.desc` +
-    `&with_release_type=2|3&primary_release_date.gte=${minDate}&primary_release_date.lte=${maxDate}`,
+      `&with_release_type=2|3&primary_release_date.gte=${minDate}&primary_release_date.lte=${maxDate}`,
   );
 
+  useEffect(() => {
+    const updateDates = () => {
+      const min = new Date(Date.now() + 24 * 60 * 60 * 1000)
+        .toISOString()
+        .split("T")[0];
+      const max = new Date(Date.now() + 90 * 24 * 60 * 60 * 1000)
+        .toISOString()
+        .split("T")[0];
+
+      setMinDate(min);
+      setMaxDate(max);
+    };
+
+    updateDates();
+  }, []);
+
   return (
-    <>
+    <main>
       <HeroSlideShow />
 
       {/* Trending Today Carousel */}
@@ -42,7 +56,7 @@ function Home() {
 
       {/* Hidden Gems */}
       <Carousel title="Hidden Gems" data={hiddenGems.data} />
-    </>
+    </main>
   );
 }
 
@@ -93,7 +107,7 @@ function Carousel({ title, data }) {
               justify-center transition-colors"
             aria-label="Scroll Left"
           >
-            <FaChevronLeft />
+            <LuChevronLeft />
           </button>
         )}
 
@@ -113,7 +127,7 @@ function Carousel({ title, data }) {
               justify-center transition-colors"
             aria-label="Scroll Right"
           >
-            <FaChevronRight />
+            <LuChevronRight />
           </button>
         )}
       </div>
