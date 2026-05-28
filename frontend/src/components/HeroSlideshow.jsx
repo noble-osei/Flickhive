@@ -1,9 +1,13 @@
-import { useState, useEffect, useCallback, useRef } from "react";
+import { useState, useEffect, useCallback } from "react";
 import useFetch from "../hooks/useFetch.jsx";
 import useGenres from "../hooks/useGenres.jsx";
-import { FaPlay, FaStar } from "react-icons/fa";
-import { FaChevronLeft, FaChevronRight, FaPlus } from "react-icons/fa6";
-import { IoMdInformationCircleOutline } from "react-icons/io";
+import {
+  LuInfo,
+  LuChevronLeft,
+  LuChevronRight,
+  LuPlus,
+  LuStar,
+} from "react-icons/lu";
 import { Link } from "react-router-dom";
 
 const AUTOPLAY_DELAY = 6000;
@@ -27,8 +31,6 @@ export default function HeroSlideshow() {
   const [active, setActive] = useState(0);
   const [animKey, setAnimKey] = useState(0);
   const [paused, setPaused] = useState(false);
-  const timerRef = useRef(null);
-  const startRef = useRef(Date.now());
   const genres = useGenres();
 
   const goTo = useCallback(
@@ -36,7 +38,6 @@ export default function HeroSlideshow() {
       if (index === active) return;
       setActive(index);
       setAnimKey((k) => k + 1);
-      startRef.current = Date.now();
     },
     [active],
   );
@@ -52,15 +53,14 @@ export default function HeroSlideshow() {
 
   useEffect(() => {
     if (paused) return;
-    timerRef.current = setTimeout(goNext, AUTOPLAY_DELAY);
-    return () => clearTimeout(timerRef.current);
+    const timerId = setTimeout(goNext, AUTOPLAY_DELAY);
+    return () => clearTimeout(timerId);
   }, [active, paused, goNext]);
 
   if (loading) return <div className={HERO_HEIGHT}>Loading...</div>;
   if (error) return <div className={HERO_HEIGHT}>Error: {error}</div>;
   if (!data) return <div className={HERO_HEIGHT}>No data available</div>;
 
-  console.log(data);
   const ITEMS = (data?.results || [])
     .filter((r) => r.media_type === "movie" || r.media_type === "tv")
     .slice(0, 5);
@@ -72,7 +72,7 @@ export default function HeroSlideshow() {
 
   return (
     <section
-      className="relative w-full overflow-hidden bg-slate-950 h-115 lg:h-screen lg:max-h-215
+      className="relative w-full overflow-hidden bg-base-200 h-115 lg:h-screen lg:max-h-215
         lg:min-h-150"
       onMouseEnter={() => setPaused(true)}
       onMouseLeave={() => setPaused(false)}
@@ -92,13 +92,13 @@ export default function HeroSlideshow() {
             className="absolute inset-0 w-full h-full object-cover object-top scale-105"
           />
           <div
-            className="absolute inset-0 bg-linear-to-b from-slate-900/25 via-transparent 
-            via-25% to-65% to-slate-950 lg:from-slate-900/20 lg:via-transparent lg:via-20% 
-            lg:to-80% lg:to-slate-950"
+            className="absolute inset-0 bg-linear-to-b from-base-200/25 via-transparent 
+            via-25% to-60% to-base-200/90 lg:from-base-200/20 lg:via-transparent lg:via-20% 
+            lg:to-80% lg:to-base-200/85"
           />
           <div
-            className="absolute inset-0 bg-linear-to-r from-slate-900/85 via-slate-900/30 
-            via-55% to-transparent to-80% lg:from-slate-900/95 lg:via-slate-900/70 lg:via-30% 
+            className="absolute inset-0 bg-linear-to-r from-base-200/85 via-base-200/30 
+            via-55% to-transparent to-80% lg:from-base-200/95 lg:via-base-200/60 lg:via-30% 
             lg:to-transparent lg:to-80%"
           />
         </div>
@@ -107,7 +107,7 @@ export default function HeroSlideshow() {
       {/* ── Stage ── */}
       <div
         className="absolute inset-0 z-10 flex flex-col justify-end px-4 pb-5.5 lg:px-16 lg:pb-14
-        xl:px-0 xl:max-w-7xl mx-auto"
+        xl:px-0 max-w-7xl mx-auto"
       >
         {/* Type + year badge xl: */}
         <div key={`badge-${animKey}`} className="duration-650 ease-out">
@@ -144,7 +144,7 @@ export default function HeroSlideshow() {
           </div>
 
           {/* Meta */}
-          <div className="flex-1 lg:max-w-145">
+          <div className="flex-1 max-w-125">
             {/* Genre pills */}
             <div className="flex flex-wrap gap-1.5 mb-2">
               {item.genre_ids
@@ -164,7 +164,7 @@ export default function HeroSlideshow() {
 
             {/* Rating — desktop shows above title */}
             <div className="hidden lg:flex items-center gap-1.5 text-accent font-bold text-sm mb-2">
-              <FaStar />
+              <LuStar fill="#f5c518" />
               {item.vote_average?.toFixed(1)}
               <span className="text-white/30 font-normal text-[12px]">/10</span>
             </div>
@@ -197,21 +197,20 @@ export default function HeroSlideshow() {
                 cursor-pointer transition-all duration-150 hover:bg-white/18 lg:text-sm lg:px-6 
                 lg:py-3 lg:gap-2"
               >
-                <IoMdInformationCircleOutline className="text-[15px]" /> More
-                Info
+                <LuInfo className="text-[15px]" /> More Info
               </Link>
               <button
                 className="flex items-center justify-center rounded-full w-8 h-8 bg-white/10
                 border border-white/20 text-white cursor-pointer transition-colors duration-150
                 hover:bg-white/20 lg:w-12 lg:h-12"
               >
-                <FaPlus className="w-3.5 h-3.5" />
+                <LuPlus size={15} />
               </button>
               <div
                 className="flex lg:hidden items-center gap-1 font-bold text-accent ml-auto
                 text-xs"
               >
-                <FaStar className="w-3.25 h-3.25" />
+                <LuStar size={12} fill="#f5c518" />
                 {item.vote_average?.toFixed(1)}
               </div>
             </div>
@@ -221,7 +220,7 @@ export default function HeroSlideshow() {
         {/* ── Controls ── */}
         <div className="flex items-center gap-2.5 mt-5 lg:mt-9">
           <button className={CHEVRON_STYLES} onClick={goPrev}>
-            <FaChevronLeft />
+            <LuChevronLeft />
           </button>
 
           <div className="flex items-center justify-center gap-2 flex-1">
@@ -251,7 +250,7 @@ export default function HeroSlideshow() {
           </div>
 
           <button className={CHEVRON_STYLES} onClick={goNext}>
-            <FaChevronRight />
+            <LuChevronRight />
           </button>
         </div>
       </div>
