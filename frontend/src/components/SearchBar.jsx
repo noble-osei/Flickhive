@@ -8,7 +8,6 @@ function useDebounce(query, delay = 500) {
   const [typing, setTyping] = useState(false);
 
   useEffect(() => {
-    setTyping(true);
     const timerId = setTimeout(() => {
       setDebouncedQuery(query);
       setTyping(false);
@@ -17,16 +16,16 @@ function useDebounce(query, delay = 500) {
     return () => {
       clearTimeout(timerId);
     };
-  }, [query]);
+  }, [delay, query]);
 
-  return { debouncedQuery, typing };
+  return { debouncedQuery, typing, setTyping };
 }
 
 function SearchBar({ show, setShow }) {
   const inputRef = useRef(null);
   const [showResults, setShowResults] = useState(true);
   const [query, setQuery] = useState("");
-  const { debouncedQuery, typing } = useDebounce(query);
+  const { debouncedQuery, typing, setTyping } = useDebounce(query);
   const { data, loading } = useFetch(
     `/search/multi?query=${debouncedQuery}&include_adult=false&page=1`,
   );
@@ -66,7 +65,10 @@ function SearchBar({ show, setShow }) {
           className="grow text-flick-muted outline-none"
           placeholder="Search"
           value={query}
-          onChange={(e) => setQuery(e.target.value)}
+          onChange={(e) => {
+            setQuery(e.target.value);
+            setTyping(true);
+          }}
           onFocus={() => setShowResults(true)}
         />
         <button
@@ -79,12 +81,14 @@ function SearchBar({ show, setShow }) {
       </label>
 
       {query.length > 0 && showResults && (
-        <div className="absolute top-16 inset-x-0 lg:inset-x-16 xl:inset-x-0 bg-base-200 shadow-xl 
-          rounded-b-lg">
+        <div
+          className="absolute top-16 inset-x-0 lg:inset-x-16 xl:inset-x-0 bg-base-200 shadow-xl 
+          rounded-b-lg"
+        >
           <div
             aria-label="Close Search Results"
             onClick={() => setShowResults(false)}
-            className="fixed inset-0 w-screen h-screen bg-black/50 z-10"
+            className="fixed inset-0 w-screen h-screen bg-black/50 z-10 cursor-pointer"
           ></div>
           <div className="relative flex flex-col z-50 bg-base-200 rounded-b-[inherit]">
             {typing || loading ? (
@@ -94,13 +98,19 @@ function SearchBar({ show, setShow }) {
             ) : (
               <>
                 {data.results?.slice(0, 5).map((r) => (
-                  <SearchMediaCard key={r.id} item={r} closeSearchBar={closeSearchBar} />
+                  <SearchMediaCard
+                    key={r.id}
+                    item={r}
+                    closeSearchBar={closeSearchBar}
+                  />
                 ))}
 
                 {data.results?.length > 0 ? (
                   data.results?.length > 5 && (
-                    <div className="text-sm font-semibold py-3 px-4 hover:bg-secondary/10 
-                      cursor-pointer border-t border-base-300 rounded-b-[inherit]">
+                    <div
+                      className="text-sm font-semibold py-3 px-4 hover:bg-secondary/10 
+                      cursor-pointer border-t border-base-300 rounded-b-[inherit]"
+                    >
                       See all results for "{query}"
                     </div>
                   )
