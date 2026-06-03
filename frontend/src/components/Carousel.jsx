@@ -23,10 +23,15 @@ export default function Carousel({ mediaWidthNum, children }) {
     const resizeObserver = new ResizeObserver(() => {
       readWidth();
     });
+
     readWidth();
     resizeObserver.observe(c);
     window.addEventListener("resize", readWidth);
-    return () => window.removeEventListener("resize", readWidth);
+    
+    return () => {
+      resizeObserver.disconnect();
+      window.removeEventListener("resize", readWidth);
+    };
   }, [mediaWidth]);
 
   const updateChevrons = () => {
