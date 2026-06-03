@@ -1,11 +1,12 @@
-export const formatDate = (dataStr) => {
-  const dateObj = new Date(dataStr);
+export const formatDate = (dateStr) => {
+  const dateObj = new Date(dateStr);
 
-  return dateObj.toLocaleDateString("en-US", {
+  const formattedDate = dateObj.toLocaleDateString("en-US", {
     month: "long",
     day: "2-digit",
     year: "numeric",
   });
+  return formattedDate === "Invalid Date" ? dateStr : formattedDate;
 };
 
 export const formatProfession = (dept) => {
