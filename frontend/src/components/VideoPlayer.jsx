@@ -11,7 +11,7 @@ export default function VideoPlayer({ video, onClose }) {
   }, [isOpen]);
 
   return (
-    <dialog ref={modalRef} className="modal">
+    <dialog ref={modalRef} className="modal" onClose={onClose}>
       <div className="modal-box p-0 w-11/12 aspect-video max-w-5xl">
         {isOpen ? (
           <iframe
