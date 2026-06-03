@@ -11,7 +11,7 @@ export default function MovieCard({ item }) {
       <img
         className="w-full h-56 object-cover rounded-lg shadow-lg mb-4 transition-all duration-300 
           group-hover:shadow-2xl"
-        src={`https://image.tmdb.org/t/p/w185${item.poster_path}`}
+        src={`https://image.tmdb.org/t/p/w342${item.poster_path}`}
         alt={item.title ? item.title : item.name}
         loading="lazy"
       />
@@ -36,7 +36,7 @@ export function SearchMediaCard({ item, closeSearchBar }) {
       <img
         className="w-12 h-full shadow-2xl border border-white/13 object-cover rounded-lg 
           transition-all duration-300 group-hover:shadow-2xl"
-        src={`https://image.tmdb.org/t/p/w92${item.poster_path || item.profile_path}`}
+        src={`https://image.tmdb.org/t/p/w154${item.poster_path || item.profile_path}`}
         onError={(e) => (e.target.src = `/${item.media_type}.svg`)}
         alt={item.title ? item.title : item.name}
         loading="lazy"
