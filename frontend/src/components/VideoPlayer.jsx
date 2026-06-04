@@ -5,9 +5,11 @@ export default function VideoPlayer({ video, onClose }) {
   const isOpen = !!video;
 
   useEffect(() => {
-    if (!modalRef.current) return;
+    const modal = modalRef.current;
+    if (!modal) return;
 
-    if (isOpen) modalRef.current.showModal();
+    if (isOpen && !modal.open) modal.showModal();
+    if (!isOpen && modal.open) modal.close();
   }, [isOpen]);
 
   return (
@@ -16,9 +18,10 @@ export default function VideoPlayer({ video, onClose }) {
         {isOpen ? (
           <iframe
             className="w-full h-full"
-            src={`https://www.youtube.com/embed/${video.key}?autoplay=1`}
-            title={video.name || "Video Player"}
+            src={`https://www.youtube-nocookie.com/embed/${video.key}?autoplay=1&rel=0`}
+            title={`Video Player: ${video.name || "Trailer"}`}
             allow="autoplay; encrypted-media; picture-in-picture"
+            referrerPolicy="strict-origin-when-cross-origin"
             allowFullScreen
           ></iframe>
         ) : (
