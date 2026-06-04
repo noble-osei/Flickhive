@@ -4,19 +4,19 @@ import { formatDate, formatProfession } from "../helpers/media.js";
 export default function MovieCard({ item }) {
   return (
     <Link
-      to={`/${item.media_type === "movie" || item.release_date ? "movies" : "tv"}/${item.id}`}
+      to={`/${item.media_type === "movie" || item.title ? "movies" : "tv"}/${item.id}`}
       className="group flex flex-none flex-col snap-start w-38 transition-all duration-300 
         hover:scale-105"
     >
       <img
         className="w-full h-56 object-cover rounded-lg shadow-lg mb-4 transition-all duration-300 
           group-hover:shadow-2xl"
-        src={`https://image.tmdb.org/t/p/w342${item.poster_path}`}
+        src={`https://image.tmdb.org/t/p/w500${item.poster_path}`}
         alt={item.title ? item.title : item.name}
         loading="lazy"
       />
 
-      <h4 className="text-sm font-bold line-clamp-2">
+      <h4 className="text-sm font-bold line-clamp-2 group-hover:link">
         {item.title ? item.title : item.name}
       </h4>
       <p className="text-sm font-light text-base-content/70">
