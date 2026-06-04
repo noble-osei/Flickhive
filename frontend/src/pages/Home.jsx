@@ -8,9 +8,7 @@ function Home() {
   const [now] = useState(() => Date.now());
 
   const { minDate, maxDate } = useMemo(() => {
-    const min = new Date(now + 24 * 60 * 60 * 1000)
-      .toISOString()
-      .split("T")[0];
+    const min = new Date(now + 24 * 60 * 60 * 1000).toISOString().split("T")[0];
 
     const max = new Date(now + 90 * 24 * 60 * 60 * 1000)
       .toISOString()
@@ -28,7 +26,7 @@ function Home() {
       `&sort_by=popularity.desc` +
       `&with_release_type=2|3` +
       `&primary_release_date.gte=${minDate}` +
-      `&primary_release_date.lte=${maxDate}`
+      `&primary_release_date.lte=${maxDate}`,
   );
 
   const hiddenGems = useFetch(
@@ -42,7 +40,7 @@ function Home() {
       `&vote_count.lte=800` +
       `&without_genres=99,10755,18` +
       `&with_original_language=en|fr|ko|ja|es` +
-      `&with_runtime.gte=40`
+      `&with_runtime.gte=40`,
   );
 
   return (
@@ -64,20 +62,21 @@ export default Home;
 
 function MediaSection({ title, data }) {
   const results = data?.results?.filter(
-    (item) => item.poster_path && item.media_type !== "person"
+    (item) => item.poster_path && item.media_type !== "person",
   );
 
   if (!results || results.length === 0) return null;
 
   return (
     <section className="px-4 my-8 lg:px-16 xl:px-0 max-w-7xl mx-auto">
-      <h2 className="text-2xl font-semibold text-base-content mb-2">
-        {title}
-      </h2>
+      <h2 className="text-2xl font-semibold text-base-content mb-2">{title}</h2>
 
       <Carousel mediaWidthNum={152}>
         {results.map((item) => (
-          <MovieCard key={`${item.media_type ?? "movie"}-${item.id}`} item={item} />
+          <MovieCard
+            key={`${item.media_type ?? "movie"}-${item.id}`}
+            item={item}
+          />
         ))}
       </Carousel>
     </section>
