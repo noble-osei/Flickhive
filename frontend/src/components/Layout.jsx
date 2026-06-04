@@ -1,8 +1,7 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import SearchBar from "./SearchBar.jsx";
-import { IoSearchOutline } from "react-icons/io5";
-import { FiMenu } from "react-icons/fi";
+import { LuSearch, LuMenu } from "react-icons/lu";
 
 export default function Layout({ children }) {
   return (
@@ -170,7 +169,7 @@ function Navbar() {
             htmlFor="my-drawer"
             className="btn btn-square btn-ghost lg:hidden"
           >
-            <FiMenu className="inline-block h-5 w-5" />
+            <LuMenu className="inline-block" size={20} />
           </label>
 
           <Link to="/" className="text-3xl font-bold">
@@ -188,8 +187,9 @@ function Navbar() {
           <button
             className="btn btn-ghost btn-circle"
             onClick={() => setShowSearchBar(true)}
+            aria-label="Open search"
           >
-            <IoSearchOutline className="h-5 w-5" aria-label="Search" />
+            <LuSearch className="h-5 w-5" aria-hidden="true" />
           </button>
 
           <Link to="/login" className="btn btn-ghost text-lg rounded-full">
@@ -203,9 +203,7 @@ function Navbar() {
 
 function Footer() {
   return (
-    <footer
-      className="bg-base-300/20 w-full border-t border-base-200 py-8 px-4 lg:px-16 xl:px-0 mx-auto"
-    >
+    <footer className="bg-base-300/20 w-full border-t border-base-200 py-8 px-4 lg:px-16 xl:px-0 mx-auto">
       <div
         className="flex flex-col sm:flex-row items-center justify-center gap-3 text-sm 
         text-base-content/50"
