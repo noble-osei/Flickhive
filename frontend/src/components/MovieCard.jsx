@@ -11,14 +11,19 @@ export default function MovieCard({ item }) {
       <img
         className="w-full h-56 object-cover rounded-lg shadow-lg mb-4 transition-all duration-300 
           group-hover:shadow-2xl"
-        src={`https://image.tmdb.org/t/p/w500${item.poster_path}`}
-        alt={item.title ? item.title : item.name}
+        src={
+          item.poster_path
+            ? `${import.meta.env.VITE_IMG}/w342${item.poster_path}`
+            : `/${item.media_type === "tv" ? "tv" : "movie"}.svg`
+        }
+        alt={item.title ?? item.name}
         loading="lazy"
+        decoding="async"
       />
 
-      <h4 className="text-sm font-bold line-clamp-2 group-hover:link">
+      <h3 className="text-sm font-bold line-clamp-2 group-hover:link">
         {item.title ? item.title : item.name}
-      </h4>
+      </h3>
       <p className="text-sm font-light text-base-content/70">
         {formatDate(item.release_date ?? item.first_air_date)}
       </p>
@@ -40,6 +45,7 @@ export function SearchMediaCard({ item, closeSearchBar }) {
         onError={(e) => (e.target.src = `/${item.media_type}.svg`)}
         alt={item.title ? item.title : item.name}
         loading="lazy"
+        decoding="async"
       />
 
       <div>
