@@ -1,6 +1,7 @@
 import { Link, useParams } from "react-router-dom";
 import { useEffect, useMemo, useState } from "react";
 import { LuStar } from "react-icons/lu";
+import { Helmet } from "react-helmet-async";
 
 import useFetch from "../hooks/useFetch.jsx";
 import Carousel from "../components/Carousel.jsx";
@@ -93,55 +94,64 @@ export default function TVShowDetailsPage() {
     : poster;
 
   return (
-    <main className="bg-base-300/30 pb-10">
-      <HeroSection
-        data={data}
-        title={title}
-        year={year}
-        poster={poster}
-        backdrop={backdrop}
-        rating={details.usRating}
-        mainTrailer={details.mainTrailer}
-        onPlayTrailer={setActiveVideo}
-      />
+    <>
+      <Helmet>
+        <title>{`${data.name} (${year}) | Flickhive`}</title>
+        <meta
+          name="description"
+          content={data.overview || `View seasons, cast, trailer, and similar shows for ${data.name}.`}
+        />
+      </Helmet>
+      <main className="bg-base-300/30 pb-10">
+        <HeroSection
+          data={data}
+          title={title}
+          year={year}
+          poster={poster}
+          backdrop={backdrop}
+          rating={details.usRating}
+          mainTrailer={details.mainTrailer}
+          onPlayTrailer={setActiveVideo}
+        />
 
-      <div className="max-w-7xl mx-auto px-4 lg:px-16 xl:px-0 mt-6 grid grid-cols-1 lg:grid-cols-5 gap-6">
-        <div className="lg:col-span-4 space-y-8">
-          <OverviewSection overview={data.overview} />
+        <div className="max-w-7xl mx-auto px-4 lg:px-16 xl:px-0 mt-6 grid grid-cols-1 lg:grid-cols-5 gap-6">
+          <div className="lg:col-span-4 space-y-8">
+            <OverviewSection overview={data.overview} />
 
-          <StatsGrid data={data} />
+            <StatsGrid data={data} />
 
-          {data.next_episode_to_air && (
-            <NextEpisodeCard episode={data.next_episode_to_air} />
-          )}
+            {data.next_episode_to_air && (
+              <NextEpisodeCard episode={data.next_episode_to_air} />
+            )}
 
-          <SeasonsSection seasons={data.seasons} tvShowId={tvShowId} />
+            <SeasonsSection seasons={data.seasons} tvShowId={tvShowId} />
 
-          <CastSection cast={details.cast} mediaId={tvShowId} tvShow />
+            <CastSection cast={details.cast} mediaId={tvShowId} tvShow />
 
-          {details.mainTrailer && (
-            <TrailerPreview
-              video={details.mainTrailer}
-              onPlay={setActiveVideo}
-            />
-          )}
+            {details.mainTrailer && (
+              <TrailerPreview
+                video={details.mainTrailer}
+                onPlay={setActiveVideo}
+              />
+            )}
+          </div>
+
+          <Sidebar data={data} />
         </div>
 
-        <Sidebar data={data} />
-      </div>
+        <VideosSection
+          trailers={details.trailers}
+          teasers={details.teasers}
+          clips={details.clips}
+          featurettes={details.featurettes}
+          setActiveVideo={setActiveVideo}
+        />
 
-      <VideosSection
-        trailers={details.trailers}
-        teasers={details.teasers}
-        clips={details.clips}
-        featurettes={details.featurettes}
-        setActiveVideo={setActiveVideo}
-      />
+        <SimilarShowsSection media={data.similar?.results} media_type="tv" />
 
-      <SimilarShowsSection media={data.similar?.results} media_type="tv" />
-
-      <VideoPlayer video={activeVideo} onClose={() => setActiveVideo(null)} />
-    </main>
+        <VideoPlayer video={activeVideo} onClose={() => setActiveVideo(null)} />
+      </main>
+    </>
   );
 }
 
@@ -163,6 +173,7 @@ function HeroSection({
           alt=""
           className="h-full w-full object-cover object-top brightness-50"
           fetchPriority="high"
+          decoding="async"
         />
         <div className="absolute inset-0 bg-linear-to-t from-base-300 via-base-300/70 to-transparent" />
       </div>
@@ -175,6 +186,7 @@ function HeroSection({
             className="w-28 h-42 lg:w-52 lg:h-78 object-cover rounded-xl shadow-2xl border 
               border-white/10 shrink-0"
             fetchPriority="high"
+            decoding="async"
           />
 
           <div className="pt-16 lg:pt-30 min-w-0 flex-1">
@@ -319,6 +331,7 @@ function SeasonsSection({ seasons, tvShowId }) {
               className="w-full h-52 object-cover rounded-lg shadow-lg group-hover:scale-105 
                 transition"
               loading="lazy"
+              decoding="async"
             />
 
             <h3 className="text-sm font-bold mt-3 line-clamp-2 group-hover:link">
@@ -366,6 +379,7 @@ function Sidebar({ data }) {
                     alt=""
                     className="w-10 h-6 object-contain bg-white rounded p-1"
                     loading="lazy"
+                    decoding="async"
                   />
                 )}
                 <span className="text-sm text-base-content/70">
