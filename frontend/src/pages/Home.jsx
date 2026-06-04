@@ -46,7 +46,7 @@ function Home() {
   );
 
   return (
-    <main>
+    <main className="min-h-screen">
       <h1 className="sr-only">Flickhive movie and TV discovery homepage</h1>
 
       <HeroSlideShow />
