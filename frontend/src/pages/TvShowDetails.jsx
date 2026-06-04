@@ -15,7 +15,7 @@ import {
   StatCard,
   TrailerPreview,
   VideosSection,
-} from "../components/mediaDetails.jsx";
+} from "../components/MediaDetails.jsx";
 import { formatDate } from "../helpers/media.js";
 
 const IMG = import.meta.env.VITE_IMG;

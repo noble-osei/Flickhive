@@ -14,7 +14,7 @@ import {
   StatCard,
   TrailerPreview,
   VideosSection,
-} from "../components/mediaDetails.jsx";
+} from "../components/MediaDetails.jsx";
 import { formatDate } from "../helpers/media.js";
 
 const IMG = import.meta.env.VITE_IMG;
@@ -282,7 +282,10 @@ export default function MovieDetails() {
       />
 
       {data.similar?.results?.length > 0 && (
-        <SimilarShowsSection media={data?.similar?.results} media_type="movie" />
+        <SimilarShowsSection
+          media={data?.similar?.results}
+          media_type="movie"
+        />
         // <section className="max-w-7xl mx-auto px-4 lg:px-16 xl:px-0 mt-10">
         //   <h2 className="text-xl font-semibold mb-2">Similar movies</h2>
 
