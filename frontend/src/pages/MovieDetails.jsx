@@ -1,14 +1,23 @@
 import { Link, useParams } from "react-router-dom";
 import { useEffect, useMemo, useState } from "react";
-import { LuStar, LuPlay, LuPlus } from "react-icons/lu";
+import { LuStar } from "react-icons/lu";
 
 import useFetch from "../hooks/useFetch.jsx";
-import Carousel from "../components/Carousel.jsx";
-import MovieCard from "../components/MovieCard.jsx";
 import VideoPlayer from "../components/VideoPlayer.jsx";
+import {
+  ActionButtons,
+  CastSection,
+  InfoBox,
+  InfoRow,
+  OverviewSection,
+  SimilarShowsSection,
+  StatCard,
+  TrailerPreview,
+  VideosSection,
+} from "../components/mediaDetails.jsx";
 import { formatDate } from "../helpers/media.js";
 
-const IMG = "https://image.tmdb.org/t/p";
+const IMG = import.meta.env.VITE_IMG;
 
 export default function MovieDetails() {
   const { movieId } = useParams();
@@ -164,41 +173,21 @@ export default function MovieDetails() {
                 </p>
               )}
 
-              <div className="hidden lg:flex mt-5 gap-3">
-                <button
-                  className="btn btn-primary rounded-full"
-                  onClick={() => setActiveVideo(details.mainTrailer)}
-                  disabled={!details.mainTrailer}
-                >
-                  <LuPlay fill="currentColor" />
-                  Play trailer
-                </button>
-
-                <button className="btn btn-outline rounded-full">
-                  <LuPlus />
-                  Watchlist
-                </button>
-              </div>
+              <ActionButtons
+                title={data.title}
+                mainTrailer={details.mainTrailer}
+                onPlayTrailer={setActiveVideo}
+                desktop
+              />
             </div>
           </div>
 
-          <div className="flex lg:hidden mt-4 gap-3">
-            <button
-              className="btn btn-primary rounded-full flex-1"
-              onClick={() => setActiveVideo(details.mainTrailer)}
-              disabled={!details.mainTrailer}
-            >
-              <LuPlay fill="currentColor" />
-              Play trailer
-            </button>
-
-            <button
-              className="btn btn-circle btn-outline"
-              aria-label="Add to watchlist"
-            >
-              <LuPlus />
-            </button>
-          </div>
+          <ActionButtons
+            title={data.title}
+            mainTrailer={details.mainTrailer}
+            onPlayTrailer={setActiveVideo}
+            mobile
+          />
         </div>
       </section>
 
@@ -207,88 +196,30 @@ export default function MovieDetails() {
         gap-6"
       >
         <div className="lg:col-span-4 space-y-8">
-          <section aria-labelledby="overview-title">
-            <h2 id="overview-title" className="text-xl font-semibold mb-2">
-              Overview
-            </h2>
-            <p className="text-base-content/70 leading-relaxed max-w-4xl">
-              {data.overview || "No overview available."}
-            </p>
-          </section>
+          <OverviewSection overview={data.overview} />
 
           <section className="grid grid-cols-2 lg:grid-cols-4 gap-3">
             <StatCard
               label="Rating"
-              value={`${data.vote_average?.toFixed(1)}/10`}
+              value={
+                data.vote_average > 0
+                  ? `${data.vote_average?.toFixed(1)}/10`
+                  : "—"
+              }
+              icon={<LuStar fill="currentColor" />}
             />
             <StatCard label="Votes" value={data.vote_count?.toLocaleString()} />
             <StatCard label="Budget" value={money(data.budget)} />
             <StatCard label="Revenue" value={money(data.revenue)} />
           </section>
 
-          <section aria-labelledby="cast-title">
-            <div className="flex items-center justify-between mb-2">
-              <h2 id="cast-title" className="text-xl font-semibold">
-                Top Billed Cast
-              </h2>
-              <Link to={`/movies/${movieId}/cast`} className="link text-sm">
-                Full Cast & Crew
-              </Link>
-            </div>
-
-            <Carousel mediaWidthNum={96}>
-              {details.cast.map((person) => (
-                <Link
-                  key={person.cast_id ?? person.id}
-                  to={`/people/${person.id}`}
-                  className="w-24 flex flex-none flex-col items-center text-center snap-start group"
-                >
-                  <img
-                    src={`${IMG}/w185${person.profile_path}`}
-                    alt={person.name}
-                    className="w-20 h-20 rounded-full object-cover object-top border 
-                      border-white/10 group-hover:scale-105 transition"
-                    loading="lazy"
-                  />
-                  <h3 className="mt-2 text-sm font-semibold line-clamp-2 group-hover:link">
-                    {person.name}
-                  </h3>
-                  <p className="text-xs text-base-content/50 line-clamp-2">
-                    {person.character}
-                  </p>
-                </Link>
-              ))}
-            </Carousel>
-          </section>
+          <CastSection cast={details.cast} mediaId={movieId} />
 
           {details.mainTrailer && (
-            <section aria-labelledby="trailer-title">
-              <h2 id="trailer-title" className="text-xl font-semibold mb-3">
-                Trailer
-              </h2>
-
-              <button
-                onClick={() => setActiveVideo(details.mainTrailer)}
-                className="relative w-full aspect-video rounded-xl overflow-hidden group"
-                aria-label={`Play ${details.mainTrailer.name}`}
-              >
-                <img
-                  src={`https://img.youtube.com/vi/${details.mainTrailer.key}/hqdefault.jpg`}
-                  alt=""
-                  className="w-full h-full object-cover brightness-75 group-hover:scale-105 
-                    transition"
-                  loading="lazy"
-                />
-                <span className="absolute inset-0 flex items-center justify-center">
-                  <span
-                    className="w-16 h-16 rounded-full bg-black/60 flex items-center 
-                    justify-center"
-                  >
-                    <LuPlay size={32} fill="currentColor" />
-                  </span>
-                </span>
-              </button>
-            </section>
+            <TrailerPreview
+              video={details.mainTrailer}
+              onPlay={setActiveVideo}
+            />
           )}
         </div>
 
@@ -342,128 +273,31 @@ export default function MovieDetails() {
         </aside>
       </div>
 
-      <section className="max-w-7xl mx-auto px-4 lg:px-16 xl:px-0 mt-10">
-        <h2 className="text-xl font-semibold mb-2">Videos</h2>
-
-        <div className="tabs tabs-border">
-          <VideoTab
-            label="Trailers"
-            videos={details.trailers}
-            setActiveVideo={setActiveVideo}
-            defaultChecked
-          />
-          <VideoTab
-            label="Teasers"
-            videos={details.teasers}
-            setActiveVideo={setActiveVideo}
-          />
-          <VideoTab
-            label="Clips"
-            videos={details.clips}
-            setActiveVideo={setActiveVideo}
-          />
-          <VideoTab
-            label="Featurettes"
-            videos={details.featurettes}
-            setActiveVideo={setActiveVideo}
-          />
-        </div>
-      </section>
+      <VideosSection
+        trailers={details.trailers}
+        teasers={details.teasers}
+        clips={details.clips}
+        featurettes={details.featurettes}
+        setActiveVideo={setActiveVideo}
+      />
 
       {data.similar?.results?.length > 0 && (
-        <section className="max-w-7xl mx-auto px-4 lg:px-16 xl:px-0 mt-10">
-          <h2 className="text-xl font-semibold mb-2">Similar movies</h2>
+        <SimilarShowsSection media={data?.similar?.results} media_type="movie" />
+        // <section className="max-w-7xl mx-auto px-4 lg:px-16 xl:px-0 mt-10">
+        //   <h2 className="text-xl font-semibold mb-2">Similar movies</h2>
 
-          <Carousel mediaWidthNum={152}>
-            {data.similar.results
-              .filter((movie) => movie.poster_path)
-              .map((movie) => (
-                <MovieCard key={movie.id} item={movie} />
-              ))}
-          </Carousel>
-        </section>
+        //   <Carousel mediaWidthNum={152}>
+        //     {data.similar.results
+        //       .filter((movie) => movie.poster_path)
+        //       .map((movie) => (
+        //         <MovieCard key={movie.id} item={movie} />
+        //       ))}
+        //   </Carousel>
+        // </section>
       )}
 
       <VideoPlayer video={activeVideo} onClose={() => setActiveVideo(null)} />
     </main>
-  );
-}
-
-function StatCard({ label, value }) {
-  return (
-    <div className="rounded-box bg-primary/20 px-4 py-3">
-      <h3 className="text-xs uppercase tracking-wider text-base-content/50">
-        {label}
-      </h3>
-      <p className="mt-1 font-bold text-primary">{value || "—"}</p>
-    </div>
-  );
-}
-
-function InfoBox({ title, children }) {
-  return (
-    <section className="rounded-box bg-primary/20 px-4 py-3">
-      <h2 className="text-sm font-semibold mb-2">{title}</h2>
-      {children}
-    </section>
-  );
-}
-
-function InfoRow({ label, value }) {
-  return (
-    <div className="mb-2 last:mb-0">
-      <p className="text-xs text-base-content/45">{label}</p>
-      <p className="text-sm text-base-content/75">{value || "—"}</p>
-    </div>
-  );
-}
-
-function VideoTab({ label, videos, setActiveVideo, defaultChecked = false }) {
-  return (
-    <>
-      <input
-        type="radio"
-        name="movie-videos"
-        className="tab"
-        aria-label={`${label} ${videos.length}`}
-        defaultChecked={defaultChecked}
-      />
-
-      <div className="tab-content pt-4">
-        {videos.length > 0 ? (
-          <Carousel mediaWidthNum={320}>
-            {videos.map((video) => (
-              <button
-                key={video.id}
-                onClick={() => setActiveVideo(video)}
-                className="relative w-80 flex-none text-left rounded-xl overflow-hidden group"
-                aria-label={`Play ${video.name}`}
-              >
-                <img
-                  src={`https://img.youtube.com/vi/${video.key}/hqdefault.jpg`}
-                  alt=""
-                  className="w-full aspect-video object-cover group-hover:scale-105 transition"
-                  loading="lazy"
-                />
-
-                <span className="absolute inset-0 flex items-center justify-center bg-black/20">
-                  <span className="w-14 h-14 rounded-full bg-black/60 flex items-center 
-                    justify-center">
-                    <LuPlay size={28} fill="currentColor" />
-                  </span>
-                </span>
-
-                <span className="sr-only">{video.name}</span>
-              </button>
-            ))}
-          </Carousel>
-        ) : (
-          <p className="h-32 flex items-center justify-center text-base-content/50">
-            No {label.toLowerCase()} available.
-          </p>
-        )}
-      </div>
-    </>
   );
 }
 
