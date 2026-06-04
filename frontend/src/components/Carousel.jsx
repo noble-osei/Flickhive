@@ -53,7 +53,7 @@ export default function Carousel({ mediaWidthNum, children }) {
           onClick={() => scroll(-1)}
           className="absolute -left-4 top-22.5 z-10 w-9 h-9 rounded-full bg-black/40 
             hover:bg-black/60 border border-transparent text-base-content flex items-center 
-            justify-center transition-colors}"
+            justify-center transition-colors"
           aria-label="Scroll Left"
         >
           <LuChevronLeft />
