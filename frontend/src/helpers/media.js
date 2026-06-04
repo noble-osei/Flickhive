@@ -1,12 +1,14 @@
 export const formatDate = (dateStr) => {
-  const dateObj = new Date(dateStr);
+  if (!dateStr) return "—"
 
-  const formattedDate = dateObj.toLocaleDateString("en-US", {
+  const dateObj = new Date(dateStr);
+  if (Number.isNaN(dateObj.getTime())) return dateStr;
+
+  return dateObj.toLocaleDateString("en-US", {
     month: "long",
     day: "2-digit",
     year: "numeric",
   });
-  return formattedDate === "Invalid Date" ? dateStr : formattedDate;
 };
 
 export const formatProfession = (dept) => {
