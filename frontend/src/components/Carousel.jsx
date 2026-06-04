@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { LuChevronLeft, LuChevronRight } from "react-icons/lu";
 
-export default function Carousel({ mediaWidthNum, children }) {
+export default function Carousel({ mediaWidthNum, children, title }) {
   const carouselRef = useRef(null);
   const mediaWidth = mediaWidthNum + 16; // MediaWidthNum plus flex gap
   const [skipWidth, setSkipWidth] = useState(mediaWidth * 2); // Initial value set for small screens
@@ -27,7 +27,7 @@ export default function Carousel({ mediaWidthNum, children }) {
     readWidth();
     resizeObserver.observe(c);
     window.addEventListener("resize", readWidth);
-    
+
     return () => {
       resizeObserver.disconnect();
       window.removeEventListener("resize", readWidth);
@@ -54,7 +54,7 @@ export default function Carousel({ mediaWidthNum, children }) {
           className="absolute -left-4 top-22.5 z-10 w-9 h-9 rounded-full bg-black/40 
             hover:bg-black/60 border border-transparent text-base-content flex items-center 
             justify-center transition-colors"
-          aria-label="Scroll Left"
+          aria-label={`Scroll ${title} left`}
         >
           <LuChevronLeft />
         </button>
@@ -74,7 +74,7 @@ export default function Carousel({ mediaWidthNum, children }) {
           className="absolute -right-4 top-22.5 z-10 w-9 h-9 rounded-full bg-black/40 
             hover:bg-black/60 border border-transparent text-base-content flex items-center 
             justify-center transition-colors"
-          aria-label="Scroll Right"
+          aria-label={`Scroll ${title} right`}
         >
           <LuChevronRight />
         </button>
