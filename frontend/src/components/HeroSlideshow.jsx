@@ -147,6 +147,7 @@ export default function HeroSlideshow() {
               className="absolute inset-0 w-full h-full object-cover object-top scale-105"
               loading={index === 0 ? "eager" : "lazy"}
               fetchPriority={index === 0 ? "high" : "auto"}
+              fetchPriority={index === 0 ? "async" : "auto"}
             />
 
             <div
@@ -192,6 +193,7 @@ export default function HeroSlideshow() {
               className="shrink-0 rounded-xl shadow-2xl shadow-black/70 border border-white/13 
                 w-20 h-28 object-cover"
               loading="eager"
+              decoding="async"
             />
           </div>
 
