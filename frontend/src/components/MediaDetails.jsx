@@ -87,14 +87,14 @@ export function CastSection({ cast, mediaId, tvShow }) {
         </h2>
 
         <Link
-          to={`/${tvShow ? "tv" : "movie"}/${mediaId}/cast`}
+          to={`/${tvShow ? "tv" : "movies"}/${mediaId}/cast`}
           className="link text-sm"
         >
           Full Cast & Crew
         </Link>
       </div>
 
-      <Carousel mediaWidthNum={96}>
+      <Carousel mediaWidthNum={96} title="cast">
         {cast.map((person) => (
           <Link
             key={person.cast_id ?? person.id}
@@ -107,6 +107,7 @@ export function CastSection({ cast, mediaId, tvShow }) {
               className="w-20 h-20 rounded-full object-cover object-top border border-white/10 
                 group-hover:scale-105 transition"
               loading="lazy"
+              decoding="async"
             />
 
             <h3 className="mt-2 text-sm font-semibold line-clamp-2 group-hover:link">
@@ -141,6 +142,7 @@ export function TrailerPreview({ video, onPlay }) {
           alt=""
           className="w-full h-full object-cover brightness-75 group-hover:scale-105 transition"
           loading="lazy"
+          decoding="async"
         />
 
         <span className="absolute inset-0 flex items-center justify-center">
@@ -222,7 +224,7 @@ function VideoTab({ label, videos, setActiveVideo, defaultChecked = false }) {
 
       <div className="tab-content pt-4">
         {videos.length > 0 ? (
-          <Carousel mediaWidthNum={320}>
+          <Carousel mediaWidthNum={320} title={label}>
             {videos.map((video) => (
               <button
                 key={video.id}
@@ -236,6 +238,7 @@ function VideoTab({ label, videos, setActiveVideo, defaultChecked = false }) {
                   alt=""
                   className="w-full aspect-video object-cover group-hover:scale-105 transition"
                   loading="lazy"
+                  decoding="async"
                 />
 
                 <span className="absolute inset-0 flex items-center justify-center bg-black/20">
@@ -270,7 +273,10 @@ export function SimilarShowsSection({ media, media_type }) {
         Similar {media_type === "tv" ? "Shows" : "Movies"}
       </h2>
 
-      <Carousel mediaWidthNum={152}>
+      <Carousel
+        mediaWidthNum={152}
+        title={"similar" + media_type === "tv" ? "Shows" : "Movies"}
+      >
         {validMedia.map((medium) => (
           <MovieCard key={medium.id} item={{ ...medium, media_type }} />
         ))}
