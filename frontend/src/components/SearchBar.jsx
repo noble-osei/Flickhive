@@ -26,8 +26,10 @@ function SearchBar({ show, setShow }) {
   const [showResults, setShowResults] = useState(true);
   const [query, setQuery] = useState("");
   const { debouncedQuery, typing, setTyping } = useDebounce(query);
+  const trimmedQuery = debouncedQuery.trim();
   const { data, loading } = useFetch(
-    `/search/multi?query=${debouncedQuery}&include_adult=false&page=1`,
+    `/search/multi?query=${encodeURIComponent(trimmedQuery)}&include_adult=false&page=1`,
+    trimmedQuery.length >= 2,
   );
 
   useEffect(() => {
@@ -85,11 +87,12 @@ function SearchBar({ show, setShow }) {
           className="absolute top-16 inset-x-0 lg:inset-x-16 xl:inset-x-0 bg-base-200 shadow-xl 
           rounded-b-lg"
         >
-          <div
+          <button
+            type="button"
             aria-label="Close Search Results"
             onClick={() => setShowResults(false)}
             className="fixed inset-0 w-screen h-screen bg-black/50 z-10 cursor-pointer"
-          ></div>
+          />
           <div className="relative flex flex-col z-50 bg-base-200 rounded-b-[inherit]">
             {typing || loading ? (
               <p className="h-32 flex items-center justify-center">
