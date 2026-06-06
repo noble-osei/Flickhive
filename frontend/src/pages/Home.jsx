@@ -3,6 +3,7 @@ import HeroSlideShow from "../components/HeroSlideshow.jsx";
 import MovieCard from "../components/MovieCard.jsx";
 import useFetch from "../hooks/useFetch.jsx";
 import Carousel from "../components/Carousel.jsx";
+import HomeSkeleton from "../components/ui/skeletons/Home.jsx";
 
 function Home() {
   const [now] = useState(() => Date.now());
@@ -42,6 +43,14 @@ function Home() {
       `&with_original_language=en|fr|ko|ja|es` +
       `&with_runtime.gte=40`,
   );
+
+  if (
+    trendingToday.loading &&
+    topRatedMovies.loading &&
+    popularTVShows.loading
+  ) {
+    return <HomeSkeleton />;
+  }
 
   return (
     <main className="min-h-screen">

@@ -1,6 +1,5 @@
 import { Link, useParams } from "react-router-dom";
 import { useEffect, useMemo, useState } from "react";
-import { LuStar } from "react-icons/lu";
 import { Helmet } from "react-helmet-async";
 
 import useFetch from "../hooks/useFetch.jsx";
@@ -17,6 +16,9 @@ import {
   TrailerPreview,
   VideosSection,
 } from "../components/MediaDetails.jsx";
+import DetailsSkeleton from "../components/ui/skeletons/Details.jsx";
+import PageError from "../components/ui/PageError.jsx";
+import EmptyState from "../components/ui/EmptyState.jsx";
 import { formatDate } from "../helpers/media.js";
 
 const IMG = import.meta.env.VITE_IMG;
@@ -25,7 +27,7 @@ export default function TVShowDetailsPage() {
   const { tvShowId } = useParams();
   const [activeVideo, setActiveVideo] = useState(null);
 
-  const { data, loading } = useFetch(
+  const { data, loading, error, refetch } = useFetch(
     `/tv/${tvShowId}?append_to_response=credits,videos,similar,content_ratings,watch/providers`,
   );
 
@@ -73,16 +75,17 @@ export default function TVShowDetailsPage() {
     };
   }, [data]);
 
-  if (loading || !data || !details) {
+  if (loading) return <DetailsSkeleton />;
+  if (error) {
     return (
-      <main className="min-h-screen flex items-center justify-center">
-        <span
-          className="loading loading-dots loading-xl"
-          aria-label="Loading TV show details"
-        />
-      </main>
-    );
-  }
+      <PageError
+        title="TV Show not found"
+        message="We couldn't load this tv show. It may have been removed or your connection failed."
+        onRetry={refetch}
+      />
+    )
+  };
+  if ( !data || !details) return <PageError title="No data found" />;
 
   const title = data.name;
   const year = data.first_air_date?.slice(0, 4);
@@ -126,7 +129,14 @@ export default function TVShowDetailsPage() {
 
             <SeasonsSection seasons={data.seasons} tvShowId={tvShowId} />
 
-            <CastSection cast={details.cast} mediaId={tvShowId} tvShow />
+            {details.cast.length === 0 ? (
+              <EmptyState 
+                title="No cast availble"
+                message="We couldn't find cast information for this movie"
+              />
+            ) : (
+              <CastSection cast={details.cast} mediaId={tvShowId} tvShow />
+            )}
 
             {details.mainTrailer && (
               <TrailerPreview
@@ -261,7 +271,6 @@ function StatsGrid({ data }) {
         value={
           data.vote_average > 0 ? `${data.vote_average.toFixed(1)}/10` : "—"
         }
-        icon={<LuStar fill="currentColor" />}
       />
       <StatCard label="Seasons" value={data.number_of_seasons} />
       <StatCard label="Episodes" value={data.number_of_episodes} />

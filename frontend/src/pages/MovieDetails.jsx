@@ -16,6 +16,9 @@ import {
   TrailerPreview,
   VideosSection,
 } from "../components/MediaDetails.jsx";
+import DetailsSkeleton from "../components/ui/skeletons/Details.jsx";
+import PageError from "../components/ui/PageError.jsx";
+import EmptyState from "../components/ui/EmptyState.jsx";
 import { formatDate } from "../helpers/media.js";
 
 const IMG = import.meta.env.VITE_IMG;
@@ -24,7 +27,7 @@ export default function MovieDetails() {
   const { movieId } = useParams();
   const [activeVideo, setActiveVideo] = useState(null);
 
-  const { data, loading } = useFetch(
+  const { data, loading, error, refetch } = useFetch(
     `/movie/${movieId}?append_to_response=credits,videos,similar,release_dates,watch/providers`,
   );
 
@@ -82,16 +85,17 @@ export default function MovieDetails() {
     };
   }, [data]);
 
-  if (loading || !data || !details) {
+  if (loading) return <DetailsSkeleton />;
+  if (error) {
     return (
-      <main className="min-h-screen w-full flex items-center justify-center">
-        <span
-          className="loading loading-dots loading-xl"
-          aria-label="Loading movie details"
-        />
-      </main>
-    );
-  }
+      <PageError
+        title="Movie not found"
+        message="We couldn't load this movie. It may have been removed or your connection failed."
+        onRetry={refetch}
+      />
+    )
+  };
+  if ( !data || !details) return <PageError title="No data found" />;
 
   const year = data.release_date?.slice(0, 4);
   const poster = data.poster_path
@@ -218,14 +222,20 @@ export default function MovieDetails() {
                     ? `${data.vote_average?.toFixed(1)}/10`
                     : "—"
                 }
-                icon={<LuStar fill="currentColor" />}
               />
               <StatCard label="Votes" value={data.vote_count?.toLocaleString()} />
               <StatCard label="Budget" value={money(data.budget)} />
               <StatCard label="Revenue" value={money(data.revenue)} />
             </section>
 
-            <CastSection cast={details.cast} mediaId={movieId} />
+            {details.cast.length === 0 ? (
+              <EmptyState 
+                title="No cast availble"
+                message="We couldn't find cast information for this movie"
+              />
+            ) : (
+              <CastSection cast={details.cast} mediaId={movieId} />
+            )}
 
             {details.mainTrailer && (
               <TrailerPreview
