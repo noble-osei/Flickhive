@@ -68,7 +68,7 @@ export default function SeasonDetails() {
   if ( !show || !season || !details) return <PageError title="No data found" />;
 
   const backdrop = show.backdrop_path
-    ? `${IMG}/original${show.backdrop_path}`
+    ? `${IMG}/w1280${show.backdrop_path}`
     : "/tv.svg";
 
   const poster = season.poster_path

@@ -10,6 +10,7 @@ import {
 
 import useGenres from "../../hooks/useGenres.jsx";
 
+const IMG = import.meta.env.VITE_IMG;
 const AUTOPLAY_DELAY = 6000;
 const HERO_HEIGHT = "h-115 lg:h-screen lg:max-h-215 lg:min-h-150";
 
@@ -115,7 +116,7 @@ export default function HeroSlideshow({ data }) {
             aria-hidden={!isActive}
           >
             <img
-              src={`https://image.tmdb.org/t/p/original${slide.backdrop_path}`}
+              src={`${IMG}/w1280${slide.backdrop_path}`}
               alt=""
               className="absolute inset-0 w-full h-full object-cover object-top scale-105"
               loading={index === 0 ? "eager" : "lazy"}
@@ -161,7 +162,7 @@ export default function HeroSlideshow({ data }) {
             />
 
             <img
-              src={`https://image.tmdb.org/t/p/w185${item.poster_path}`}
+              src={`${IMG}/w185${item.poster_path}`}
               alt={`${title} poster`}
               className="shrink-0 rounded-xl shadow-2xl shadow-black/70 border border-white/13 
                 w-20 h-28 object-cover"

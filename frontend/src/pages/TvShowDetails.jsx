@@ -93,7 +93,7 @@ export default function TVShowDetailsPage() {
     ? `${IMG}/w500${data.poster_path}`
     : "/tv.svg";
   const backdrop = data.backdrop_path
-    ? `${IMG}/original${data.backdrop_path}`
+    ? `${IMG}/w1280${data.backdrop_path}`
     : poster;
 
   return (

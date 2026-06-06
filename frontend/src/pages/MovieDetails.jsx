@@ -102,7 +102,7 @@ export default function MovieDetails() {
     ? `${IMG}/w500${data.poster_path}`
     : "/movie.svg";
   const backdrop = data.backdrop_path
-    ? `${IMG}/original${data.backdrop_path}`
+    ? `${IMG}/w1280${data.backdrop_path}`
     : poster;
 
   return (

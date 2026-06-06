@@ -121,7 +121,7 @@ export default function FullCastCrewPage() {
     ? `${IMG}/w342${data.poster_path}`
     : `/${apiMediaType}.svg`;
   const backdrop = data.backdrop_path
-    ? `${IMG}/original${data.backdrop_path}`
+    ? `${IMG}/w1280${data.backdrop_path}`
     : poster;
 
   return (
