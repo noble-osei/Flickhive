@@ -4,7 +4,7 @@ import { LuStar } from "react-icons/lu";
 import { Helmet } from "react-helmet-async";
 
 import useFetch from "../hooks/useFetch.jsx";
-import VideoPlayer from "../components/VideoPlayer.jsx";
+import VideoPlayer from "../components/media/VideoPlayer.jsx";
 import {
   ActionButtons,
   CastSection,
@@ -15,7 +15,7 @@ import {
   StatCard,
   TrailerPreview,
   VideosSection,
-} from "../components/MediaDetails.jsx";
+} from "../components/media/MediaDetails.jsx";
 import DetailsSkeleton from "../components/ui/skeletons/Details.jsx";
 import PageError from "../components/ui/PageError.jsx";
 import EmptyState from "../components/ui/EmptyState.jsx";

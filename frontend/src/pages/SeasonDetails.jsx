@@ -3,8 +3,8 @@ import { useEffect, useMemo, useRef } from "react";
 import { LuArrowLeft, LuStar } from "react-icons/lu";
 
 import useFetch from "../hooks/useFetch.jsx";
-import Carousel from "../components/Carousel.jsx";
-import { InfoBox, InfoRow, OverviewSection, StatCard } from "../components/MediaDetails.jsx";
+import Carousel from "../components/media/Carousel.jsx";
+import { InfoBox, InfoRow, OverviewSection, StatCard } from "../components/media/MediaDetails.jsx";
 import SeasonDetailsSkeleton from "../components/ui/skeletons/SeasonDetails.jsx";
 import { formatDate } from "../helpers/media.js";
 import PageError from "../components/ui/PageError.jsx";

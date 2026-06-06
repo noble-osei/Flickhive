@@ -1,8 +1,8 @@
 import { useMemo, useState } from "react";
 import HeroSlideShow from "../components/HeroSlideshow.jsx";
-import MovieCard from "../components/MovieCard.jsx";
+import MovieCard from "../components/media/MovieCard.jsx";
 import useFetch from "../hooks/useFetch.jsx";
-import Carousel from "../components/Carousel.jsx";
+import Carousel from "../components/media/Carousel.jsx";
 import HomeSkeleton from "../components/ui/skeletons/Home.jsx";
 
 function Home() {

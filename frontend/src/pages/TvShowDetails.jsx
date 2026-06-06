@@ -3,8 +3,8 @@ import { useEffect, useMemo, useState } from "react";
 import { Helmet } from "react-helmet-async";
 
 import useFetch from "../hooks/useFetch.jsx";
-import Carousel from "../components/Carousel.jsx";
-import VideoPlayer from "../components/VideoPlayer.jsx";
+import Carousel from "../components/media/Carousel.jsx";
+import VideoPlayer from "../components/media/Carousel.jsx";
 import {
   ActionButtons,
   CastSection,
@@ -15,7 +15,7 @@ import {
   StatCard,
   TrailerPreview,
   VideosSection,
-} from "../components/MediaDetails.jsx";
+} from "../components/media/MediaDetails.jsx";
 import DetailsSkeleton from "../components/ui/skeletons/Details.jsx";
 import PageError from "../components/ui/PageError.jsx";
 import EmptyState from "../components/ui/EmptyState.jsx";
