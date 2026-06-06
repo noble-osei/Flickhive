@@ -4,7 +4,7 @@ export default function HomeSkeleton() {
       <section className="h-115 lg:h-screen lg:max-h-215 lg:min-h-150 bg-base-200 relative overflow-hidden">
         <div className="absolute inset-0 bg-linear-to-t from-base-300 via-base-300/70 to-transparent" />
 
-        <div className="absolute bottom-6 lg:bottom-16 left-4 right-4 lg:left-16 xl:left-1/2 xl:-translate-x-1/2 max-w-7xl">
+        <div className="absolute bottom-6 lg:bottom-16 left-4 right-4 lg:left-16 xl:left-0 max-w-7xl mx-auto">
           <div className="flex items-end gap-4">
             <div className="lg:hidden w-20 h-28 rounded-xl bg-base-100/70" />
 
