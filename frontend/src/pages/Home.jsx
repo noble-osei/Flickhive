@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import HeroSlideShow from "../components/HeroSlideshow.jsx";
+import HeroSlideShow from "../components/media/HeroSlideshow.jsx";
 import MovieCard from "../components/media/MovieCard.jsx";
 import useFetch from "../hooks/useFetch.jsx";
 import Carousel from "../components/media/Carousel.jsx";
@@ -18,6 +18,7 @@ function Home() {
     return { minDate: min, maxDate: max };
   }, [now]);
 
+  const trendingThisWeek = useFetch("/trending/all/week");
   const trendingToday = useFetch("/trending/all/day");
   const topRatedMovies = useFetch("/movie/top_rated?page=1");
   const popularTVShows = useFetch("/tv/popular?page=1");
@@ -45,6 +46,7 @@ function Home() {
   );
 
   if (
+    trendingThisWeek.loading &&
     trendingToday.loading &&
     topRatedMovies.loading &&
     popularTVShows.loading
@@ -56,7 +58,7 @@ function Home() {
     <main className="min-h-screen">
       <h1 className="sr-only">Flickhive movie and TV discovery homepage</h1>
 
-      <HeroSlideShow />
+      <HeroSlideShow data={trendingThisWeek.data} />
 
       <MediaSection title="Trending Today" data={trendingToday.data} />
       <MediaSection title="Top Rated Movies" data={topRatedMovies.data} />
