@@ -1,7 +1,7 @@
 import { useEffect, useState, useRef } from "react";
-import { IoSearchOutline } from "react-icons/io5";
 import useFetch from "../hooks/useFetch.jsx";
 import { SearchMediaCard } from "./MovieCard.jsx";
+import { LuSearch } from "react-icons/lu";
 
 function useDebounce(query, delay = 500) {
   const [debouncedQuery, setDebouncedQuery] = useState(query);
@@ -60,7 +60,7 @@ function SearchBar({ show, setShow }) {
             appearance: none;
           }
         `}</style>
-        <IoSearchOutline className="h-5 w-5 opacity-50" aria-label="Search" />
+        <LuSearch className="h-5 w-5 opacity-50" aria-label="Search" />
         <input
           ref={inputRef}
           type="search"
@@ -94,7 +94,7 @@ function SearchBar({ show, setShow }) {
             className="fixed inset-0 w-screen h-screen bg-black/50 z-10 cursor-pointer"
           />
           <div className="relative flex flex-col z-50 bg-base-200 rounded-b-[inherit]">
-            {typing || loading ? (
+            {typing || loading || data === null ? (
               <p className="h-32 flex items-center justify-center">
                 <span className="loading loading-dots loading-xl"></span>
               </p>
