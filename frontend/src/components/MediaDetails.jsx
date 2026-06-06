@@ -62,14 +62,13 @@ export function OverviewSection({ overview }) {
   );
 }
 
-export function StatCard({ label, value, icon }) {
+export function StatCard({ label, value }) {
   return (
     <div className="rounded-box bg-primary/20 px-4 py-3">
       <h3 className="text-xs uppercase tracking-wider text-base-content/50">
         {label}
       </h3>
       <p className="mt-1 font-bold text-primary flex items-center gap-1">
-        {icon}
         {value || "—"}
       </p>
     </div>
@@ -138,7 +137,8 @@ export function TrailerPreview({ video, onPlay }) {
         aria-label={`Play ${video.name}`}
       >
         <img
-          src={`https://img.youtube.com/vi/${video.key}/hqdefault.jpg`}
+          src={`https://res.cloudinary.com/dbu9plfk1/image/fetch/f_auto,q_auto/` +
+               `https://img.youtube.com/vi/${video.key}/hqdefault.jpg`}
           alt=""
           className="w-full h-full object-cover brightness-75 group-hover:scale-105 transition"
           loading="lazy"
@@ -234,7 +234,8 @@ function VideoTab({ label, videos, setActiveVideo, defaultChecked = false }) {
                 aria-label={`Play ${video.name}`}
               >
                 <img
-                  src={`https://img.youtube.com/vi/${video.key}/hqdefault.jpg`}
+                  src={`https://res.cloudinary.com/dbu9plfk1/image/fetch/f_auto,q_auto/` + 
+                      `https://img.youtube.com/vi/${video.key}/hqdefault.jpg`}
                   alt=""
                   className="w-full aspect-video object-cover group-hover:scale-105 transition"
                   loading="lazy"
