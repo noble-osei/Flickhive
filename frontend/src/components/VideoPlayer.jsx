@@ -1,4 +1,5 @@
 import { useEffect, useRef } from "react";
+import IframePlaceholder from "./ui/IframePlaceholder.jsx";
 
 export default function VideoPlayer({ video, onClose }) {
   const modalRef = useRef(null);
@@ -25,7 +26,7 @@ export default function VideoPlayer({ video, onClose }) {
             allowFullScreen
           ></iframe>
         ) : (
-          <div className="w-full h-full bg-base-100"></div>
+          <IframePlaceholder />
         )}
       </div>
 
