@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import SearchBar from "./SearchBar.jsx";
+import SearchBar from "../search/SearchBar.jsx";
 import { LuSearch, LuMenu } from "react-icons/lu";
 
 export default function Layout({ children }) {
