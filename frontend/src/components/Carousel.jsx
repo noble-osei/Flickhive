@@ -8,6 +8,7 @@ export default function Carousel({ mediaWidthNum, children, title }) {
   const [atStart, setAtStart] = useState(true);
   const [atEnd, setAtEnd] = useState(false);
   const [showChevron, setShowChevron] = useState(true);
+  const [height, setHeight] = useState(null);
 
   useEffect(() => {
     const c = carouselRef.current;
@@ -26,13 +27,21 @@ export default function Carousel({ mediaWidthNum, children, title }) {
 
     readWidth();
     resizeObserver.observe(c);
-    window.addEventListener("resize", readWidth);
 
     return () => {
       resizeObserver.disconnect();
-      window.removeEventListener("resize", readWidth);
     };
   }, [mediaWidth]);
+
+  useEffect(() => {
+    const c = carouselRef.current;
+    if (!c) return;
+
+    const readHeights = () => {
+      setHeight(Math.round(c.clientHeight));
+    }
+    readHeights();
+  }, [])
 
   const updateChevrons = () => {
     const c = carouselRef.current;
@@ -51,9 +60,10 @@ export default function Carousel({ mediaWidthNum, children, title }) {
       {!atStart && showChevron && (
         <button
           onClick={() => scroll(-1)}
-          className="absolute -left-4 top-22.5 z-10 w-9 h-9 rounded-full bg-black/40 
+          className="absolute -left-4 z-10 w-9 h-9 rounded-full bg-black/40 
             hover:bg-black/60 border border-transparent text-base-content flex items-center 
             justify-center transition-colors"
+          style={{ top: (height / 3) + "px"}}
           aria-label={`Scroll ${title} left`}
         >
           <LuChevronLeft />
@@ -71,9 +81,10 @@ export default function Carousel({ mediaWidthNum, children, title }) {
       {!atEnd && showChevron && (
         <button
           onClick={() => scroll(1)}
-          className="absolute -right-4 top-22.5 z-10 w-9 h-9 rounded-full bg-black/40 
+          className="absolute -right-4 z-10 w-9 h-9 rounded-full bg-black/40 
             hover:bg-black/60 border border-transparent text-base-content flex items-center 
             justify-center transition-colors"
+          style={{ top: (height / 3) + "px"}}
           aria-label={`Scroll ${title} right`}
         >
           <LuChevronRight />
