@@ -8,8 +8,7 @@ import {
   LuStar,
 } from "react-icons/lu";
 
-import useFetch from "../hooks/useFetch.jsx";
-import useGenres from "../hooks/useGenres.jsx";
+import useGenres from "../../hooks/useGenres.jsx";
 
 const AUTOPLAY_DELAY = 6000;
 const HERO_HEIGHT = "h-115 lg:h-screen lg:max-h-215 lg:min-h-150";
@@ -21,8 +20,7 @@ const CHEVRON_STYLES = `
   lg:w-[44px] lg:h-[44px]
 `;
 
-export default function HeroSlideshow() {
-  const { data, loading, error } = useFetch("/trending/all/week");
+export default function HeroSlideshow({ data }) {
   const genres = useGenres();
 
   const [active, setActive] = useState(0);
@@ -75,31 +73,6 @@ export default function HeroSlideshow() {
       setActive(0);
     }
   }, [active, itemsLength]);
-
-  if (loading) {
-    return (
-      <section
-        className={`${HERO_HEIGHT} bg-base-200 flex items-center justify-center`}
-      >
-        <span
-          className="loading loading-dots loading-xl"
-          aria-label="Loading featured movies"
-        />
-      </section>
-    );
-  }
-
-  if (error) {
-    return (
-      <section
-        className={`${HERO_HEIGHT} bg-base-200 flex items-center justify-center px-4`}
-      >
-        <p className="text-error text-center">
-          Failed to load featured movies.
-        </p>
-      </section>
-    );
-  }
 
   if (itemsLength === 0) {
     return (
