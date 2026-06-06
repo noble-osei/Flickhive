@@ -120,8 +120,8 @@ export default function HeroSlideshow({ data }) {
               alt=""
               className="absolute inset-0 w-full h-full object-cover object-top scale-105"
               loading={index === 0 ? "eager" : "lazy"}
-              fetchPriority={index === 0 ? "high" : "auto"}
-              fetchPriority={index === 0 ? "async" : "auto"}
+              fetchPriority={index === 0 ? "high" : "low"}
+              decoding={index === 0 ? "async" : "auto"}
             />
 
             <div
