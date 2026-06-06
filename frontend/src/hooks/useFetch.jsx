@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import axios from "axios";
 
 import { tmdbInstance } from "../api/axios.js";
@@ -7,6 +7,11 @@ function useFetch(url, enabled = true) {
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(Boolean(enabled && url));
   const [error, setError] = useState(null);
+  const [retryKey, setRetryKey] = useState(0);
+
+  const refetch = useCallback(() => {
+    setRetryKey(key => key + 1);
+  }, [])
 
   useEffect(() => {
     if (!enabled || !url) return;
@@ -37,9 +42,9 @@ function useFetch(url, enabled = true) {
     getData();
 
     return () => controller.abort();
-  }, [url, enabled]);
+  }, [url, enabled, retryKey]);
 
-  return { data, loading, error };
+  return { data, loading, error, refetch };
 }
 
 export default useFetch;
