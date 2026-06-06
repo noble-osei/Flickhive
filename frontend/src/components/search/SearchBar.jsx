@@ -1,25 +1,8 @@
 import { useEffect, useState, useRef } from "react";
-import useFetch from "../hooks/useFetch.jsx";
-import { SearchMediaCard } from "./MovieCard.jsx";
+import useFetch from "../../hooks/useFetch.jsx";
+import SearchMediaCard from "./SearchMediaCard.jsx";
 import { LuSearch } from "react-icons/lu";
-
-function useDebounce(query, delay = 500) {
-  const [debouncedQuery, setDebouncedQuery] = useState(query);
-  const [typing, setTyping] = useState(false);
-
-  useEffect(() => {
-    const timerId = setTimeout(() => {
-      setDebouncedQuery(query);
-      setTyping(false);
-    }, delay);
-
-    return () => {
-      clearTimeout(timerId);
-    };
-  }, [delay, query]);
-
-  return { debouncedQuery, typing, setTyping };
-}
+import useDebounce from "../../hooks/useDebounce.jsx";
 
 function SearchBar({ show, setShow }) {
   const inputRef = useRef(null);
