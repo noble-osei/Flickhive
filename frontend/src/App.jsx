@@ -1,9 +1,10 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Home from "./pages/Home.jsx";
-import Layout from "./components/Layout.jsx";
+import Layout from "./components/layout/Layout.jsx";
 import MovieDetails from "./pages/MovieDetails.jsx";
 import TVShowDetails from "./pages/TvShowDetails.jsx";
 import SeasonDetails from "./pages/SeasonDetails.jsx";
+import FullCastCrew from "./pages/FullCastCrew.jsx";
 
 function App() {
   return (
@@ -17,6 +18,7 @@ function App() {
             path="/tv/:tvShowId/season/:seasonNumber"
             element={<SeasonDetails />}
           />
+          <Route path="/:mediaType/:mediaId/cast" element={<FullCastCrew />} />
         </Routes>
       </Layout>
     </BrowserRouter>
