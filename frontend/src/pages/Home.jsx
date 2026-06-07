@@ -3,7 +3,8 @@ import HeroSlideShow from "../components/media/HeroSlideshow.jsx";
 import MovieCard from "../components/media/MovieCard.jsx";
 import useFetch from "../hooks/useFetch.jsx";
 import Carousel from "../components/media/Carousel.jsx";
-import HomeSkeleton from "../components/ui/skeletons/Home.jsx";
+import { SkeletonRow } from "../components/ui/skeletons/Home.jsx";
+import { Helmet } from "react-helmet-async";
 
 function Home() {
   const [now] = useState(() => Date.now());
@@ -45,37 +46,38 @@ function Home() {
       `&with_runtime.gte=40`,
   );
 
-  if (
-    trendingThisWeek.loading &&
-    trendingToday.loading &&
-    topRatedMovies.loading &&
-    popularTVShows.loading
-  ) {
-    return <HomeSkeleton />;
-  }
-
   return (
-    <main className="min-h-screen">
-      <h1 className="sr-only">Flickhive movie and TV discovery homepage</h1>
+    <>
+      <Helmet>
+        <title>Flickhive | Discover Movies and TV Shows</title>
+        <meta
+          name="description"
+          content="Discover trending movies, top-rated films, popular TV shows, upcoming releases, and hidden gems on Flickhive."
+        />
+      </Helmet>
+      <main className="min-h-screen">
+        <h1 className="sr-only">Flickhive movie and TV discovery homepage</h1>
 
-      <HeroSlideShow data={trendingThisWeek.data} />
+        <HeroSlideShow data={trendingThisWeek.data} loading={trendingThisWeek.loading} />
 
-      <MediaSection title="Trending Today" data={trendingToday.data} />
-      <MediaSection title="Top Rated Movies" data={topRatedMovies.data} />
-      <MediaSection title="Popular TV Shows" data={popularTVShows.data} />
-      <MediaSection title="Coming Soon" data={comingSoon.data} />
-      <MediaSection title="Hidden Gems" data={hiddenGems.data} />
-    </main>
+        <MediaSection title="Trending Today" data={trendingToday.data} loading={trendingToday.loading} />
+        <MediaSection title="Top Rated Movies" data={topRatedMovies.data} loading={topRatedMovies.loading} />
+        <MediaSection title="Popular TV Shows" data={popularTVShows.data} loading={popularTVShows.loading} />
+        <MediaSection title="Coming Soon" data={comingSoon.data} loading={comingSoon.loading} />
+        <MediaSection title="Hidden Gems" data={hiddenGems.data} loading={hiddenGems.loading} />
+      </main>
+    </>
   );
 }
 
 export default Home;
 
-function MediaSection({ title, data }) {
+function MediaSection({ title, data, loading }) {
   const results = data?.results?.filter(
     (item) => item.poster_path && item.media_type !== "person",
   );
 
+  if (loading) return <SkeletonRow />
   if (!results || results.length === 0) return null;
 
   return (

@@ -9,6 +9,7 @@ import {
 } from "react-icons/lu";
 
 import useGenres from "../../hooks/useGenres.jsx";
+import HeroSlideSkeleton from "../ui/skeletons/Home.jsx"
 
 const IMG = import.meta.env.VITE_IMG;
 const AUTOPLAY_DELAY = 6000;
@@ -21,7 +22,7 @@ const CHEVRON_STYLES = `
   lg:w-[44px] lg:h-[44px]
 `;
 
-export default function HeroSlideshow({ data }) {
+export default function HeroSlideshow({ data, loading }) {
   const genres = useGenres();
 
   const [active, setActive] = useState(0);
@@ -75,6 +76,7 @@ export default function HeroSlideshow({ data }) {
     }
   }, [active, itemsLength]);
 
+  if (loading) return <HeroSlideSkeleton />
   if (itemsLength === 0) {
     return (
       <section
