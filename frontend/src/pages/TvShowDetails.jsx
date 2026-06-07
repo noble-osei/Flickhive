@@ -105,6 +105,7 @@ export default function TVShowDetailsPage() {
           content={data.overview || `View seasons, cast, trailer, and similar shows for ${data.name}.`}
         />
       </Helmet>
+      
       <main className="bg-base-300/30 pb-10">
         <HeroSection
           data={data}
