@@ -3,6 +3,7 @@ import { LuChevronLeft, LuChevronRight } from "react-icons/lu";
 
 export default function Carousel({ mediaWidthNum, children, title }) {
   const carouselRef = useRef(null);
+  const frameRef = useRef(null);
   const mediaWidth = mediaWidthNum + 16; // MediaWidthNum plus flex gap
   const [skipWidth, setSkipWidth] = useState(mediaWidth * 2); // Initial value set for small screens
   const [atStart, setAtStart] = useState(true);
@@ -17,19 +18,21 @@ export default function Carousel({ mediaWidthNum, children, title }) {
     const readWidth = () => {
       setShowChevron(c.scrollWidth >= c.clientWidth + 1);
 
-      let skipItems = Math.floor(c.clientWidth / mediaWidth);
-      setSkipWidth((skipItems >= 1 ? skipItems : 1) * mediaWidth);
+      const skipItems = Math.floor(c.clientWidth / mediaWidth);
+      setSkipWidth(Math.max(skipItems, 1) * mediaWidth);
     };
 
-    const resizeObserver = new ResizeObserver(() => {
-      readWidth();
-    });
+    const resizeObserver = new ResizeObserver(readWidth);
 
     readWidth();
     resizeObserver.observe(c);
 
     return () => {
       resizeObserver.disconnect();
+
+      if (frameRef.current) {
+        cancelAnimationFrame(frameRef.current);
+      }
     };
   }, [mediaWidth]);
 
@@ -44,10 +47,16 @@ export default function Carousel({ mediaWidthNum, children, title }) {
   }, [])
 
   const updateChevrons = () => {
-    const c = carouselRef.current;
-    if (!c) return;
-    setAtStart(c.scrollLeft < 1);
-    setAtEnd(c.scrollLeft >= c.scrollWidth - c.clientWidth - 1);
+    if (frameRef.current) return;
+    
+    frameRef.current = requestAnimationFrame(() => {
+      const c = carouselRef.current;
+      if (!c) return;
+      setAtStart(c.scrollLeft < 1);
+      setAtEnd(c.scrollLeft >= c.scrollWidth - c.clientWidth - 1);
+
+      frameRef.current = null;
+    });
   };
 
   const scroll = (dir) => {
