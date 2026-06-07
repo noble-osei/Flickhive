@@ -344,7 +344,7 @@ function SeasonsSection({ seasons, tvShowId }) {
               decoding="async"
             />
 
-            <h3 className="text-sm font-bold mt-3 line-clamp-2 group-hover:link">
+            <h3 className="text-sm font-bold mt-3 line-clamp-2 group-hover:link-primary">
               {season.name}
             </h3>
 
