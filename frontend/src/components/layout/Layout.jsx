@@ -1,16 +1,16 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, Outlet } from "react-router-dom";
 import SearchBar from "../search/SearchBar.jsx";
 import { LuSearch, LuMenu } from "react-icons/lu";
 
-export default function Layout({ children }) {
+export default function Layout() {
   return (
     <div className="drawer">
       <input id="my-drawer" type="checkbox" className="drawer-toggle" />
 
       <div className="drawer-content flex flex-col min-h-screen">
         <Navbar />
-        {children}
+        <Outlet />
         <Footer />
       </div>
 
