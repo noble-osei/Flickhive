@@ -109,7 +109,7 @@ export function CastSection({ cast, mediaId, tvShow }) {
               decoding="async"
             />
 
-            <h3 className="mt-2 text-sm font-semibold line-clamp-2 group-hover:link">
+            <h3 className="mt-2 text-sm font-semibold line-clamp-2 group-hover:link-primary">
               {person.name}
             </h3>
 
