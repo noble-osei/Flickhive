@@ -8,6 +8,7 @@ import { InfoBox, InfoRow, OverviewSection, StatCard } from "../components/media
 import SeasonDetailsSkeleton from "../components/ui/skeletons/SeasonDetails.jsx";
 import { formatDate } from "../helpers/media.js";
 import PageError from "../components/ui/PageError.jsx";
+import { Helmet } from "react-helmet-async";
 
 const IMG = import.meta.env.VITE_IMG;
 
@@ -78,38 +79,51 @@ export default function SeasonDetails() {
       : "/tv.svg";
 
   return (
-    <main className="bg-base-300/30 pb-10">
-      <SeasonHero
-        show={show}
-        season={season}
-        poster={poster}
-        backdrop={backdrop}
-        averageRating={details.averageRating}
-      />
+    <>
+      <Helmet>
+        <title>{`${show.name}: ${season.name} (${season.air_date.slice(0, 4)}) | Flickhive`}</title>
+        <meta
+          name="description"
+          content={
+            season.overview ||
+            `View ${season.name} episodes for ${show.name}.`
+          }
+        />
+      </Helmet>
 
-      <div className="max-w-7xl mx-auto px-4 lg:px-16 xl:px-0 mt-6 grid grid-cols-1 lg:grid-cols-5 gap-6">
-        <div className="lg:col-span-4 space-y-8">
-          <OverviewSection overview={season.overview} />
-
-          <SeasonStats
-            season={season}
-            averageRating={details.averageRating}
-            averageRuntime={details.averageRuntime}
-          />
-
-          <EpisodesSection episodes={details.episodes} />
-        </div>
-
-        <SeasonSidebar
+      <main className="bg-base-300/30 pb-10">
+        <SeasonHero
           show={show}
           season={season}
-          tvShowId={tvShowId}
-          activeSeason={Number(seasonNumber)}
+          poster={poster}
+          backdrop={backdrop}
+          averageRating={details.averageRating}
         />
-      </div>
 
-      <BackToShowCTA show={show} tvShowId={tvShowId} />
-    </main>
+        <div className="max-w-7xl mx-auto px-4 lg:px-16 xl:px-0 mt-6 grid grid-cols-1 lg:grid-cols-5 gap-6">
+          <div className="lg:col-span-4 space-y-8">
+            <OverviewSection overview={season.overview} />
+
+            <SeasonStats
+              season={season}
+              averageRating={details.averageRating}
+              averageRuntime={details.averageRuntime}
+            />
+
+            <EpisodesSection episodes={details.episodes} />
+          </div>
+
+          <SeasonSidebar
+            show={show}
+            season={season}
+            tvShowId={tvShowId}
+            activeSeason={Number(seasonNumber)}
+          />
+        </div>
+
+        <BackToShowCTA show={show} tvShowId={tvShowId} />
+      </main>
+    </>
   );
 }
 
@@ -216,16 +230,20 @@ function EpisodesSection({ episodes }) {
 }
 
 function EpisodeCard({ episode }) {
+  const hasStill = Boolean(episode.still_path);
+
   const still = episode.still_path
     ? `${IMG}/w500${episode.still_path}`
     : "/tv.svg";
 
   return (
-    <article className="rounded-box overflow-hidden bg-primary/12 border border-white/10 flex flex-col md:flex-row">
+    <article className="rounded-box overflow-hidden bg-primary/12 border border-white/10 flex 
+      flex-col md:flex-row">
       <img
         src={still}
         alt=""
-        className="w-full md:w-56 h-44 md:h-auto object-cover bg-base-200"
+        className={`w-full md:w-56 h-44 object-cover bg-base-200
+          ${hasStill ? "md:h-auto" : "md:h-33"}`}
         loading="lazy"
       />
 
