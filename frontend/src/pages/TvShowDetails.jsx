@@ -4,7 +4,7 @@ import { Helmet } from "react-helmet-async";
 
 import useFetch from "../hooks/useFetch.jsx";
 import Carousel from "../components/media/Carousel.jsx";
-import VideoPlayer from "../components/media/Carousel.jsx";
+import VideoPlayer from "../components/media/VideoPlayer.jsx";
 import {
   ActionButtons,
   CastSection,
@@ -83,9 +83,9 @@ export default function TVShowDetailsPage() {
         message="We couldn't load this tv show. It may have been removed or your connection failed."
         onRetry={refetch}
       />
-    )
-  };
-  if ( !data || !details) return <PageError title="No data found" />;
+    );
+  }
+  if (!data || !details) return <PageError title="No data found" />;
 
   const title = data.name;
   const year = data.first_air_date?.slice(0, 4);
@@ -102,10 +102,13 @@ export default function TVShowDetailsPage() {
         <title>{`${data.name} (${year}) | Flickhive`}</title>
         <meta
           name="description"
-          content={data.overview || `View seasons, cast, trailer, and similar shows for ${data.name}.`}
+          content={
+            data.overview ||
+            `View seasons, cast, trailer, and similar shows for ${data.name}.`
+          }
         />
       </Helmet>
-      
+
       <main className="bg-base-300/30 pb-10">
         <HeroSection
           data={data}
@@ -131,7 +134,7 @@ export default function TVShowDetailsPage() {
             <SeasonsSection seasons={data.seasons} tvShowId={tvShowId} />
 
             {details.cast.length === 0 ? (
-              <EmptyState 
+              <EmptyState
                 title="No cast availble"
                 message="We couldn't find cast information for this movie"
               />
