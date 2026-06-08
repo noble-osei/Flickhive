@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import { LuStar } from "react-icons/lu";
+import { formatDate } from "../../helpers/media.js";
 
 const IMG = import.meta.env.VITE_IMG;
 
@@ -39,7 +40,7 @@ export default function BrowseMediaCard({ item, mediaType }) {
       </h2>
 
       <p className="text-sm text-base-content/55">
-        {date?.slice(0, 4) || "Unknown year"}
+        {formatDate(date) || "Unknown year"}
       </p>
     </Link>
   );
