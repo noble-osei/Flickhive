@@ -21,10 +21,17 @@ export default function Carousel({ mediaWidthNum, children, title }) {
       const skipItems = Math.floor(c.clientWidth / mediaWidth);
       setSkipWidth(Math.max(skipItems, 1) * mediaWidth);
     };
+    const readHeights = () => {
+      setHeight(Math.round(c.clientHeight));
+    }
 
-    const resizeObserver = new ResizeObserver(readWidth);
+    const resizeObserver = new ResizeObserver(() => {
+      readWidth();
+      readHeights();
+    });
 
     readWidth();
+    readHeights()
     resizeObserver.observe(c);
 
     return () => {
@@ -35,16 +42,6 @@ export default function Carousel({ mediaWidthNum, children, title }) {
       }
     };
   }, [mediaWidth]);
-
-  useEffect(() => {
-    const c = carouselRef.current;
-    if (!c) return;
-
-    const readHeights = () => {
-      setHeight(Math.round(c.clientHeight));
-    }
-    readHeights();
-  }, [])
 
   const updateChevrons = () => {
     if (frameRef.current) return;
