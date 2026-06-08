@@ -1,5 +1,5 @@
 import { Link, useSearchParams } from "react-router-dom";
-import { useMemo, useRef } from "react";
+import { useMemo, useRef, useState } from "react";
 import {
   LuChevronLeft,
   LuChevronRight,
@@ -15,41 +15,78 @@ import BrowseGridSkeleton from "../components/ui/skeletons/BrowseGridSkeleton.js
 import PageError from "../components/ui/PageError.jsx";
 import { Helmet } from "react-helmet-async";
 
+const NOW_PLAYING_DAYS_BACK = 30;
+const UPCOMING_DAYS_FORWARD = 90;
+const ON_THE_AIR_DAYS_FORWARD = 7;
+
 const PAGE_CONFIG = {
   "movies-popular": {
     title: "Popular Movies",
     description: "Discover movies people are watching right now.",
     mediaType: "movies",
     apiMediaType: "movie",
-    defaultEndpoint: "/movie/popular",
-    defaultSort: "popularity.desc",
+    preset: {
+      endpoint: "/discover/movie",
+      params: {
+        include_adult: "false",
+        include_video: "false",
+        sort_by: "popularity.desc",
+      },
+    },
   },
 
   "movies-upcoming": {
     title: "Upcoming Movies",
-    description: "Explore movies arriving soon.",
+    description:
+      "Explore theatrical movie releases arriving in the next 90 days.",
     mediaType: "movies",
     apiMediaType: "movie",
-    defaultEndpoint: "/movie/upcoming",
-    defaultSort: "popularity.desc",
+    preset: {
+      endpoint: "/discover/movie",
+      params: () => ({
+        include_adult: "false",
+        include_video: "false",
+        sort_by: "popularity.desc",
+        with_release_type: "2|3",
+        "primary_release_date.gte": getOffsetDate(1),
+        "primary_release_date.lte": getOffsetDate(UPCOMING_DAYS_FORWARD),
+      }),
+    },
   },
 
   "movies-now-playing": {
     title: "Now Playing",
-    description: "Find movies currently showing in cinemas.",
+    description: "Find popular theatrical movie releases currently showing.",
     mediaType: "movies",
     apiMediaType: "movie",
-    defaultEndpoint: "/movie/now_playing",
-    defaultSort: "popularity.desc",
+    preset: {
+      endpoint: "/discover/movie",
+      params: () => ({
+        include_adult: "false",
+        include_video: "false",
+        sort_by: "popularity.desc",
+        with_release_type: "2|3",
+        "release_date.gte": getOffsetDate(-NOW_PLAYING_DAYS_BACK),
+        "release_date.lte": getOffsetDate(0),
+      }),
+    },
   },
 
   "movies-top-rated": {
     title: "Top Rated Movies",
-    description: "Browse highly rated movies from across the years.",
+    description: "Browse highly rated movies with enough audience votes.",
     mediaType: "movies",
     apiMediaType: "movie",
-    defaultEndpoint: "/movie/top_rated",
-    defaultSort: "vote_average.desc",
+    preset: {
+      endpoint: "/discover/movie",
+      params: {
+        include_adult: "false",
+        include_video: "false",
+        sort_by: "vote_average.desc",
+        "vote_count.gte": "200",
+        without_genres: "99,10755",
+      },
+    },
   },
 
   "tv-popular": {
@@ -57,26 +94,45 @@ const PAGE_CONFIG = {
     description: "Discover shows viewers are watching right now.",
     mediaType: "tv",
     apiMediaType: "tv",
-    defaultEndpoint: "/tv/popular",
-    defaultSort: "popularity.desc",
+    preset: {
+      endpoint: "/discover/tv",
+      params: {
+        include_adult: "false",
+        sort_by: "popularity.desc",
+      },
+    },
   },
 
   "tv-top-rated": {
     title: "Top Rated TV Shows",
-    description: "Browse highly rated series worth adding to your watchlist.",
+    description: "Browse highly rated series with enough audience votes.",
     mediaType: "tv",
     apiMediaType: "tv",
-    defaultEndpoint: "/tv/top_rated",
-    defaultSort: "vote_average.desc",
+    preset: {
+      endpoint: "/discover/tv",
+      params: {
+        include_adult: "false",
+        sort_by: "vote_average.desc",
+        "vote_count.gte": "100",
+      },
+    },
   },
 
   "tv-on-the-air": {
     title: "On the Air",
-    description: "Explore TV shows with episodes currently airing.",
+    description:
+      "Explore TV shows with episodes airing during the next 7 days.",
     mediaType: "tv",
     apiMediaType: "tv",
-    defaultEndpoint: "/tv/on_the_air",
-    defaultSort: "popularity.desc",
+    preset: {
+      endpoint: "/discover/tv",
+      params: () => ({
+        include_adult: "false",
+        sort_by: "popularity.desc",
+        "air_date.gte": getOffsetDate(0),
+        "air_date.lte": getOffsetDate(ON_THE_AIR_DAYS_FORWARD),
+      }),
+    },
   },
 
   "people-popular": {
@@ -84,10 +140,71 @@ const PAGE_CONFIG = {
     description: "Explore actors, directors, and creators currently trending.",
     mediaType: "people",
     apiMediaType: "person",
-    defaultEndpoint: "/person/popular",
-    defaultSort: null,
+    preset: {
+      endpoint: "/person/popular",
+      params: {
+      },
+    },
   },
 };
+
+function getOffsetDate(offsetDays = 0) {
+  const date = new Date();
+
+  date.setHours(12, 0, 0, 0);
+  date.setDate(date.getDate() + offsetDays);
+
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+
+  return `${year}-${month}-${day}`;
+}
+
+function resolvePresetParams(config) {
+  const params =
+    typeof config.preset.params === "function"
+      ? config.preset.params()
+      : config.preset.params;
+
+  return { ...params };
+}
+
+function createEmptyFilters() {
+  return {
+    genres: [],
+    from: "",
+    to: "",
+    rating: "",
+    language: "",
+  };
+}
+
+function readFilters(searchParams) {
+  return {
+    genres: searchParams.get("genres")?.split(",").filter(Boolean) ?? [],
+    from: searchParams.get("from") ?? "",
+    to: searchParams.get("to") ?? "",
+    rating: searchParams.get("rating") ?? "",
+    language: searchParams.get("language") ?? "",
+  };
+}
+
+function writeFilters(searchParams, filters) {
+  setOrDelete(searchParams, "genres", filters.genres.join(","));
+  setOrDelete(searchParams, "from", filters.from);
+  setOrDelete(searchParams, "to", filters.to);
+  setOrDelete(searchParams, "rating", filters.rating);
+  setOrDelete(searchParams, "language", filters.language);
+}
+
+function setOrDelete(searchParams, key, value) {
+  if (value) {
+    searchParams.set(key, String(value));
+  } else {
+    searchParams.delete(key);
+  }
+}
 
 export default function BrowsePage({ pageKey }) {
   const config = PAGE_CONFIG[pageKey];
@@ -98,24 +215,41 @@ export default function BrowsePage({ pageKey }) {
 
   const [searchParams, setSearchParams] = useSearchParams();
   const filterDrawerRef = useRef(null);
+  const yearFilterLabel =
+    config.apiMediaType === "tv" ? "First Air Year" : "Release Year";
 
-  const page = Math.max(Number(searchParams.get("page") ?? 1), 1);
-  const sort = searchParams.get("sort") ?? config.defaultSort ?? "";
-  const genreIds = useMemo(() => {
-    return searchParams.get("genres")?.split(",").filter(Boolean) ?? [];
-  }, [searchParams]);
-  const fromYear = searchParams.get("from") ?? "";
-  const toYear = searchParams.get("to") ?? "";
-  const rating = searchParams.get("rating") ?? "";
-  const language = searchParams.get("language") ?? "";
+  const requestedPage = Number(searchParams.get("page") ?? 1);
+
+  const page =
+    Number.isInteger(requestedPage) && requestedPage > 0 ? requestedPage : 1;
 
   const isPersonPage = config.mediaType === "people";
 
-  const hasFilters =
-    !isPersonPage &&
-    (genreIds.length > 0 || fromYear || toYear || rating || language);
+  const presetParams = resolvePresetParams(config);
 
-  const hasCustomSort = !isPersonPage && sort && sort !== config.defaultSort;
+  const defaultSort = presetParams.sort_by ?? "";
+  const sort = searchParams.get("sort") ?? defaultSort;
+
+  const committedFilters = useMemo(
+    () => readFilters(searchParams),
+    [searchParams],
+  );
+
+  const [draftFilters, setDraftFilters] = useState(committedFilters);
+  const [prevCommitted, setPrevCommitted] = useState(committedFilters);
+
+  if (committedFilters !== prevCommitted) {
+    setPrevCommitted(committedFilters);
+    setDraftFilters(committedFilters);
+  }
+
+  const {
+    genres: genreIds,
+    from: fromYear,
+    to: toYear,
+    rating,
+    language,
+  } = committedFilters;
 
   const activeFilterCount =
     genreIds.length +
@@ -123,20 +257,18 @@ export default function BrowsePage({ pageKey }) {
     Number(Boolean(rating)) +
     Number(Boolean(language));
 
+  const hasDraftChanges =
+    JSON.stringify(draftFilters) !== JSON.stringify(committedFilters);
+
   const browseUrl = useMemo(() => {
-    if (isPersonPage) {
-      return `${config.defaultEndpoint}?page=${page}`;
-    }
-
-    if (!hasFilters && !hasCustomSort) {
-      return `${config.defaultEndpoint}?page=${page}`;
-    }
-
     const params = new URLSearchParams({
+      ...presetParams,
       page: String(page),
-      include_adult: "false",
-      sort_by: sort || config.defaultSort,
     });
+
+    if (isPersonPage) {
+      return `${config.preset.endpoint}?${params.toString()}`;
+    }
 
     if (genreIds.length > 0) {
       params.set("with_genres", genreIds.join(","));
@@ -151,27 +283,40 @@ export default function BrowsePage({ pageKey }) {
     }
 
     if (config.apiMediaType === "movie") {
-      if (fromYear) params.set("primary_release_date.gte", `${fromYear}-01-01`);
-      if (toYear) params.set("primary_release_date.lte", `${toYear}-12-31`);
+      if (fromYear) {
+        params.set("primary_release_date.gte", `${fromYear}-01-01`);
+      }
+
+      if (toYear) {
+        params.set("primary_release_date.lte", `${toYear}-12-31`);
+      }
     }
 
     if (config.apiMediaType === "tv") {
-      if (fromYear) params.set("first_air_date.gte", `${fromYear}-01-01`);
-      if (toYear) params.set("first_air_date.lte", `${toYear}-12-31`);
+      if (fromYear) {
+        params.set("first_air_date.gte", `${fromYear}-01-01`);
+      }
+
+      if (toYear) {
+        params.set("first_air_date.lte", `${toYear}-12-31`);
+      }
     }
 
-    return `/discover/${config.apiMediaType}?${params.toString()}`;
+    if (sort) {
+      params.set("sort_by", sort);
+    }
+
+    return `${config.preset.endpoint}?${params.toString()}`;
   }, [
     config,
+    presetParams,
+    page,
+    isPersonPage,
     genreIds,
     fromYear,
     toYear,
-    hasCustomSort,
-    hasFilters,
-    isPersonPage,
-    language,
-    page,
     rating,
+    language,
     sort,
   ]);
 
@@ -182,47 +327,115 @@ export default function BrowsePage({ pageKey }) {
 
   const { data, loading, error, refetch } = useFetch(browseUrl);
 
-  const updateParam = (name, value) => {
-    const next = new URLSearchParams(searchParams);
+  function updateDraftFilter(name, value) {
+    setDraftFilters((currentFilters) => ({
+      ...currentFilters,
+      [name]: value,
+    }));
+  }
 
-    if (value) {
-      next.set(name, String(value));
-    } else {
-      next.delete(name);
-    }
-
-    next.set("page", "1");
-    setSearchParams(next);
-  };
-
-  const updatePage = (newPage) => {
-    const next = new URLSearchParams(searchParams);
-    next.set("page", String(newPage));
-    setSearchParams(next);
-
-    window.scrollTo({ top: 0, behavior: "smooth" });
-  };
-
-  const resetFilters = () => {
-    const next = new URLSearchParams();
-
-    if (config.defaultSort) {
-      next.set("sort", config.defaultSort);
-    }
-
-    next.set("page", "1");
-    setSearchParams(next);
-  };
-
-  const toggleGenre = (genreId) => {
+  function toggleDraftGenre(genreId) {
     const id = String(genreId);
 
-    const nextGenres = genreIds.includes(id)
-      ? genreIds.filter((currentId) => currentId !== id)
-      : [...genreIds, id];
+    setDraftFilters((currentFilters) => ({
+      ...currentFilters,
+      genres: currentFilters.genres.includes(id)
+        ? currentFilters.genres.filter((currentId) => currentId !== id)
+        : [...currentFilters.genres, id],
+    }));
+  }
 
-    updateParam("genres", nextGenres.join(","));
-  };
+  function commitFilters(filters, options = { replace: true }) {
+    const next = new URLSearchParams(searchParams);
+
+    writeFilters(next, filters);
+    next.set("page", "1");
+
+    setSearchParams(next, options);
+  }
+
+  function applyFilters() {
+    commitFilters(draftFilters);
+  }
+
+  function applyAndCloseFilters() {
+    applyFilters();
+    filterDrawerRef.current?.close();
+  }
+
+  function resetDraftFilters() {
+    setDraftFilters(createEmptyFilters());
+  }
+
+  function resetAppliedFilters() {
+    const emptyFilters = createEmptyFilters();
+
+    setDraftFilters(emptyFilters);
+    commitFilters(emptyFilters);
+  }
+
+  function updateSort(value) {
+    const next = new URLSearchParams(searchParams);
+
+    if (value === defaultSort) {
+      next.delete("sort");
+    } else {
+      next.set("sort", value);
+    }
+
+    next.set("page", "1");
+
+    setSearchParams(next, { replace: true });
+  }
+
+  function updatePage(newPage) {
+    const next = new URLSearchParams(searchParams);
+
+    next.set("page", String(newPage));
+
+    setSearchParams(next);
+
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth",
+    });
+  }
+
+  function openFilters() {
+    setDraftFilters(committedFilters);
+    filterDrawerRef.current?.showModal();
+  }
+
+  function removeCommittedGenre(genreId) {
+    const id = String(genreId);
+
+    commitFilters({
+      ...committedFilters,
+      genres: committedFilters.genres.filter((currentId) => currentId !== id),
+    });
+  }
+
+  function clearCommittedDate() {
+    commitFilters({
+      ...committedFilters,
+      from: "",
+      to: "",
+    });
+  }
+
+  function clearCommittedRating() {
+    commitFilters({
+      ...committedFilters,
+      rating: "",
+    });
+  }
+
+  function clearCommittedLanguage() {
+    commitFilters({
+      ...committedFilters,
+      language: "",
+    });
+  }
 
   if (error) {
     return (
@@ -243,10 +456,7 @@ export default function BrowsePage({ pageKey }) {
     <>
       <Helmet>
         <title>{`${config.title} | Flickhive`}</title>
-        <meta
-          name="description"
-          content={config.description}
-        />
+        <meta name="description" content={config.description} />
       </Helmet>
 
       <main className="min-h-screen bg-base-300/30 pb-10">
@@ -258,8 +468,8 @@ export default function BrowsePage({ pageKey }) {
             totalResults={totalResults}
             sort={sort}
             activeFilterCount={activeFilterCount}
-            openFilters={() => filterDrawerRef.current?.showModal()}
-            updateSort={(value) => updateParam("sort", value)}
+            openFilters={openFilters}
+            updateSort={updateSort}
           />
 
           {!isPersonPage && activeFilterCount > 0 && (
@@ -270,14 +480,11 @@ export default function BrowsePage({ pageKey }) {
               toYear={toYear}
               rating={rating}
               language={language}
-              toggleGenre={toggleGenre}
-              clearDate={() => {
-                updateParam("from", "");
-                updateParam("to", "");
-              }}
-              clearRating={() => updateParam("rating", "")}
-              clearLanguage={() => updateParam("language", "")}
-              resetFilters={resetFilters}
+              toggleGenre={removeCommittedGenre}
+              clearDate={clearCommittedDate}
+              clearRating={clearCommittedRating}
+              clearLanguage={clearCommittedLanguage}
+              resetFilters={resetAppliedFilters}
             />
           )}
 
@@ -290,14 +497,13 @@ export default function BrowsePage({ pageKey }) {
               <aside className="hidden lg:block">
                 <FilterPanel
                   genres={genres}
-                  genreIds={genreIds}
-                  fromYear={fromYear}
-                  toYear={toYear}
-                  rating={rating}
-                  language={language}
-                  toggleGenre={toggleGenre}
-                  updateParam={updateParam}
-                  resetFilters={resetFilters}
+                  draftFilters={draftFilters}
+                  hasDraftChanges={hasDraftChanges}
+                  toggleGenre={toggleDraftGenre}
+                  updateDraftFilter={updateDraftFilter}
+                  resetDraftFilters={resetDraftFilters}
+                  applyFilters={applyFilters}
+                  yearFilterLabel={yearFilterLabel}
                 />
               </aside>
             )}
@@ -316,7 +522,7 @@ export default function BrowsePage({ pageKey }) {
                   personPage={isPersonPage}
                 />
               ) : (
-                <EmptyResults resetFilters={resetFilters} />
+                <EmptyResults resetFilters={resetAppliedFilters} />
               )}
 
               {!loading && results.length > 0 && (
@@ -334,14 +540,13 @@ export default function BrowsePage({ pageKey }) {
           <MobileFilterDrawer
             drawerRef={filterDrawerRef}
             genres={genres}
-            genreIds={genreIds}
-            fromYear={fromYear}
-            toYear={toYear}
-            rating={rating}
-            language={language}
-            toggleGenre={toggleGenre}
-            updateParam={updateParam}
-            resetFilters={resetFilters}
+            draftFilters={draftFilters}
+            hasDraftChanges={hasDraftChanges}
+            toggleGenre={toggleDraftGenre}
+            updateDraftFilter={updateDraftFilter}
+            resetDraftFilters={resetDraftFilters}
+            applyAndCloseFilters={applyAndCloseFilters}
+            yearFilterLabel={yearFilterLabel}
           />
         )}
       </main>
@@ -484,14 +689,13 @@ function BrowseGrid({ results, mediaType, personPage }) {
 
 function FilterPanel({
   genres,
-  genreIds,
-  fromYear,
-  toYear,
-  rating,
-  language,
+  draftFilters,
+  hasDraftChanges,
   toggleGenre,
-  updateParam,
-  resetFilters,
+  updateDraftFilter,
+  resetDraftFilters,
+  applyFilters,
+  yearFilterLabel,
 }) {
   return (
     <div className="rounded-box bg-primary/12 border border-white/10 p-4 sticky top-20">
@@ -501,7 +705,7 @@ function FilterPanel({
         <button
           type="button"
           className="btn btn-ghost btn-sm"
-          onClick={resetFilters}
+          onClick={resetDraftFilters}
         >
           <LuRotateCcw />
           Reset
@@ -510,25 +714,41 @@ function FilterPanel({
 
       <GenreFilters
         genres={genres}
-        genreIds={genreIds}
+        genreIds={draftFilters.genres}
         toggleGenre={toggleGenre}
       />
 
       <div className="divider" />
 
       <YearFilters
-        fromYear={fromYear}
-        toYear={toYear}
-        updateParam={updateParam}
+        fromYear={draftFilters.from}
+        toYear={draftFilters.to}
+        updateDraftFilter={updateDraftFilter}
+        label={yearFilterLabel}
       />
 
       <div className="divider" />
 
-      <RatingFilter rating={rating} updateParam={updateParam} />
+      <RatingFilter
+        rating={draftFilters.rating}
+        updateDraftFilter={updateDraftFilter}
+      />
 
       <div className="divider" />
 
-      <LanguageFilter language={language} updateParam={updateParam} />
+      <LanguageFilter
+        language={draftFilters.language}
+        updateDraftFilter={updateDraftFilter}
+      />
+
+      <button
+        type="button"
+        className="btn btn-primary rounded-full w-full mt-5"
+        onClick={applyFilters}
+        disabled={!hasDraftChanges}
+      >
+        Apply Filters
+      </button>
     </div>
   );
 }
@@ -542,7 +762,7 @@ function GenreFilters({ genres, genreIds, toggleGenre }) {
         {genres.map((genre) => (
           <label
             key={genre.id}
-            className="flex items-center gap-2 text-sm cursor-pointer"
+            className="flex items-center gap-2 text-sm cursor-pointer group"
           >
             <input
               type="checkbox"
@@ -550,7 +770,9 @@ function GenreFilters({ genres, genreIds, toggleGenre }) {
               checked={genreIds.includes(String(genre.id))}
               onChange={() => toggleGenre(genre.id)}
             />
-            <span className="text-base-content/70">{genre.name}</span>
+            <span className="text-base-content/70 group-hover:text-primary/70">
+              {genre.name}
+            </span>
           </label>
         ))}
       </div>
@@ -558,10 +780,10 @@ function GenreFilters({ genres, genreIds, toggleGenre }) {
   );
 }
 
-function YearFilters({ fromYear, toYear, updateParam }) {
+function YearFilters({ fromYear, toYear, updateDraftFilter, label }) {
   return (
     <fieldset>
-      <legend className="text-sm font-semibold mb-3">Release Year</legend>
+      <legend className="text-sm font-semibold mb-3">{label}</legend>
 
       <div className="grid grid-cols-2 gap-2">
         <input
@@ -572,8 +794,8 @@ function YearFilters({ fromYear, toYear, updateParam }) {
           className="input input-bordered w-full bg-base-200"
           placeholder="From"
           value={fromYear}
-          onChange={(event) => updateParam("from", event.target.value)}
-          aria-label="Release year from"
+          onChange={(event) => updateDraftFilter("from", event.target.value)}
+          aria-label={`${label} from`}
         />
 
         <input
@@ -584,15 +806,15 @@ function YearFilters({ fromYear, toYear, updateParam }) {
           className="input input-bordered w-full bg-base-200"
           placeholder="To"
           value={toYear}
-          onChange={(event) => updateParam("to", event.target.value)}
-          aria-label="Release year to"
+          onChange={(event) => updateDraftFilter("to", event.target.value)}
+          aria-label={`${label} to`}
         />
       </div>
     </fieldset>
   );
 }
 
-function RatingFilter({ rating, updateParam }) {
+function RatingFilter({ rating, updateDraftFilter }) {
   return (
     <fieldset>
       <legend className="text-sm font-semibold mb-3">Minimum Rating</legend>
@@ -605,7 +827,7 @@ function RatingFilter({ rating, updateParam }) {
           step="1"
           className="range range-primary range-sm"
           value={rating || 0}
-          onChange={(event) => updateParam("rating", event.target.value)}
+          onChange={(event) => updateDraftFilter("rating", event.target.value)}
           aria-label="Minimum rating"
         />
 
@@ -617,7 +839,7 @@ function RatingFilter({ rating, updateParam }) {
   );
 }
 
-function LanguageFilter({ language, updateParam }) {
+function LanguageFilter({ language, updateDraftFilter }) {
   return (
     <label className="block">
       <span className="text-sm font-semibold block mb-3">
@@ -627,7 +849,7 @@ function LanguageFilter({ language, updateParam }) {
       <select
         className="select select-bordered w-full bg-base-200"
         value={language}
-        onChange={(event) => updateParam("language", event.target.value)}
+        onChange={(event) => updateDraftFilter("language", event.target.value)}
       >
         <option value="">Any Language</option>
         <option value="en">English</option>
@@ -714,14 +936,13 @@ function FilterChip({ label, onRemove }) {
 function MobileFilterDrawer({
   drawerRef,
   genres,
-  genreIds,
-  fromYear,
-  toYear,
-  rating,
-  language,
+  draftFilters,
+  hasDraftChanges,
   toggleGenre,
-  updateParam,
-  resetFilters,
+  updateDraftFilter,
+  resetDraftFilters,
+  applyAndCloseFilters,
+  yearFilterLabel,
 }) {
   return (
     <dialog ref={drawerRef} className="modal modal-bottom lg:hidden">
@@ -748,7 +969,7 @@ function MobileFilterDrawer({
 
           <div className="flex flex-wrap gap-2">
             {genres.map((genre) => {
-              const active = genreIds.includes(String(genre.id));
+              const active = draftFilters.genres.includes(String(genre.id));
 
               return (
                 <button
@@ -758,6 +979,7 @@ function MobileFilterDrawer({
                     active ? "btn-primary" : "btn-outline"
                   }`}
                   onClick={() => toggleGenre(genre.id)}
+                  aria-pressed={active}
                 >
                   {genre.name}
                 </button>
@@ -769,36 +991,43 @@ function MobileFilterDrawer({
         <div className="divider" />
 
         <YearFilters
-          fromYear={fromYear}
-          toYear={toYear}
-          updateParam={updateParam}
+          fromYear={draftFilters.from}
+          toYear={draftFilters.to}
+          updateDraftFilter={updateDraftFilter}
+          label={yearFilterLabel}
         />
 
         <div className="divider" />
 
-        <RatingFilter rating={rating} updateParam={updateParam} />
+        <RatingFilter
+          rating={draftFilters.rating}
+          updateDraftFilter={updateDraftFilter}
+        />
 
         <div className="divider" />
 
-        <LanguageFilter language={language} updateParam={updateParam} />
+        <LanguageFilter
+          language={draftFilters.language}
+          updateDraftFilter={updateDraftFilter}
+        />
 
         <div className="modal-action grid grid-cols-2 gap-3">
           <button
             type="button"
             className="btn btn-outline rounded-full"
-            onClick={resetFilters}
+            onClick={resetDraftFilters}
           >
             Reset
           </button>
 
-          <form method="dialog">
-            <button
-              type="submit"
-              className="btn btn-primary rounded-full w-full"
-            >
-              Show Results
-            </button>
-          </form>
+          <button
+            type="button"
+            className="btn btn-primary rounded-full"
+            onClick={applyAndCloseFilters}
+            disabled={!hasDraftChanges}
+          >
+            Show Results
+          </button>
         </div>
       </div>
 
