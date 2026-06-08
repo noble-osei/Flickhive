@@ -7,6 +7,7 @@ import { InfoBox, InfoRow } from "../components/media/MediaDetails.jsx";
 import PageError from "../components/ui/PageError.jsx";
 import FullCastCrewSkeleton from "../components/ui/skeletons/FullCastCrew.jsx";
 import EmptyState from "../components/ui/EmptyState.jsx";
+import { Helmet } from "react-helmet-async";
 
 const IMG = import.meta.env.VITE_IMG;
 
@@ -125,77 +126,89 @@ export default function FullCastCrewPage() {
     : poster;
 
   return (
-    <main className="bg-base-300/30 pb-10">
-      <CastCrewHero
-        title={title}
-        year={year}
-        poster={poster}
-        backdrop={backdrop}
-        isMovie={isMovie}
-        data={data}
-        detailsPath={detailsPath}
-      />
-
-      <div className="max-w-7xl mx-auto px-4 lg:px-16 xl:px-0 mt-6 grid grid-cols-1 lg:grid-cols-5 gap-6">
-        <div className="lg:col-span-4 space-y-8">
-          <SearchBox query={query} setQuery={setQuery} />
-
-          <div className="tabs tabs-border">
-            <input
-              type="radio"
-              name="cast-crew-tabs"
-              className="tab"
-              aria-label={`Cast ${filteredCredits.cast.length}`}
-              defaultChecked
-            />
-            <div className="tab-content pt-5">
-              <PeopleSection
-                title="Cast"
-                people={filteredCredits.cast}
-                emptyMessage="No cast members match your search."
-              />
-            </div>
-
-            <input
-              type="radio"
-              name="cast-crew-tabs"
-              className="tab"
-              aria-label={`Crew ${filteredCredits.crew.length}`}
-            />
-            <div className="tab-content pt-5">
-              <CrewSection title="Crew" groupedCrew={filteredCredits.groupedCrew} />
-            </div>
-
-            {!isMovie && (
-              <>
-                <input
-                  type="radio"
-                  name="cast-crew-tabs"
-                  className="tab"
-                  aria-label={`Creators ${filteredCredits.creators.length}`}
-                />
-                <div className="tab-content pt-5">
-                  <PeopleSection
-                    title="Creators"
-                    people={filteredCredits.creators}
-                    emptyMessage="No creators match your search."
-                  />
-                </div>
-              </>
-            )}
-          </div>
-        </div>
-
-        <CastCrewSidebar
-          isMovie={isMovie}
-          year={year}
-          castCount={credits.cast.length}
-          crewCount={credits.crew.length}
-          creatorCount={credits.creators.length}
-          groupedCrew={filteredCredits.groupedCrew}
+    <>
+      <Helmet>
+        <title>{`${data.name || data.title} (${year}) - Cast & Crew | Flickhive`}</title>
+        <meta
+          name="description"
+          content={
+            data.overview ||
+            `View full cast and crew for ${data.name || data.title}.`
+          }
         />
-      </div>
-    </main>
+      </Helmet>
+      <main className="bg-base-300/30 pb-10">
+        <CastCrewHero
+          title={title}
+          year={year}
+          poster={poster}
+          backdrop={backdrop}
+          isMovie={isMovie}
+          data={data}
+          detailsPath={detailsPath}
+        />
+
+        <div className="max-w-7xl mx-auto px-4 lg:px-16 xl:px-0 mt-6 grid grid-cols-1 lg:grid-cols-5 gap-6">
+          <div className="lg:col-span-4 space-y-8">
+            <SearchBox query={query} setQuery={setQuery} />
+
+            <div className="tabs tabs-border">
+              <input
+                type="radio"
+                name="cast-crew-tabs"
+                className="tab"
+                aria-label={`Cast ${filteredCredits.cast.length}`}
+                defaultChecked
+              />
+              <div className="tab-content pt-5">
+                <PeopleSection
+                  title="Cast"
+                  people={filteredCredits.cast}
+                  emptyMessage="No cast members match your search."
+                />
+              </div>
+
+              <input
+                type="radio"
+                name="cast-crew-tabs"
+                className="tab"
+                aria-label={`Crew ${filteredCredits.crew.length}`}
+              />
+              <div className="tab-content pt-5">
+                <CrewSection title="Crew" groupedCrew={filteredCredits.groupedCrew} />
+              </div>
+
+              {!isMovie && (
+                <>
+                  <input
+                    type="radio"
+                    name="cast-crew-tabs"
+                    className="tab"
+                    aria-label={`Creators ${filteredCredits.creators.length}`}
+                  />
+                  <div className="tab-content pt-5">
+                    <PeopleSection
+                      title="Creators"
+                      people={filteredCredits.creators}
+                      emptyMessage="No creators match your search."
+                    />
+                  </div>
+                </>
+              )}
+            </div>
+          </div>
+
+          <CastCrewSidebar
+            isMovie={isMovie}
+            year={year}
+            castCount={credits.cast.length}
+            crewCount={credits.crew.length}
+            creatorCount={credits.creators.length}
+            groupedCrew={filteredCredits.groupedCrew}
+          />
+        </div>
+      </main>
+    </>
   );
 }
 
