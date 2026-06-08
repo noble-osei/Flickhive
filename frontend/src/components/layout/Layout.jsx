@@ -1,14 +1,17 @@
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import { Link, Outlet } from "react-router-dom";
 import SearchBar from "../search/SearchBar.jsx";
 import { LuSearch, LuMenu } from "react-icons/lu";
 
 export default function Layout() {
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+  const closeDrawer = useCallback(() => {
+    setIsDrawerOpen(false);
+  }, [])
 
   return (
     <div className="drawer">
-      <input id="my-drawer" type="checkbox" className="drawer-toggle" checked={isDrawerOpen} />
+      <input id="my-drawer" readOnly type="checkbox" className="drawer-toggle" checked={isDrawerOpen} />
 
       <div className="drawer-content flex flex-col min-h-screen">
         <Navbar setIsDrawerOpen={setIsDrawerOpen} />
@@ -21,138 +24,95 @@ export default function Layout() {
           htmlFor="my-drawer"
           aria-label="close sidebar"
           className="drawer-overlay"
-          onClick={() => setIsDrawerOpen(false)}
+          onClick={closeDrawer}
         ></label>
 
         <ul className="menu bg-base-200 min-h-full w-64 p-4">
           <span className="mb-4 text-3xl font-bold">
             Flick<span className="text-primary">hive</span>
           </span>
-          <PrimaryMenuList closeDrawer={() => setIsDrawerOpen(false)} />
+          <PrimaryMenuList closeDrawer={closeDrawer} />
         </ul>
       </div>
     </div>
   );
 }
 
+const PRIMARY_MENU = [
+  {
+    label: "🎬 Movies",
+    links: [
+      { label: "Popular", to: "/movies/popular" },
+      { label: "Top Rated", to: "/movies/top-rated" },
+      { label: "Upcoming", to: "/movies/upcoming" },
+      { label: "Now Playing", to: "/movies/now-playing" },
+    ],
+  },
+  {
+    label: "📺 TV Shows",
+    links: [
+      { label: "Popular", to: "/tv/popular" },
+      { label: "Top Rated", to: "/tv/top-rated" },
+      { label: "On TV", to: "/tv/on-tv" },
+    ],
+  },
+  {
+    label: "👨‍🎤 People",
+    links: [{ label: "Popular", to: "/people/popular" }],
+  },
+];
+
 function PrimaryMenuList({ closeDrawer, horizontal = false }) {
-  const handleLinkClick = () => {
-    document.activeElement.blur();
-  };
+  const handleDesktopLinkClick = useCallback(() => {
+    document.activeElement?.blur();
+  }, []);
 
   if (horizontal) {
     return (
       <>
-        <li className="dropdown dropdown-hover">
-          <div
-            tabIndex={0}
-            role="button"
-            className="btn btn-ghost h-8 font-semibold"
-          >
-            🎬 Movies
-          </div>
-          <ul className="dropdown-content menu bg-base-200 rounded-box -mt-px pt-3 z-50 w-44 shadow">
-            <li className="text-sm text-flick-muted">
-              <Link to="/movies/popular" onClick={handleLinkClick}>Popular</Link>
-            </li>
-            <li className="text-sm text-flick-muted">
-              <Link to="/movies/top-rated" onClick={handleLinkClick}>Top Rated</Link>
-            </li>
-            <li className="text-sm text-flick-muted">
-              <Link to="/movies/upcoming" onClick={handleLinkClick}>Upcoming</Link>
-            </li>
-            <li className="text-sm text-flick-muted">
-              <Link to="/movies/now-playing" onClick={handleLinkClick}>Now Playing</Link>
-            </li>
-          </ul>
-        </li>
+        {PRIMARY_MENU.map((section) => (
+          <li key={section.label} className="dropdown dropdown-hover">
+            <button
+              type="button"
+              className="btn btn-ghost h-8 font-semibold"
+            >
+              {section.label}
+            </button>
 
-        <li className="dropdown dropdown-hover">
-          <div
-            tabIndex={0}
-            role="button"
-            className="btn btn-ghost h-8 font-semibold"
-          >
-            📺 TV Shows
-          </div>
-          <ul className="dropdown-content menu bg-base-200 rounded-box -mt-px pt-3 z-50 w-44 shadow">
-            <li className="text-sm text-flick-muted">
-              <Link to="/tv/popular" onClick={handleLinkClick}>Popular</Link>
-            </li>
-            <li className="text-sm text-flick-muted">
-              <Link to="/tv/top-rated" onClick={handleLinkClick}>Top Rated</Link>
-            </li>
-            <li className="text-sm text-flick-muted">
-              <Link to="/tv/on-tv" onClick={handleLinkClick}>On TV</Link>
-            </li>
-          </ul>
-        </li>
-
-        <li className="dropdown dropdown-hover">
-          <div
-            tabIndex={0}
-            role="button"
-            className="btn btn-ghost h-8 font-semibold"
-          >
-            👨‍🎤 People
-          </div>
-          <ul className="dropdown-content menu bg-base-200 rounded-box -mt-px pt-3 z-50 w-44 shadow">
-            <li className="text-sm text-flick-muted">
-              <Link to="/people/popular" onClick={handleLinkClick}>Popular</Link>
-            </li>
-          </ul>
-        </li>
+            <ul className="dropdown-content menu bg-base-200 rounded-box -mt-px pt-3 z-50 w-44 shadow">
+              {section.links.map((link) => (
+                <li key={link.to} className="text-sm text-flick-muted">
+                  <Link to={link.to} onClick={handleDesktopLinkClick}>
+                    {link.label}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </li>
+        ))}
       </>
     );
   }
 
   return (
     <>
-      <li>
-        <details>
-          <summary className="font-semibold">🎬 Movies</summary>
-          <ul>
-            <li className="text-sm text-flick-muted">
-              <Link onClick={closeDrawer} to="/movies/popular">Popular</Link>
-            </li>
-            <li className="text-sm text-flick-muted">
-              <Link onClick={closeDrawer} to="/movies/top-rated">Top Rated</Link>
-            </li>
-            <li className="text-sm text-flick-muted">
-              <Link onClick={closeDrawer} to="/movies/upcoming">Upcoming</Link>
-            </li>
-            <li className="text-sm text-flick-muted">
-              <Link onClick={closeDrawer} to="/movies/now-playing">Now Playing</Link>
-            </li>
-          </ul>
-        </details>
-      </li>
-      <li>
-        <details>
-          <summary className="font-semibold">📺 TV Shows</summary>
-          <ul>
-            <li className="text-sm text-flick-muted">
-              <Link onClick={closeDrawer} to="/tv/popular">Popular</Link>
-            </li>
-            <li className="text-sm text-flick-muted">
-              <Link onClick={closeDrawer} to="/tv/top-rated">Top Rated</Link>
-            </li>
-            <li className="text-sm text-flick-muted">
-              <Link onClick={closeDrawer} to="/tv/on-tv">On TV</Link>
-            </li>
-          </ul>
-        </details>
-      </li>
-      <li>
-        <details>
-          <summary className="font-semibold">👨‍🎤 People</summary>
-          <ul>
-            <li className="text-sm text-flick-muted">
-              <Link onClick={closeDrawer} to="/people/popular">Popular</Link>
-            </li>
-          </ul>
-        </details>
-      </li>
+      {PRIMARY_MENU.map((section) => (
+        <li key={section.label}>
+          <details>
+            <summary className="font-semibold">{section.label}</summary>
+
+            <ul>
+              {section.links.map((link) => (
+                <li key={link.to} className="text-sm text-flick-muted">
+                  <Link to={link.to} onClick={closeDrawer}>
+                    {link.label}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </details>
+        </li>
+      ))}
     </>
   );
 }
