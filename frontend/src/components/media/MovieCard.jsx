@@ -5,23 +5,24 @@ export default function MovieCard({ item }) {
   return (
     <Link
       to={`/${item.media_type === "movie" || item.title ? "movies" : "tv"}/${item.id}`}
-      className="group flex flex-none flex-col snap-start w-38 transition-all duration-300 
-        hover:scale-105"
+      className="group flex flex-none flex-col snap-start w-38 transition-all duration-300"
     >
-      <img
-        className="w-full h-56 object-cover rounded-lg shadow-lg mb-4 transition-all duration-300 
-          group-hover:shadow-2xl"
-        src={
-          item.poster_path
-            ? `${import.meta.env.VITE_IMG}/w342${item.poster_path}`
-            : `/${item.media_type === "tv" ? "tv" : "movie"}.svg`
-        }
-        alt={item.title ?? item.name}
-        loading="lazy"
-        decoding="async"
-      />
+      <div className="relative overflow-hidden rounded-lg bg-base-200 aspect-2/3">
+        <img
+          className="w-full h-full object-cover rounded-lg mb-4 transition-all duration-300 
+            group-hover:scale-105"
+          src={
+            item.poster_path
+              ? `${import.meta.env.VITE_IMG}/w342${item.poster_path}`
+              : `/${item.media_type === "tv" ? "tv" : "movie"}.svg`
+          }
+          alt={item.title ?? item.name}
+          loading="lazy"
+          decoding="async"
+        />
+      </div>
 
-      <h3 className="text-sm font-bold line-clamp-2 group-hover:link">
+      <h3 className="text-sm font-bold line-clamp-2 group-hover:link-primary">
         {item.title ? item.title : item.name}
       </h3>
       <p className="text-sm font-light text-base-content/70">
