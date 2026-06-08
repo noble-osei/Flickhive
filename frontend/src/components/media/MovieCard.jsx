@@ -7,9 +7,9 @@ export default function MovieCard({ item }) {
       to={`/${item.media_type === "movie" || item.title ? "movies" : "tv"}/${item.id}`}
       className="group flex flex-none flex-col snap-start w-38 transition-all duration-300"
     >
-      <div className="relative overflow-hidden rounded-lg bg-base-200 aspect-2/3">
+      <div className="relative overflow-hidden rounded-lg bg-base-200 aspect-2/3 mb-4">
         <img
-          className="w-full h-full object-cover rounded-lg mb-4 transition-all duration-300 
+          className="w-full h-full object-cover rounded-lg transition-all duration-300 
             group-hover:scale-105"
           src={
             item.poster_path
