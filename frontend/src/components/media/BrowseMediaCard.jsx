@@ -4,7 +4,7 @@ import { formatDate } from "../../helpers/media.js";
 
 const IMG = import.meta.env.VITE_IMG;
 
-export default function BrowseMediaCard({ item, mediaType }) {
+export default function BrowseMediaCard({ item, mediaType, i }) {
   const isMovie = mediaType === "movies";
   const title = isMovie ? item.title : item.name;
   const date = isMovie ? item.release_date : item.first_air_date;
@@ -23,8 +23,9 @@ export default function BrowseMediaCard({ item, mediaType }) {
           src={poster}
           alt={`${title} poster`}
           className="w-full h-full object-cover transition duration-300 group-hover:scale-105"
-          loading="lazy"
-          decoding="async"
+          loading={i < 5 ? "eager" : "lazy"}
+          decoding={i < 5 ? "sync" : "async"}
+          fetchPriority={i < 5 ? "high" : "low"}
         />
 
         {item.vote_average > 0 && (

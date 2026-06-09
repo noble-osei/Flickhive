@@ -3,7 +3,7 @@ import { formatProfession } from "../../helpers/media.js";
 
 const IMG = import.meta.env.VITE_IMG;
 
-export default function PersonBrowseCard({ person }) {
+export default function PersonBrowseCard({ person, i }) {
   const image = person.profile_path
     ? `${IMG}/w342${person.profile_path}`
     : "/person.svg";
@@ -20,9 +20,10 @@ export default function PersonBrowseCard({ person }) {
         <img
           src={image}
           alt={person.name}
+          loading={i < 5 ? "eager" : "lazy"}
+          decoding={i < 5 ? "sync" : "async"}
+          fetchPriority={i < 5 ? "high" : "low"}
           className="w-full h-full object-cover object-top transition duration-300 group-hover:scale-105"
-          loading="lazy"
-          decoding="async"
         />
       </div>
 

@@ -676,11 +676,11 @@ function BrowseGrid({ results, mediaType, personPage }) {
           : "grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-5 gap-4 lg:gap-6"
       }
     >
-      {results.map((item) =>
+      {results.map((item, index) =>
         personPage ? (
-          <PersonBrowseCard key={item.id} person={item} />
+          <PersonBrowseCard key={item.id} person={item} i={index} />
         ) : (
-          <BrowseMediaCard key={item.id} item={item} mediaType={mediaType} />
+          <BrowseMediaCard key={item.id} item={item} mediaType={mediaType} i={index} />
         ),
       )}
     </div>
