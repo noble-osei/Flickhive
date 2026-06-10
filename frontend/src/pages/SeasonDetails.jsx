@@ -81,7 +81,7 @@ export default function SeasonDetails() {
   return (
     <>
       <Helmet>
-        <title>{`${show.name}: ${season.name} (${season.air_date.slice(0, 4)}) | Flickhive`}</title>
+        <title>{`${show.name}: ${season.name} (${season.air_date?.slice(0, 4)}) | Flickhive`}</title>
         <meta
           name="description"
           content={
