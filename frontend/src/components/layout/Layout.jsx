@@ -1,18 +1,25 @@
 import { useCallback, useState } from "react";
 import { Link, Outlet } from "react-router-dom";
 import SearchBar from "../search/SearchBar.jsx";
-import { LuSearch, LuMenu } from "react-icons/lu";
+import { LuSearch, LuMenu, LuClapperboard, LuTv } from "react-icons/lu";
+import { MdPerson } from "react-icons/md";
 import ScrollManager from "../../helpers/ScrollManager.jsx";
 
 export default function Layout() {
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const closeDrawer = useCallback(() => {
     setIsDrawerOpen(false);
-  }, [])
+  }, []);
 
   return (
     <div className="drawer">
-      <input id="my-drawer" readOnly type="checkbox" className="drawer-toggle" checked={isDrawerOpen} />
+      <input
+        id="my-drawer"
+        readOnly
+        type="checkbox"
+        className="drawer-toggle"
+        checked={isDrawerOpen}
+      />
 
       <div className="drawer-content flex flex-col min-h-screen">
         <Navbar setIsDrawerOpen={setIsDrawerOpen} />
@@ -42,7 +49,7 @@ export default function Layout() {
 
 const PRIMARY_MENU = [
   {
-    label: "🎬 Movies",
+    label: "Movies",
     links: [
       { label: "Popular", to: "/movies/popular" },
       { label: "Top Rated", to: "/movies/top-rated" },
@@ -51,7 +58,7 @@ const PRIMARY_MENU = [
     ],
   },
   {
-    label: "📺 TV Shows",
+    label: "TV Shows",
     links: [
       { label: "Popular", to: "/tv/popular" },
       { label: "Top Rated", to: "/tv/top-rated" },
@@ -59,7 +66,7 @@ const PRIMARY_MENU = [
     ],
   },
   {
-    label: "👨‍🎤 People",
+    label: "People",
     links: [{ label: "Popular", to: "/people/popular" }],
   },
 ];
@@ -74,10 +81,14 @@ function PrimaryMenuList({ closeDrawer, horizontal = false }) {
       <>
         {PRIMARY_MENU.map((section) => (
           <li key={section.label} className="dropdown dropdown-hover">
-            <button
-              type="button"
-              className="btn btn-ghost h-8 font-semibold"
-            >
+            <button type="button" className="btn btn-ghost h-8 font-semibold">
+              {section.label === "Movies" ? (
+                <LuClapperboard size={14} />
+              ) : section.label === "TV Shows" ? (
+                <LuTv size={14} />
+              ) : (
+                <MdPerson size={14} />
+              )}
               {section.label}
             </button>
 
@@ -101,7 +112,16 @@ function PrimaryMenuList({ closeDrawer, horizontal = false }) {
       {PRIMARY_MENU.map((section) => (
         <li key={section.label}>
           <details>
-            <summary className="font-semibold">{section.label}</summary>
+            <summary className="font-semibold">
+              {section.label === "Movies" ? (
+                <LuClapperboard size={14} />
+              ) : section.label === "TV Shows" ? (
+                <LuTv size={14} />
+              ) : (
+                <MdPerson size={14} />
+              )}
+              {section.label}
+            </summary>
 
             <ul>
               {section.links.map((link) => (
