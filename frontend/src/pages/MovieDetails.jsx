@@ -1,5 +1,5 @@
 import { Link, useParams } from "react-router-dom";
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { LuStar } from "react-icons/lu";
 import { Helmet } from "react-helmet-async";
 
@@ -30,10 +30,6 @@ export default function MovieDetails() {
   const { data, loading, error, refetch } = useFetch(
     `/movie/${movieId}?append_to_response=credits,videos,similar,release_dates,watch/providers`,
   );
-
-  useEffect(() => {
-    window.scrollTo({ top: 0, behavior: "smooth" });
-  }, [movieId]);
 
   const details = useMemo(() => {
     if (!data) return null;
