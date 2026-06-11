@@ -18,10 +18,6 @@ export default function SeasonDetails() {
   const showQuery = useFetch(`/tv/${tvShowId}`);
   const seasonQuery = useFetch(`/tv/${tvShowId}/season/${seasonNumber}`);
 
-  useEffect(() => {
-    window.scrollTo({ top: 0, behavior: "smooth" });
-  }, [tvShowId, seasonNumber]);
-
   const show = showQuery.data;
   const season = seasonQuery.data;
 
