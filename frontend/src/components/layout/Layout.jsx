@@ -2,6 +2,7 @@ import { useCallback, useState } from "react";
 import { Link, Outlet } from "react-router-dom";
 import SearchBar from "../search/SearchBar.jsx";
 import { LuSearch, LuMenu } from "react-icons/lu";
+import ScrollManager from "../../helpers/ScrollManager.jsx";
 
 export default function Layout() {
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
@@ -15,6 +16,7 @@ export default function Layout() {
 
       <div className="drawer-content flex flex-col min-h-screen">
         <Navbar setIsDrawerOpen={setIsDrawerOpen} />
+        <ScrollManager />
         <Outlet />
         <Footer />
       </div>
