@@ -11,7 +11,7 @@ import {
 import useFetch from "../hooks/useFetch.jsx";
 import BrowseMediaCard from "../components/media/BrowseMediaCard.jsx";
 import PersonBrowseCard from "../components/media/PersonBrowseCard.jsx";
-import BrowseGridSkeleton from "../components/ui/skeletons/BrowseGridSkeleton.jsx";
+import BrowseGridSkeleton from "../components/ui/skeletons/BrowseGrid.jsx";
 import PageError from "../components/ui/PageError.jsx";
 import { Helmet } from "react-helmet-async";
 
