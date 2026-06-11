@@ -4,7 +4,10 @@ import { formatProfession } from "../../helpers/media.js";
 export default function SearchMediaCard({ item, closeSearchBar }) {
   return (
     <Link
-      to={`/${item.media_type === "movie" ? "movies" : "tv"}/${item.id}`}
+      to={
+        `/${item.media_type === "movie" ? "movies" : item.media_type === "tv" ? "tv" : "people"}` +
+        `/${item.id}`
+      }
       className="group h-22 flex gap-4 py-2 px-4 hover:bg-secondary/10 border-b border-white/10"
       onClick={closeSearchBar}
     >
