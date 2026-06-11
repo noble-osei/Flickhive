@@ -1,5 +1,5 @@
 import { Link, useParams } from "react-router-dom";
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { Helmet } from "react-helmet-async";
 
 import useFetch from "../hooks/useFetch.jsx";
@@ -30,10 +30,6 @@ export default function TVShowDetailsPage() {
   const { data, loading, error, refetch } = useFetch(
     `/tv/${tvShowId}?append_to_response=credits,videos,similar,content_ratings,watch/providers`,
   );
-
-  useEffect(() => {
-    window.scrollTo({ top: 0, behavior: "smooth" });
-  }, [tvShowId]);
 
   const details = useMemo(() => {
     if (!data) return null;
