@@ -10,6 +10,7 @@ const TVShowDetails = lazy(() => import("./pages/TvShowDetails.jsx"));
 const SeasonDetails = lazy(() => import("./pages/SeasonDetails.jsx"));
 const FullCastCrew = lazy(() => import("./pages/FullCastCrew.jsx"));
 const BrowsePage = lazy(() => import("./pages/Browse.jsx"));
+const PersonDetails = lazy(() => import("./pages/PersonDetails.jsx"));
 
 function App() {
   return (
@@ -33,6 +34,8 @@ function App() {
           />
           
           <Route path="/people/popular" element={<BrowsePage pageKey="people-popular" />} />
+          <Route path="/people/:personId" element={<PersonDetails />} />
+
           <Route path="/:mediaType/:mediaId/cast" element={<FullCastCrew />} />
         </Route>
       </Routes>
