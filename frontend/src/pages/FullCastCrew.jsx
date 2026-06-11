@@ -1,5 +1,5 @@
 import { Link, useParams } from "react-router-dom";
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { LuArrowLeft, LuSearch } from "react-icons/lu";
 
 import useFetch from "../hooks/useFetch.jsx";
@@ -22,10 +22,6 @@ export default function FullCastCrewPage() {
   const { data, loading, error, refetch } = useFetch(
     `/${apiMediaType}/${mediaId}?append_to_response=credits,aggregate_credits`,
   );
-
-  useEffect(() => {
-    window.scrollTo({ top: 0, behavior: "smooth" });
-  }, [mediaType, mediaId]);
 
   const credits = useMemo(() => {
     if (!data) return null;
