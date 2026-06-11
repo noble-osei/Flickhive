@@ -68,7 +68,7 @@ export function StatCard({ label, value }) {
       <h3 className="text-xs uppercase tracking-wider text-base-content/50">
         {label}
       </h3>
-      <p className="mt-1 font-bold text-primary flex items-center gap-1">
+      <p className="mt-1 font-bold text-primary">
         {value || "—"}
       </p>
     </div>
