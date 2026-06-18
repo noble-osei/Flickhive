@@ -137,7 +137,7 @@ export function TrailerPreview({ video, onPlay }) {
         <img
           src={
             `https://res.cloudinary.com/dbu9plfk1/image/fetch/f_auto,q_auto/` +
-            `https://img.youtube.com/vi/${video.key}/hqdefault.jpg`
+            `https://img.youtube.com/vi/${video.key}/maxresdefault.jpg`
           }
           alt=""
           className="w-full h-full object-cover brightness-75 group-hover:scale-105 transition"
@@ -236,7 +236,7 @@ function VideoTab({ label, videos, setActiveVideo, defaultChecked = false }) {
                 <img
                   src={
                     `https://res.cloudinary.com/dbu9plfk1/image/fetch/f_auto,q_auto/` +
-                    `https://img.youtube.com/vi/${video.key}/hqdefault.jpg`
+                    `https://img.youtube.com/vi/${video.key}/sddefault.jpg`
                   }
                   alt=""
                   className="w-full aspect-video object-cover group-hover:scale-105 transition"
