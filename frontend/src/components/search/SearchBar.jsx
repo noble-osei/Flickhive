@@ -1,7 +1,9 @@
 import { useEffect, useState, useRef } from "react";
+import { Link } from "react-router-dom";
+import { LuSearch } from "react-icons/lu";
+
 import useFetch from "../../hooks/useFetch.jsx";
 import SearchMediaCard from "./SearchMediaCard.jsx";
-import { LuSearch } from "react-icons/lu";
 import useDebounce from "../../hooks/useDebounce.jsx";
 
 function SearchBar({ show, setShow }) {
@@ -93,12 +95,14 @@ function SearchBar({ show, setShow }) {
 
                 {data.results?.length > 0 ? (
                   data.results?.length > 5 && (
-                    <div
+                    <Link
+                      to={`/search?query=${encodeURIComponent(query.trim())}`}
+                      onClick={closeSearchBar}
                       className="text-sm font-semibold py-3 px-4 hover:bg-secondary/10 
                       cursor-pointer border-t border-base-300 rounded-b-[inherit]"
                     >
                       See all results for "{query}"
-                    </div>
+                    </Link>
                   )
                 ) : (
                   <div className="py-4 px-4 text-sm opacity-50">
