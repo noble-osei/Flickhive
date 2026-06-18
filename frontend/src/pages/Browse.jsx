@@ -1,19 +1,18 @@
 import { Link, useSearchParams } from "react-router-dom";
 import { useMemo, useRef, useState } from "react";
 import {
-  LuChevronLeft,
-  LuChevronRight,
   LuFilter,
   LuRotateCcw,
   LuX,
 } from "react-icons/lu";
+import { Helmet } from "react-helmet-async";
 
 import useFetch from "../hooks/useFetch.jsx";
 import BrowseMediaCard from "../components/media/BrowseMediaCard.jsx";
 import PersonBrowseCard from "../components/media/PersonBrowseCard.jsx";
 import BrowseGridSkeleton from "../components/ui/skeletons/BrowseGrid.jsx";
 import PageError from "../components/ui/PageError.jsx";
-import { Helmet } from "react-helmet-async";
+import { Pagination } from "../components/media/MediaDetails.jsx";
 
 const NOW_PLAYING_DAYS_BACK = 30;
 const UPCOMING_DAYS_FORWARD = 90;
@@ -1040,53 +1039,6 @@ function MobileFilterDrawer({
   );
 }
 
-function Pagination({ page, totalPages, updatePage }) {
-  if (totalPages <= 1) return null;
-
-  const visiblePages = getVisiblePages(page, totalPages);
-
-  return (
-    <nav
-      aria-label="Results pagination"
-      className="flex justify-center items-center gap-2 mt-10"
-    >
-      <button
-        type="button"
-        className="btn btn-sm btn-outline rounded-full"
-        disabled={page <= 1}
-        onClick={() => updatePage(page - 1)}
-        aria-label="Previous page"
-      >
-        <LuChevronLeft />
-      </button>
-
-      {visiblePages.map((pageNumber) => (
-        <button
-          key={pageNumber}
-          type="button"
-          className={`btn btn-sm btn-circle ${
-            pageNumber === page ? "btn-primary" : "btn-ghost"
-          }`}
-          onClick={() => updatePage(pageNumber)}
-          aria-current={pageNumber === page ? "page" : undefined}
-        >
-          {pageNumber}
-        </button>
-      ))}
-
-      <button
-        type="button"
-        className="btn btn-sm btn-outline rounded-full"
-        disabled={page >= totalPages}
-        onClick={() => updatePage(page + 1)}
-        aria-label="Next page"
-      >
-        <LuChevronRight />
-      </button>
-    </nav>
-  );
-}
-
 function EmptyResults({ resetFilters }) {
   return (
     <section className="rounded-box border border-white/10 bg-primary/10 p-8 text-center">
@@ -1105,11 +1057,4 @@ function EmptyResults({ resetFilters }) {
       </button>
     </section>
   );
-}
-
-function getVisiblePages(currentPage, totalPages) {
-  const start = Math.max(1, Math.min(currentPage - 2, totalPages - 4));
-  const end = Math.min(totalPages, start + 4);
-
-  return Array.from({ length: end - start + 1 }, (_, index) => start + index);
 }
