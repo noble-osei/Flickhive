@@ -3,6 +3,7 @@ import { lazy, Suspense } from "react";
 
 import Layout from "./components/layout/Layout.jsx";
 import HomeSkeleton from "./components/ui/skeletons/Home.jsx";
+import SearchResults from "./pages/SearchResults.jsx";
 
 const Home = lazy(() => import("./pages/Home.jsx"));
 const MovieDetails = lazy(() => import("./pages/MovieDetails.jsx"));
@@ -19,6 +20,7 @@ function App() {
       <Routes>
         <Route element={<Layout />}>
           <Route path="/" element={<Home />} />
+          <Route path="/search" element={<SearchResults />} />
 
           <Route
             path="/movies/popular"
