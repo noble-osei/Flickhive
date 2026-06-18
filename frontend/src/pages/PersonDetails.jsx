@@ -143,7 +143,7 @@ function PersonHero({ person, knownFor }) {
       <div className="relative h-48 lg:h-80 overflow-hidden bg-base-200">
         {person.profile_path && (
           <img
-            src={`${IMG}/original${person.profile_path}`}
+            src={`${IMG}/h632${person.profile_path}`}
             alt=""
             className="absolute inset-0 w-full h-full object-cover object-top blur-3xl 
               scale-125 opacity-25"
