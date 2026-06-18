@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { LuPlus, LuPlay } from "react-icons/lu";
+import { LuPlus, LuPlay, LuChevronLeft, LuChevronRight } from "react-icons/lu";
 
 import Carousel from "./Carousel.jsx";
 import MovieCard from "./MovieCard.jsx";
@@ -68,9 +68,7 @@ export function StatCard({ label, value }) {
       <h3 className="text-xs uppercase tracking-wider text-base-content/50">
         {label}
       </h3>
-      <p className="mt-1 font-bold text-primary">
-        {value || "—"}
-      </p>
+      <p className="mt-1 font-bold text-primary">{value || "—"}</p>
     </div>
   );
 }
@@ -137,8 +135,10 @@ export function TrailerPreview({ video, onPlay }) {
         aria-label={`Play ${video.name}`}
       >
         <img
-          src={`https://res.cloudinary.com/dbu9plfk1/image/fetch/f_auto,q_auto/` +
-               `https://img.youtube.com/vi/${video.key}/hqdefault.jpg`}
+          src={
+            `https://res.cloudinary.com/dbu9plfk1/image/fetch/f_auto,q_auto/` +
+            `https://img.youtube.com/vi/${video.key}/hqdefault.jpg`
+          }
           alt=""
           className="w-full h-full object-cover brightness-75 group-hover:scale-105 transition"
           loading="lazy"
@@ -234,8 +234,10 @@ function VideoTab({ label, videos, setActiveVideo, defaultChecked = false }) {
                 aria-label={`Play ${video.name}`}
               >
                 <img
-                  src={`https://res.cloudinary.com/dbu9plfk1/image/fetch/f_auto,q_auto/` + 
-                      `https://img.youtube.com/vi/${video.key}/hqdefault.jpg`}
+                  src={
+                    `https://res.cloudinary.com/dbu9plfk1/image/fetch/f_auto,q_auto/` +
+                    `https://img.youtube.com/vi/${video.key}/hqdefault.jpg`
+                  }
                   alt=""
                   className="w-full aspect-video object-cover group-hover:scale-105 transition"
                   loading="lazy"
@@ -284,4 +286,58 @@ export function SimilarShowsSection({ media, media_type }) {
       </Carousel>
     </section>
   );
+}
+
+export function Pagination({ page, totalPages, updatePage }) {
+  if (totalPages <= 1) return null;
+
+  const visiblePages = getVisiblePages(page, totalPages);
+
+  return (
+    <nav
+      aria-label="Results pagination"
+      className="flex justify-center items-center gap-2 mt-10"
+    >
+      <button
+        type="button"
+        className="btn btn-sm btn-outline rounded-full"
+        disabled={page <= 1}
+        onClick={() => updatePage(page - 1)}
+        aria-label="Previous page"
+      >
+        <LuChevronLeft />
+      </button>
+
+      {visiblePages.map((pageNumber) => (
+        <button
+          key={pageNumber}
+          type="button"
+          className={`btn btn-sm btn-circle ${
+            pageNumber === page ? "btn-primary" : "btn-ghost"
+          }`}
+          onClick={() => updatePage(pageNumber)}
+          aria-current={pageNumber === page ? "page" : undefined}
+        >
+          {pageNumber}
+        </button>
+      ))}
+
+      <button
+        type="button"
+        className="btn btn-sm btn-outline rounded-full"
+        disabled={page >= totalPages}
+        onClick={() => updatePage(page + 1)}
+        aria-label="Next page"
+      >
+        <LuChevronRight />
+      </button>
+    </nav>
+  );
+}
+
+function getVisiblePages(currentPage, totalPages) {
+  const start = Math.max(1, Math.min(currentPage - 2, totalPages - 4));
+  const end = Math.min(totalPages, start + 4);
+
+  return Array.from({ length: end - start + 1 }, (_, index) => start + index);
 }
