@@ -143,6 +143,11 @@ export function TrailerPreview({ video, onPlay }) {
           className="w-full h-full object-cover brightness-75 group-hover:scale-105 transition"
           loading="lazy"
           decoding="async"
+          onError={(e) => {
+            e.currentTarget.onerror = null;
+            e.currentTarget.src = `https://res.cloudinary.com/dbu9plfk1/image/fetch/f_auto,q_auto`
+            + `/https://img.youtube.com/vi/${video.key}/hqdefault.jpg`;
+          }}
         />
 
         <span className="absolute inset-0 flex items-center justify-center">
@@ -242,6 +247,12 @@ function VideoTab({ label, videos, setActiveVideo, defaultChecked = false }) {
                   className="w-full aspect-video object-cover group-hover:scale-105 transition"
                   loading="lazy"
                   decoding="async"
+                  onError={(e) => {
+                    e.currentTarget.onerror = null;
+                    e.currentTarget.src = 
+                    `https://res.cloudinary.com/dbu9plfk1/image/fetch/f_auto,q_auto` +
+                    `/https://img.youtube.com/vi/${video.key}/hqdefault.jpg`;
+                  }}
                 />
 
                 <span className="absolute inset-0 flex items-center justify-center bg-black/20">
