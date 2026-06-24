@@ -5,7 +5,6 @@ export default function Carousel({ mediaWidthNum, children, title }) {
   const carouselRef = useRef(null);
   const frameRef = useRef(null);
   const mediaWidth = mediaWidthNum + 16; // MediaWidthNum plus flex gap
-  const [skipWidth, setSkipWidth] = useState(mediaWidth * 2); // Initial value set for small screens
   const [atStart, setAtStart] = useState(true);
   const [atEnd, setAtEnd] = useState(false);
   const [showChevron, setShowChevron] = useState(true);
@@ -15,33 +14,23 @@ export default function Carousel({ mediaWidthNum, children, title }) {
     const c = carouselRef.current;
     if (!c) return;
 
-    const readWidth = () => {
+    const checkLayout = () => {
       setShowChevron(c.scrollWidth >= c.clientWidth + 1);
-
-      const skipItems = Math.floor(c.clientWidth / mediaWidth);
-      setSkipWidth(Math.max(skipItems, 1) * mediaWidth);
-    };
-    const readHeights = () => {
       setHeight(Math.round(c.clientHeight));
     }
 
-    const resizeObserver = new ResizeObserver(() => {
-      readWidth();
-      readHeights();
-    });
+    const resizeObserver = new ResizeObserver(checkLayout);
 
-    readWidth();
-    readHeights()
+    checkLayout();
     resizeObserver.observe(c);
 
     return () => {
       resizeObserver.disconnect();
-
       if (frameRef.current) {
         cancelAnimationFrame(frameRef.current);
       }
     };
-  }, [mediaWidth]);
+  }, []);
 
   const updateChevrons = () => {
     if (frameRef.current) return;
@@ -57,8 +46,12 @@ export default function Carousel({ mediaWidthNum, children, title }) {
   };
 
   const scroll = (dir) => {
-    if (!carouselRef.current) return;
-    carouselRef.current.scrollBy({ left: dir * skipWidth, behavior: "smooth" });
+    const c = carouselRef.current;
+    if (!c) return;
+
+    const skipItems = Math.floor(c.clientWidth / mediaWidth);
+    const skipWidth = Math.max(skipItems, 1) * mediaWidth;
+    c.scrollBy({ left: dir * skipWidth, behavior: "smooth" });
   };
 
   return (
