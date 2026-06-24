@@ -4,14 +4,14 @@ import { useLocation, useNavigationType } from "react-router-dom";
 const scrollPositions = new Map();
 
 export default function ScrollManager() {
-  const location = useLocation();
+  const routerLocation = useLocation();
   const navigationType = useNavigationType();
-  const activeLocationKey = useRef(location.key);
+  const activeLocationKey = useRef(routerLocation.key);
 
   useLayoutEffect(() => {
     window.history.scrollRestoration = "manual";
 
-    const currentKey = location.key;
+    const currentKey = routerLocation.key;
     activeLocationKey.current = currentKey;
 
     if (navigationType === "POP") {
@@ -39,7 +39,7 @@ export default function ScrollManager() {
       left: 0,
       behavior: "auto",
     });
-  }, [location.key, navigationType]);
+  }, [routerLocation.key, navigationType]);
 
   useLayoutEffect(() => {
     const savePosition = () => {
