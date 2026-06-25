@@ -98,20 +98,20 @@ export default function HeroSlideshow({ data, loading }) {
   const detailsPath = `/${item.media_type === "movie" ? "movies" : "tv"}/${item.id}`;
   const rating = item.vote_average ? item.vote_average.toFixed(1) : null;
 
-  const hasPoster = !!data.poster_path;
+  const hasPoster = !!item.poster_path;
   const poster = hasPoster
-    ? `${IMG}/w500${data.poster_path}`
+    ? `${IMG}/w500${item.poster_path}`
     : `/${item.media_type}.svg`;
   const posterSrcset = hasPoster
-    ? `${IMG}/w342${data.poster_path} 342w, ${IMG}/w500${data.poster_path} 500w, ` +
-      `${IMG}/w780${data.poster_path} 780w, ${IMG}/w185${data.poster_path} 185w, ` +
-      `${IMG}/w154${data.poster_path} 154w`
+    ? `${IMG}/w342${item.poster_path} 342w, ${IMG}/w500${item.poster_path} 500w, ` +
+      `${IMG}/w780${item.poster_path} 780w, ${IMG}/w185${item.poster_path} 185w, ` +
+      `${IMG}/w154${item.poster_path} 154w`
     : undefined;
 
-  const hasBackdrop = !!data.backdrop_path;
+  const hasBackdrop = !!item.backdrop_path;
   const backdropSrcset = hasBackdrop
-    ? `${IMG}/w300${data.backdrop_path} 300w, ${IMG}/w780${data.backdrop_path} 780w, ` +
-      `${IMG}/w1280${data.backdrop_path} 1280w`
+    ? `${IMG}/w300${item.backdrop_path} 300w, ${IMG}/w780${item.backdrop_path} 780w, ` +
+      `${IMG}/w1280${item.backdrop_path} 1280w`
     : undefined;
 
   return (
