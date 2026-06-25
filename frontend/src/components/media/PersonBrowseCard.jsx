@@ -22,7 +22,7 @@ export default function PersonBrowseCard({ person, i }) {
           alt={person.name}
           loading={i < 5 ? "eager" : "lazy"}
           decoding={i < 5 ? "sync" : "async"}
-          fetchPriority={i < 5 ? "high" : "low"}
+          fetchPriority={i < 5 ? "auto" : "low"}
           className="w-full h-full object-cover object-top transition duration-300 group-hover:scale-105"
         />
       </div>
