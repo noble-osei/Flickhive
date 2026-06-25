@@ -108,12 +108,6 @@ export default function HeroSlideshow({ data, loading }) {
       `${IMG}/w154${item.poster_path} 154w`
     : undefined;
 
-  const hasBackdrop = !!item.backdrop_path;
-  const backdropSrcset = hasBackdrop
-    ? `${IMG}/w300${item.backdrop_path} 300w, ${IMG}/w780${item.backdrop_path} 780w, ` +
-      `${IMG}/w1280${item.backdrop_path} 1280w`
-    : undefined;
-
   return (
     <section
       className={`relative w-full overflow-hidden bg-base-200 ${HERO_HEIGHT}`}
@@ -125,6 +119,12 @@ export default function HeroSlideshow({ data, loading }) {
         const slideTitle = slide.title ?? slide.name;
         const isActive = index === safeActive;
 
+        const hasBackdrop = !!slide.backdrop_path;
+        const backdropSrcset = hasBackdrop
+          ? `${IMG}/w300${slide.backdrop_path} 300w, ${IMG}/w780${slide.backdrop_path} 780w, ` +
+            `${IMG}/w1280${slide.backdrop_path} 1280w`
+          : undefined;
+
         return (
           <div
             key={`${slide.media_type}-${slide.id}`}
@@ -134,8 +134,8 @@ export default function HeroSlideshow({ data, loading }) {
             aria-hidden={!isActive}
           >
             <img
-              src={hasBackdrop ? `${IMG}/w780${data.backdrop_path}` : poster}
-              alt={`${title} banner`}
+              src={`${IMG}/w780${slide.backdrop_path}`}
+              alt={`${slideTitle} banner`}
               srcSet={backdropSrcset}
               sizes="100vw"
               className="absolute inset-0 w-full h-full object-cover object-top scale-105"
