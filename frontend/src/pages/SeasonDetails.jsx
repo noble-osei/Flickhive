@@ -64,16 +64,6 @@ export default function SeasonDetails() {
   };
   if ( !show || !season || !details) return <PageError title="No data found" />;
 
-  const backdrop = show.backdrop_path
-    ? `${IMG}/w1280${show.backdrop_path}`
-    : "/tv.svg";
-
-  const poster = season.poster_path
-    ? `${IMG}/w500${season.poster_path}`
-    : show.poster_path
-      ? `${IMG}/w500${show.poster_path}`
-      : "/tv.svg";
-
   return (
     <>
       <Helmet>
@@ -91,8 +81,8 @@ export default function SeasonDetails() {
         <SeasonHero
           show={show}
           season={season}
-          poster={poster}
-          backdrop={backdrop}
+          poster={season.poster_path || show.poster_path}
+          backdrop={show.backdrop_path}
           averageRating={details.averageRating}
         />
 
@@ -124,12 +114,30 @@ export default function SeasonDetails() {
 }
 
 function SeasonHero({ show, season, poster, backdrop, averageRating }) {
+  const hasPoster = !!poster;
+  const posterSrc = hasPoster
+    ? `${IMG}/w500${poster}`
+    : "/tv.svg";
+  const posterSrcset = hasPoster
+    ? `${IMG}/w342${poster} 342w, ${IMG}/w500${poster} 500w, ` +
+      `${IMG}/w780${poster} 780w, ${IMG}/w185${poster} 185w, ` +
+      `${IMG}/w154${poster} 154w`
+    : undefined;
+
+  const hasBackdrop = !!backdrop;
+  const backdropSrcset = hasBackdrop
+    ? `${IMG}/w300${backdrop} 300w, ${IMG}/w780${backdrop} 780w, ` +
+      `${IMG}/w1280${backdrop} 1280w`
+    : undefined;
+
   return (
     <section className="relative">
       <div className="relative h-56 lg:h-96 overflow-hidden">
         <img
-          src={backdrop}
-          alt=""
+          src={hasBackdrop ? `${IMG}/w780${backdrop}` : posterSrc}
+          alt={season.name || "Season Banner"}
+          srcSet={backdropSrcset}
+          sizes="100vw"
           className="h-full w-full object-cover object-top brightness-50"
           fetchPriority="high"
         />
@@ -139,8 +147,10 @@ function SeasonHero({ show, season, poster, backdrop, averageRating }) {
       <div className="relative max-w-7xl mx-auto px-4 lg:px-16 xl:px-0">
         <div className="flex gap-4 lg:gap-6 -mt-16 lg:-mt-28 relative z-10">
           <img
-            src={poster}
+            src={posterSrc}
             alt={`${season.name} poster`}
+            srcSet={posterSrcset}
+            sizes="(max-width: 1024px) 112px, 208px"
             className="w-28 h-42 lg:w-52 lg:h-78 object-cover rounded-xl shadow-2xl border border-white/10 shrink-0"
             fetchPriority="high"
           />
