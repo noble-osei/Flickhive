@@ -246,11 +246,12 @@ function ResultsGrid({ results, activeType }) {
         className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-5 
         gap-4 lg:gap-6"
       >
-        {validResults.map((item) => (
+        {validResults.map((item, index) => (
           <SearchResultCard
             key={`${getMediaType(item, activeType)}-${item.id}`}
             item={item}
             activeType={activeType}
+            index={index}
           />
         ))}
       </div>
@@ -258,17 +259,17 @@ function ResultsGrid({ results, activeType }) {
   );
 }
 
-function SearchResultCard({ item, activeType }) {
+function SearchResultCard({ item, activeType, index }) {
   const mediaType = getMediaType(item, activeType);
 
   if (mediaType === "person") {
-    return <PersonResultCard person={item} />;
+    return <PersonResultCard person={item} index={index} />;
   }
 
-  return <MediaResultCard item={item} mediaType={mediaType} />;
+  return <MediaResultCard item={item} mediaType={mediaType} index={index} />;
 }
 
-function MediaResultCard({ item, mediaType }) {
+function MediaResultCard({ item, mediaType, index }) {
   const isMovie = mediaType === "movie";
   const title = isMovie ? item.title : item.name;
   const date = isMovie ? item.release_date : item.first_air_date;
@@ -287,8 +288,9 @@ function MediaResultCard({ item, mediaType }) {
           src={poster}
           alt={`${title} poster`}
           className="w-full h-full object-cover transition duration-300 group-hover:scale-105"
-          loading="lazy"
-          decoding="async"
+          loading={index < 5 ? "eager" : "lazy"}
+          fetchPriority={index < 5 ? "auto" : "low"}
+          decoding={index < 5 ? "sync" : "async"}
         />
 
         <span className="absolute top-2 left-2 badge badge-neutral bg-black/65 border-white/10">
@@ -317,7 +319,7 @@ function MediaResultCard({ item, mediaType }) {
   );
 }
 
-function PersonResultCard({ person }) {
+function PersonResultCard({ person, index }) {
   const image = person.profile_path
     ? `${IMG}/w342${person.profile_path}`
     : "/person.svg";
@@ -332,8 +334,9 @@ function PersonResultCard({ person }) {
           src={image}
           alt={person.name}
           className="w-full h-full object-cover object-top transition duration-300 group-hover:scale-105"
-          loading="lazy"
-          decoding="async"
+          loading={index < 5 ? "eager" : "lazy"}
+          fetchPriority={index < 5 ? "auto" : "low"}
+          decoding={index < 5 ? "sync" : "async"}
         />
 
         <span className="absolute top-2 left-2 badge badge-neutral bg-black/65 border-white/10">
