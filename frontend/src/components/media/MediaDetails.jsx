@@ -5,6 +5,7 @@ import Carousel from "./Carousel.jsx";
 import MovieCard from "./MovieCard.jsx";
 
 const IMG = import.meta.env.VITE_IMG;
+const YOUTUBE_IMG = import.meta.env.VITE_YOUTUBE_THUMBNAIL;
 
 export function ActionButtons({
   title,
@@ -135,18 +136,14 @@ export function TrailerPreview({ video, onPlay }) {
         aria-label={`Play ${video.name}`}
       >
         <img
-          src={
-            `https://res.cloudinary.com/dbu9plfk1/image/fetch/f_auto,q_auto/` +
-            `https://img.youtube.com/vi/${video.key}/maxresdefault.jpg`
-          }
+          src={`${YOUTUBE_IMG}/${video.key}/maxresdefault.jpg`}
           alt=""
           className="w-full h-full object-cover brightness-75 group-hover:scale-105 transition"
           loading="lazy"
           decoding="async"
           onError={(e) => {
             e.currentTarget.onerror = null;
-            e.currentTarget.src = `https://res.cloudinary.com/dbu9plfk1/image/fetch/f_auto,q_auto`
-            + `/https://img.youtube.com/vi/${video.key}/hqdefault.jpg`;
+            e.currentTarget.src = `${YOUTUBE_IMG}/${video.key}/hqdefault.jpg`;
           }}
         />
 
@@ -239,19 +236,14 @@ function VideoTab({ label, videos, setActiveVideo, defaultChecked = false }) {
                 aria-label={`Play ${video.name}`}
               >
                 <img
-                  src={
-                    `https://res.cloudinary.com/dbu9plfk1/image/fetch/f_auto,q_auto/` +
-                    `https://img.youtube.com/vi/${video.key}/sddefault.jpg`
-                  }
+                  src={`${YOUTUBE_IMG}/${video.key}/sddefault.jpg`}
                   alt=""
                   className="w-full aspect-video object-cover group-hover:scale-105 transition"
                   loading="lazy"
                   decoding="async"
                   onError={(e) => {
                     e.currentTarget.onerror = null;
-                    e.currentTarget.src = 
-                    `https://res.cloudinary.com/dbu9plfk1/image/fetch/f_auto,q_auto` +
-                    `/https://img.youtube.com/vi/${video.key}/hqdefault.jpg`;
+                    e.currentTarget.src = `${YOUTUBE_IMG}/${video.key}/hqdefault.jpg`;
                   }}
                 />
 
