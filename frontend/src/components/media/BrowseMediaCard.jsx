@@ -25,7 +25,7 @@ export default function BrowseMediaCard({ item, mediaType, i }) {
           className="w-full h-full object-cover transition duration-300 group-hover:scale-105"
           loading={i < 5 ? "eager" : "lazy"}
           decoding={i < 5 ? "sync" : "async"}
-          fetchPriority={i < 5 ? "high" : "low"}
+          fetchPriority={i < 5 ? "auto" : "low"}
         />
 
         {item.vote_average > 0 && (
