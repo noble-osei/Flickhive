@@ -98,6 +98,22 @@ export default function HeroSlideshow({ data, loading }) {
   const detailsPath = `/${item.media_type === "movie" ? "movies" : "tv"}/${item.id}`;
   const rating = item.vote_average ? item.vote_average.toFixed(1) : null;
 
+  const hasPoster = !!data.poster_path;
+  const poster = hasPoster
+    ? `${IMG}/w500${data.poster_path}`
+    : `/${item.media_type}.svg`;
+  const posterSrcset = hasPoster
+    ? `${IMG}/w342${data.poster_path} 342w, ${IMG}/w500${data.poster_path} 500w, ` +
+      `${IMG}/w780${data.poster_path} 780w, ${IMG}/w185${data.poster_path} 185w, ` +
+      `${IMG}/w154${data.poster_path} 154w`
+    : undefined;
+
+  const hasBackdrop = !!data.backdrop_path;
+  const backdropSrcset = hasBackdrop
+    ? `${IMG}/w300${data.backdrop_path} 300w, ${IMG}/w780${data.backdrop_path} 780w, ` +
+      `${IMG}/w1280${data.backdrop_path} 1280w`
+    : undefined;
+
   return (
     <section
       className={`relative w-full overflow-hidden bg-base-200 ${HERO_HEIGHT}`}
@@ -118,8 +134,10 @@ export default function HeroSlideshow({ data, loading }) {
             aria-hidden={!isActive}
           >
             <img
-              src={`${IMG}/w1280${slide.backdrop_path}`}
-              alt=""
+              src={hasBackdrop ? `${IMG}/w780${data.backdrop_path}` : poster}
+              alt={`${title} banner`}
+              srcSet={backdropSrcset}
+              sizes="100vw"
               className="absolute inset-0 w-full h-full object-cover object-top scale-105"
               loading={index === 0 ? "eager" : "lazy"}
               fetchPriority={index === 0 ? "high" : "auto"}
@@ -164,8 +182,10 @@ export default function HeroSlideshow({ data, loading }) {
             />
 
             <img
-              src={`${IMG}/w185${item.poster_path}`}
+              src={poster}
               alt={`${title} poster`}
+              srcSet={posterSrcset}
+              sizes="80px"
               className="shrink-0 rounded-xl shadow-2xl shadow-black/70 border border-white/13 
                 w-20 h-28 object-cover"
               loading="eager"
