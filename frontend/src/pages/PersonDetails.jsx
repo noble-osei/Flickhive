@@ -133,6 +133,11 @@ function PersonHero({ person, knownFor }) {
     ? `${IMG}/h632${person.profile_path}`
     : "/person.svg";
 
+  const profileSrcset = person.profile_path
+    ? `${IMG}/w45${person.profile_path} 45w, ${IMG}/w185${person.profile_path} 185w, ` +
+      `${IMG}/h632${person.profile_path} 421w`
+    : undefined;
+
   const knownForTitles = knownFor
     .slice(0, 3)
     .map((credit) => credit.title ?? credit.name)
@@ -144,7 +149,9 @@ function PersonHero({ person, knownFor }) {
         {person.profile_path && (
           <img
             src={`${IMG}/h632${person.profile_path}`}
-            alt=""
+            sizes="100vw"
+            srcSet={profileSrcset}
+            alt={person.name || "Profile picture"}
             className="absolute inset-0 w-full h-full object-cover object-top blur-3xl 
               scale-125 opacity-25"
           />
@@ -164,6 +171,8 @@ function PersonHero({ person, knownFor }) {
           <img
             src={profile}
             alt={`${person.name} profile`}
+            sizes="(max-width: 1024px) 144px, 208px"
+            srcSet={profileSrcset}
             className="w-36 h-52 lg:w-52 lg:h-78 rounded-xl object-cover object-top 
               border border-white/10 shadow-2xl bg-base-200 shrink-0"
             fetchPriority="high"
