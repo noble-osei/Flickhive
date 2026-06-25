@@ -1,4 +1,4 @@
-import { useCallback, useState } from "react";
+import { Suspense, useCallback, useState } from "react";
 import { Link, Outlet } from "react-router-dom";
 import SearchBar from "../search/SearchBar.jsx";
 import { LuSearch, LuMenu, LuClapperboard, LuTv } from "react-icons/lu";
@@ -24,7 +24,15 @@ export default function Layout() {
       <div className="drawer-content flex flex-col min-h-screen">
         <Navbar setIsDrawerOpen={setIsDrawerOpen} />
         <ScrollManager />
-        <Outlet />
+
+        <Suspense fallback={
+          <main className="min-h-screen bg-base-300/30 flex justify-center items-center">
+            <span classname="loading loading-dots loading-xl"></span>
+          </main>
+        }>
+          <Outlet />
+        </Suspense>
+
         <Footer />
       </div>
 
