@@ -89,17 +89,27 @@ export default function MovieDetails() {
         message="We couldn't load this movie. It may have been removed or your connection failed."
         onRetry={refetch}
       />
-    )
-  };
-  if ( !data || !details) return <PageError title="No data found" />;
+    );
+  }
+  if (!data || !details) return <PageError title="No data found" />;
 
   const year = data.release_date?.slice(0, 4);
-  const poster = data.poster_path
+
+  const hasPoster = !!data.poster_path;
+  const poster = hasPoster
     ? `${IMG}/w500${data.poster_path}`
     : "/movie.svg";
-  const backdrop = data.backdrop_path
-    ? `${IMG}/w1280${data.backdrop_path}`
-    : poster;
+  const posterSrcset = hasPoster
+    ? `${IMG}/w342${data.poster_path} 342w, ${IMG}/w500${data.poster_path} 500w, ` +
+      `${IMG}/w780${data.poster_path} 780w, ${IMG}/w185${data.poster_path} 185w, ` +
+      `${IMG}/w154${data.poster_path} 154w`
+    : undefined;
+
+  const hasBackdrop = !!data.backdrop_path;
+  const backdropSrcset = hasBackdrop
+    ? `${IMG}/w300${data.backdrop_path} 300w, ${IMG}/w780${data.backdrop_path} 780w, ` +
+      `${IMG}/w1280${data.backdrop_path} 1280w`
+    : undefined;
 
   return (
     <>
@@ -107,7 +117,10 @@ export default function MovieDetails() {
         <title>{`${data.title} (${year}) | Flickhive`}</title>
         <meta
           name="description"
-          content={data.overview || `View details, cast, trailer, and similar movies for ${data.title}.`}
+          content={
+            data.overview ||
+            `View details, cast, trailer, and similar movies for ${data.title}.`
+          }
         />
       </Helmet>
 
@@ -115,8 +128,10 @@ export default function MovieDetails() {
         <section className="relative">
           <div className="relative h-56 lg:h-96 overflow-hidden">
             <img
-              src={backdrop}
-              alt=""
+              src={hasBackdrop ? `${IMG}/w780${data.backdrop_path}` : poster}
+              alt={data.title || "Movie banner"}
+              srcSet={backdropSrcset}
+              sizes="100vw"
               className="h-full w-full object-cover object-top brightness-50"
               fetchPriority="high"
               decoding="async"
@@ -132,6 +147,8 @@ export default function MovieDetails() {
               <img
                 src={poster}
                 alt={`${data.title} poster`}
+                srcSet={posterSrcset}
+                sizes="(max-width: 1024px) 112px, 208px"
                 className="w-28 h-42 lg:w-52 lg:h-78 object-cover rounded-xl shadow-2xl border 
                   border-white/10 shrink-0"
                 fetchPriority="high"
@@ -157,7 +174,9 @@ export default function MovieDetails() {
                   {data.release_date && (
                     <span>{formatDate(data.release_date)}</span>
                   )}
-                  {details.certification && <span>{details.certification}</span>}
+                  {details.certification && (
+                    <span>{details.certification}</span>
+                  )}
                   {details.runtime && <span>{details.runtime}</span>}
                   {data.vote_average > 0 && (
                     <span className="inline-flex items-center gap-1 text-accent font-semibold">
@@ -219,13 +238,16 @@ export default function MovieDetails() {
                     : "—"
                 }
               />
-              <StatCard label="Votes" value={data.vote_count?.toLocaleString()} />
+              <StatCard
+                label="Votes"
+                value={data.vote_count?.toLocaleString()}
+              />
               <StatCard label="Budget" value={money(data.budget)} />
               <StatCard label="Revenue" value={money(data.revenue)} />
             </section>
 
             {details.cast.length === 0 ? (
-              <EmptyState 
+              <EmptyState
                 title="No cast availble"
                 message="We couldn't find cast information for this movie"
               />
