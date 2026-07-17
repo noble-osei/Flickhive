@@ -4,6 +4,8 @@ class UserSchema {
   // Used in both userSignup and userLogin
   baseSchema = {
     email: Joi.string().email().trim().required().messages({
+      "string.base": "Email should be text",
+      "string.empty": "Email cannot be empty",
       "string.email": "Invalid email format",
       "any.required": "Email is required",
     }),
