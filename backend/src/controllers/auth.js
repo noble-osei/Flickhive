@@ -9,6 +9,11 @@ class AuthController {
     res.status(201).end();
   });
 
+  me = asyncHandler(async (req, res) => {
+    const user = await authService.me(req.user?.id);
+    res.json(user);
+  });
+
   login = asyncHandler(async (req, res) => {
     const { accessToken, refreshToken } = await authService.login(req.body);
 
