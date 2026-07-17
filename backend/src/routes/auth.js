@@ -15,6 +15,8 @@ router.post(
   authController.signup,
 );
 
+router.get("/me", validateAccessToken, authController.me);
+
 router.post("/login", validateBody(userSchema.userLogin), authController.login);
 
 router.post("/logout", validateAccessToken, authController.logout);
