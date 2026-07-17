@@ -14,6 +14,14 @@ class AuthService {
     return await userRepository.createUser(signupData);
   };
 
+  me = async (userId) => {
+    const user = await userRepository.findOneUser({ _id: userId });
+    if (!user) {
+      throw new AppError("User not found", 404);
+    }
+    return user;
+  };
+
   login = async (loginData) => {
     const { email, password, rememberMe } = loginData;
 
@@ -22,7 +30,7 @@ class AuthService {
       { select: "+password" },
     );
     if (!user) {
-      throw new AppError("Invalid credentials", 400);
+      throw new AppError("Invalid credentials", 401);
     }
     await this.validatePassword(user, password);
 
@@ -42,7 +50,10 @@ class AuthService {
   };
 
   refresh = async (token, decoded) => {
-    const user = await userRepository.findOneUser({ _id: decoded.id });
+    const user = await userRepository.findOneUser(
+      { _id: decoded.id },
+      { select: "+refreshToken" },
+    );
     if (!user) {
       throw new AppError("User not found", 404);
     }
