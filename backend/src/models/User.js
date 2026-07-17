@@ -42,9 +42,7 @@ userSchema.pre("save", async function () {
   this.refreshToken = await bcrypt.hash(this.refreshToken, 12);
 });
 
-userSchema.methods.compareRefreshToken = async function (
-  candidateRefreshToken,
-) {
+userSchema.methods.compareRefreshToken = async function (candidateRefreshToken) {
   return await bcrypt.compare(candidateRefreshToken, this.refreshToken);
 };
 
