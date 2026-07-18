@@ -4,6 +4,7 @@ import SearchBar from "../search/SearchBar.jsx";
 import { LuSearch, LuMenu, LuClapperboard, LuTv } from "react-icons/lu";
 import { MdPerson } from "react-icons/md";
 import ScrollManager from "../../helpers/ScrollManager.jsx";
+import { useAuth } from "../../context/Auth.jsx";
 
 export default function Layout() {
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
@@ -25,11 +26,13 @@ export default function Layout() {
         <Navbar setIsDrawerOpen={setIsDrawerOpen} />
         <ScrollManager />
 
-        <Suspense fallback={
-          <main className="min-h-screen bg-base-300/30 flex justify-center items-center">
-            <span classname="loading loading-dots loading-xl"></span>
-          </main>
-        }>
+        <Suspense
+          fallback={
+            <main className="min-h-screen bg-base-300/30 flex justify-center items-center">
+              <span className="loading loading-dots loading-xl"></span>
+            </main>
+          }
+        >
           <Outlet />
         </Suspense>
 
@@ -149,6 +152,7 @@ function PrimaryMenuList({ closeDrawer, horizontal = false }) {
 
 function Navbar({ setIsDrawerOpen }) {
   const [showSearchBar, setShowSearchBar] = useState(false);
+  const { user, logout, loading } = useAuth();
 
   return (
     <nav className="bg-base-200 w-full">
@@ -183,8 +187,18 @@ function Navbar({ setIsDrawerOpen }) {
             <LuSearch className="h-5 w-5" aria-hidden="true" />
           </button>
 
-          <Link to="/login" className="btn btn-ghost text-lg rounded-full">
-            Login
+          <Link
+            to="/login"
+            className="btn btn-ghost text-lg rounded-full"
+            onClick={user ? logout : undefined}
+          >
+            {user ? (
+              "Logout"
+            ) : loading ? (
+              <span className="loading loading-dots loading-lg"></span>
+            ) : (
+              "Login"
+            )}
           </Link>
         </div>
       </div>
@@ -194,10 +208,10 @@ function Navbar({ setIsDrawerOpen }) {
 
 function Footer() {
   return (
-    <footer className="bg-base-300/20 w-full border-t border-base-200 py-8 px-4 lg:px-16 xl:px-0 mx-auto">
+    <footer className="bg-base-300/20 w-full border-t border-base-200">
       <div
         className="flex flex-col sm:flex-row items-center justify-center gap-3 text-sm 
-        text-base-content/50"
+        text-base-content/50 py-8 px-4 lg:px-16 xl:px-0 max-w-7xl mx-auto"
       >
         <p>© {new Date().getFullYear()} Flickhive</p>
         <p className="flex items-center gap-2">
