@@ -17,6 +17,8 @@ const BrowsePage = lazy(() => import("./pages/Browse.jsx"));
 const PersonDetails = lazy(() => import("./pages/PersonDetails.jsx"));
 const PageNotFound = lazy(() => import("./pages/PageNotFound.jsx"));
 const SearchResults = lazy(() => import("./pages/SearchResults.jsx"));
+const Login = lazy(() => import("./pages/Login.jsx"));
+const AuthLayout = lazy(() => import("./components/layout/AuthLayout.jsx"));
 
 function App() {
   return (
@@ -94,6 +96,10 @@ function App() {
         } />
 
         <Route path="*" element={<PageNotFound />} />
+      </Route>
+
+      <Route element={<AuthLayout />}>
+        <Route path="/login" element={<Login />} />
       </Route>
     </Routes>
   );
