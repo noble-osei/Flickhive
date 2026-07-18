@@ -236,6 +236,7 @@ function CastCrewHero({
           alt={title || `${isMovie ? "Movie" : "TV Show"} banner`}
           srcSet={backdropSrcset}
           sizes="100vw"
+          onError={(e) => (e.target.src = posterSrc)}
           className="h-full w-full object-cover object-top brightness-50"
           fetchPriority="high"
           decoding="async"
@@ -249,6 +250,7 @@ function CastCrewHero({
             src={posterSrc}
             alt={`${title} poster`}
             srcSet={posterSrcset}
+            onError={(e) => e.target.src = `/${isMovie ? "movie" : "tv"}.svg`}
             sizes="(max-width: 1024px) 112px, 208px"
             className="w-28 h-42 lg:w-52 lg:h-78 object-cover rounded-xl shadow-2xl border border-white/10 shrink-0"
             fetchPriority="high"
@@ -390,6 +392,10 @@ function PersonCreditCard({ person }) {
   const image = person.profile_path
     ? `${IMG}/w185${person.profile_path}`
     : "/person.svg";
+  const imageSrcset = person.profile_path
+    ? `${IMG}/w92${person.profile_path} 92w, ${IMG}/w154${person.profile_path} 154w, ` +
+      `${IMG}/w185${person.profile_path} 185w, ${IMG}/w342${person.profile_path} 342w`
+    : undefined;
 
   return (
     <Link
@@ -399,9 +405,12 @@ function PersonCreditCard({ person }) {
       <img
         src={image}
         alt={person.name}
+        sizes="64px"
         className="w-16 h-16 rounded-full object-cover object-top border border-white/10 shrink-0"
         loading="lazy"
         decoding="async"
+        onError={(e) => e.target.src = "/person.svg"}
+        srcSet={imageSrcset}
       />
 
       <div className="min-w-0">

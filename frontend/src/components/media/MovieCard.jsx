@@ -1,7 +1,19 @@
 import { Link } from "react-router-dom";
 import { formatDate } from "../../helpers/media.js";
 
+const IMG = import.meta.env.VITE_IMG;
+
 export default function MovieCard({ item }) {
+  const hasPoster = !!item.poster_path;
+  const poster = hasPoster
+    ? `${IMG}/w342${item.poster_path}`
+    : `/${item.media_type === "tv" ? "tv" : "movie"}.svg`;
+  const posterSrcset = hasPoster
+    ? `${IMG}/w342${item.poster_path} 342w, ${IMG}/w500${item.poster_path} 500w, ` +
+      `${IMG}/w780${item.poster_path} 780w, ${IMG}/w185${item.poster_path} 185w, ` +
+      `${IMG}/w154${item.poster_path} 154w`
+    : undefined;
+
   return (
     <Link
       to={`/${item.media_type === "movie" || item.title ? "movies" : "tv"}/${item.id}`}
@@ -11,14 +23,15 @@ export default function MovieCard({ item }) {
         <img
           className="w-full h-full object-cover rounded-lg transition-all duration-300 
             group-hover:scale-105"
-          src={
-            item.poster_path
-              ? `${import.meta.env.VITE_IMG}/w342${item.poster_path}`
-              : `/${item.media_type === "tv" ? "tv" : "movie"}.svg`
-          }
+          src={poster}
           alt={item.title ?? item.name}
+          sizes="152px"
+          srcSet={posterSrcset}
           loading="lazy"
           decoding="async"
+          onError={(e) =>
+            (e.target.src = `/${item.media_type === "tv" ? "tv" : "movie"}.svg`)
+          }
         />
       </div>
 

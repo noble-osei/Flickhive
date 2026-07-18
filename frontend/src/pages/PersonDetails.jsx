@@ -154,6 +154,7 @@ function PersonHero({ person, knownFor }) {
             alt={person.name || "Profile picture"}
             className="absolute inset-0 w-full h-full object-cover object-top blur-3xl 
               scale-125 opacity-25"
+            onError={(e) => (e.target.src = "/person.svg")}
           />
         )}
 
@@ -177,6 +178,7 @@ function PersonHero({ person, knownFor }) {
               border border-white/10 shadow-2xl bg-base-200 shrink-0"
             fetchPriority="high"
             decoding="async"
+            onError={(e) => e.target.src = "/person.svg"}
           />
 
           <div className="lg:pb-5 min-w-0">
@@ -387,6 +389,10 @@ function CreditCard({ credit }) {
   const poster = credit.poster_path
     ? `${IMG}/w154${credit.poster_path}`
     : `/${isMovie ? "movie" : "tv"}.svg`;
+  const posterSrcset = credit.poster_path
+    ? `${IMG}/w154${credit.poster_path} 154w, ${IMG}/w185${credit.poster_path} 185w, ` +
+      `${IMG}/w342${credit.poster_path} 342w, ${IMG}/w92${credit.poster_path} 92w`
+    : undefined;
 
   return (
     <Link
@@ -397,9 +403,12 @@ function CreditCard({ credit }) {
       <img
         src={poster}
         alt={`${title} poster`}
+        sizes="64px"
         className="w-16 h-24 rounded-lg object-cover bg-base-200 shrink-0"
         loading="lazy"
         decoding="async"
+        srcSet={posterSrcset}
+        onError={(e) => e.target.src = `${isMovie ? "movie" : "tv"}.svg`}
       />
 
       <div className="min-w-0">
@@ -498,15 +507,20 @@ function ImageGallery({ images = [], personName }) {
       </h2>
 
       <Carousel mediaWidthNum={160}>
-        {images.slice(0, 20).map((image) => (
+        {images.slice(0, 10).map((image) => (
           <img
             key={image.file_path}
             src={`${IMG}/w342${image.file_path}`}
             alt={`${personName} profile`}
+            sizes="160px"
+            srcSet={`${IMG}/w342${image.file_path} 342w, ${IMG}/w500${image.file_path} 500w, ` +
+              `${IMG}/w780${image.file_path} 780w, ${IMG}/w185${image.file_path} 185w, ` +
+              `${IMG}/w154${image.file_path} 154w`}
             className="w-40 h-60 rounded-xl object-cover object-top flex-none 
               bg-base-200"
             loading="lazy"
             decoding="async"
+            onError={(e) => e.target.src = `${image.media_type === "movie" ? "movie" : "tv"}.svg`}
           />
         ))}
       </Carousel>

@@ -9,7 +9,7 @@ import {
 } from "react-icons/lu";
 
 import useGenres from "../../hooks/useGenres.jsx";
-import HeroSlideSkeleton from "../ui/skeletons/Home.jsx"
+import HeroSlideSkeleton from "../ui/skeletons/Home.jsx";
 
 const IMG = import.meta.env.VITE_IMG;
 const AUTOPLAY_DELAY = 6000;
@@ -76,7 +76,7 @@ export default function HeroSlideshow({ data, loading }) {
     }
   }, [active, itemsLength]);
 
-  if (loading) return <HeroSlideSkeleton />
+  if (loading) return <HeroSlideSkeleton />;
   if (itemsLength === 0) {
     return (
       <section
@@ -142,6 +142,7 @@ export default function HeroSlideshow({ data, loading }) {
               loading={index === 0 ? "eager" : "lazy"}
               fetchPriority={index === 0 ? "high" : "auto"}
               decoding={index === 0 ? "sync" : "auto"}
+              onError={(e) => (e.target.src = poster)}
             />
 
             <div
@@ -190,6 +191,7 @@ export default function HeroSlideshow({ data, loading }) {
                 w-20 h-28 object-cover"
               loading="eager"
               decoding="async"
+              onError={(e) => (e.target.src = `/${item.media_type}.svg`)}
             />
           </div>
 

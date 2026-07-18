@@ -102,10 +102,16 @@ export function CastSection({ cast, mediaId, tvShow }) {
             <img
               src={`${IMG}/w185${person.profile_path}`}
               alt={person.name}
+              sizes="78px"
+              srcSet={
+                `${IMG}/w92${person.profile_path} 92w, ${IMG}/w154${person.profile_path} 154w,` +
+                ` ${IMG}/w185${person.profile_path} 185w, ${IMG}/w342${person.profile_path} 342w`
+              }
               className="w-20 h-20 rounded-full object-cover object-top border border-white/10 
                 group-hover:scale-105 transition"
               loading="lazy"
               decoding="async"
+              onError={(e) => (e.target.src = "/person.svg")}
             />
 
             <h3 className="mt-2 text-sm font-semibold line-clamp-2 group-hover:link-primary">

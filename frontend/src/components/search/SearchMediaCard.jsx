@@ -1,7 +1,20 @@
 import { Link } from "react-router-dom";
 import { formatProfession } from "../../helpers/media.js";
 
+const IMG = import.meta.env.VITE_IMG;
+
 export default function SearchMediaCard({ item, closeSearchBar }) {
+  const posterPath = item.poster_path || item.profile_path;
+  const hasPoster = !!posterPath;
+  const poster = hasPoster
+    ? `${IMG}/w342${posterPath}`
+    : `/${item.media_type === "movie" ? "movie" : item.media_type === "tv" ? "tv" : "person"}.svg`;
+  const posterSrcset = hasPoster
+    ? `${IMG}/w342${posterPath} 342w, ${IMG}/w500${posterPath} 500w, ` +
+      `${IMG}/w780${posterPath} 780w, ${IMG}/w185${posterPath} 185w, ` +
+      `${IMG}/w154${posterPath} 154w, ${IMG}/w92${posterPath} 92w`
+    : undefined; 
+
   return (
     <Link
       to={
@@ -14,8 +27,10 @@ export default function SearchMediaCard({ item, closeSearchBar }) {
       <img
         className="w-12 h-full shadow-2xl border border-white/13 object-cover rounded-lg 
           transition-all duration-300 group-hover:shadow-2xl"
-        src={`https://image.tmdb.org/t/p/w154${item.poster_path || item.profile_path}`}
-        onError={(e) => (e.target.src = `/${item.media_type}.svg`)}
+        src={poster}
+        srcSet={posterSrcset}
+        sizes=" 48px"
+        onError={(e) => (e.target.src = `/${item.media_type === "movie" ? "movie" : item.media_type === "tv" ? "tv" : "person"}.svg`)}
         alt={item.title ? item.title : item.name}
         loading="lazy"
         decoding="async"

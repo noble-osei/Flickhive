@@ -140,6 +140,7 @@ function SeasonHero({ show, season, poster, backdrop, averageRating }) {
           sizes="100vw"
           className="h-full w-full object-cover object-top brightness-50"
           fetchPriority="high"
+          onError={(e) => (e.target.src = posterSrc)}
         />
         <div className="absolute inset-0 bg-linear-to-t from-base-300 via-base-300/70 to-transparent" />
       </div>
@@ -153,6 +154,7 @@ function SeasonHero({ show, season, poster, backdrop, averageRating }) {
             sizes="(max-width: 1024px) 112px, 208px"
             className="w-28 h-42 lg:w-52 lg:h-78 object-cover rounded-xl shadow-2xl border border-white/10 shrink-0"
             fetchPriority="high"
+            onError={(e) => e.target.src = "/tv.svg"}
           />
 
           <div className="pt-16 lg:pt-30 min-w-0 flex-1">
@@ -236,11 +238,14 @@ function EpisodesSection({ episodes }) {
 }
 
 function EpisodeCard({ episode }) {
-  const hasStill = Boolean(episode.still_path);
-
-  const still = episode.still_path
-    ? `${IMG}/w500${episode.still_path}`
-    : "/tv.svg";
+  const hasStill = !!episode.still_path;
+  const still = hasStill
+    ? `${IMG}/w342${episode.still_path}`
+    : `/tv.svg`;
+  const stillSrcset = hasStill
+    ? `${IMG}/w342${episode.still_path} 342w, ${IMG}/w500${episode.still_path} 500w, ` +
+      `${IMG}/w780${episode.still_path} 780w`
+    : undefined;
 
   return (
     <article className="rounded-box overflow-hidden bg-primary/12 border border-white/10 flex 
@@ -248,9 +253,12 @@ function EpisodeCard({ episode }) {
       <img
         src={still}
         alt=""
+        srcSet={stillSrcset}
+        sizes="(max-width: 768px) 100vw, 224px"
         className={`w-full md:w-56 h-44 object-cover bg-base-200
           ${hasStill ? "md:h-auto" : "md:h-33"}`}
         loading="lazy"
+        onError={(e) => (e.target.src = "/tv.svg")}
       />
 
       <div className="p-4 flex-1">

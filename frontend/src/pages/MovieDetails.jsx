@@ -132,6 +132,7 @@ export default function MovieDetails() {
               alt={data.title || "Movie banner"}
               srcSet={backdropSrcset}
               sizes="100vw"
+              onError={(e) => e.target.src = poster}
               className="h-full w-full object-cover object-top brightness-50"
               fetchPriority="high"
               decoding="async"
@@ -153,6 +154,7 @@ export default function MovieDetails() {
                   border-white/10 shrink-0"
                 fetchPriority="high"
                 decoding="async"
+                onError={(e) => (e.target.src = "/movie.svg")}
               />
 
               <div className="pt-16 lg:pt-30 min-w-0 flex-1">

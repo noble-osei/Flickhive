@@ -9,23 +9,29 @@ export default function BrowseMediaCard({ item, mediaType, i }) {
   const title = isMovie ? item.title : item.name;
   const date = isMovie ? item.release_date : item.first_air_date;
 
-  const poster = item.poster_path
+  const hasPoster = !!item.poster_path;
+  const poster = hasPoster
     ? `${IMG}/w342${item.poster_path}`
     : `/${isMovie ? "movie" : "tv"}.svg`;
+  const posterSrcset = hasPoster
+    ? `${IMG}/w342${item.poster_path} 342w, ${IMG}/w500${item.poster_path} 500w, ` +
+      `${IMG}/w780${item.poster_path} 780w, ${IMG}/w185${item.poster_path} 185w, ` +
+      `${IMG}/w154${item.poster_path} 154w`
+    : undefined;
 
   return (
-    <Link
-      to={`/${mediaType}/${item.id}`}
-      className="group min-w-0"
-    >
+    <Link to={`/${mediaType}/${item.id}`} className="group min-w-0">
       <div className="relative overflow-hidden rounded-lg bg-base-200 aspect-2/3">
         <img
           src={poster}
+          srcSet={posterSrcset}
           alt={`${title} poster`}
+          sizes="(max-width: 640px) 50vw, (max-width: 768px) 33vw, (max-width: 1344px) 25vw, 20vw"
           className="w-full h-full object-cover transition duration-300 group-hover:scale-105"
           loading={i < 5 ? "eager" : "lazy"}
           decoding={i < 5 ? "sync" : "async"}
           fetchPriority={i < 5 ? "auto" : "low"}
+          onError={(e) => (e.target.src = `/${isMovie ? "movie" : "tv"}.svg`)}
         />
 
         {item.vote_average > 0 && (

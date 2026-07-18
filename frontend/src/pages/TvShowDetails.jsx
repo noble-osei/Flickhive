@@ -197,6 +197,7 @@ function HeroSection({
           className="h-full w-full object-cover object-top brightness-50"
           fetchPriority="high"
           decoding="async"
+          onError={(e) => e.target.src = "/tv.svg"}
         />
         <div className="absolute inset-0 bg-linear-to-t from-base-300 via-base-300/70 to-transparent" />
       </div>
@@ -212,6 +213,7 @@ function HeroSection({
               border-white/10 shrink-0"
             fetchPriority="high"
             decoding="async"
+            onError={(e) => e.target.src = "/tv.svg"}
           />
 
           <div className="pt-16 lg:pt-30 min-w-0 flex-1">
@@ -352,10 +354,18 @@ function SeasonsSection({ seasons, tvShowId }) {
                   : "/tv.svg"
               }
               alt={`${season.name} poster`}
+              sizes="140px"
+              srcSet={season.poster_path
+                ? `${IMG}/w342${season.poster_path} 342w, ${IMG}/w500${season.poster_path} 500w, ` +
+                  `${IMG}/w780${season.poster_path} 780w, ${IMG}/w185${season.poster_path} 185w, ` +
+                  `${IMG}/w154${season.poster_path} 154w`
+                : undefined
+              }
               className="w-full h-52 object-cover rounded-lg shadow-lg group-hover:scale-105 
                 transition"
               loading="lazy"
               decoding="async"
+              onError={(e) => (e.target.src = "/tv.svg")}
             />
 
             <h3 className="text-sm font-bold mt-3 line-clamp-2 group-hover:link-primary">
