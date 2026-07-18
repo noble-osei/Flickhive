@@ -75,7 +75,7 @@ export default Home;
 function MediaSection({ title, data, loading }) {
   const results = data?.results?.filter(
     (item) => item.poster_path && item.media_type !== "person",
-  );
+  ).slice(0, 10);
 
   if (loading) return <SkeletonRow />
   if (!results || results.length === 0) return null;
