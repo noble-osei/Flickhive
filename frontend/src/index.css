@@ -25,6 +25,16 @@
   to   { transform: scaleX(1); }
 }
 
+@keyframes slowZoom {
+  from {
+    transform: scale(1.05);
+  }
+
+  to {
+    transform: scale(1.12);
+  }
+}
+
 .no-scrollbar {
   -ms-overflow-style: none;  /* IE and Edge */
   scrollbar-width: none;     /* Firefox */
