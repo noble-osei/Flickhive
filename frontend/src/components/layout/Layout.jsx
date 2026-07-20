@@ -1,7 +1,13 @@
 import { Suspense, useCallback, useState } from "react";
 import { Link, Outlet } from "react-router-dom";
 import SearchBar from "../search/SearchBar.jsx";
-import { LuSearch, LuMenu, LuClapperboard, LuTv } from "react-icons/lu";
+import {
+  LuSearch,
+  LuMenu,
+  LuClapperboard,
+  LuTv,
+  LuBookmark,
+} from "react-icons/lu";
 import { MdPerson } from "react-icons/md";
 import ScrollManager from "../../helpers/ScrollManager.jsx";
 import { useAuth } from "../../context/Auth.jsx";
@@ -186,6 +192,15 @@ function Navbar({ setIsDrawerOpen }) {
           >
             <LuSearch className="h-5 w-5" aria-hidden="true" />
           </button>
+
+          <Link
+            to="/watchlist"
+            className="btn btn-ghost btn-circle"
+            title="My Watchlist"
+            aria-label="My Watchlist"
+          >
+            <LuBookmark className="h-5 w-5" aria-hidden="true" />
+          </Link>
 
           <Link
             to="/login"
