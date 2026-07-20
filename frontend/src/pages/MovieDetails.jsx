@@ -96,9 +96,7 @@ export default function MovieDetails() {
   const year = data.release_date?.slice(0, 4);
 
   const hasPoster = !!data.poster_path;
-  const poster = hasPoster
-    ? `${IMG}/w500${data.poster_path}`
-    : "/movie.svg";
+  const poster = hasPoster ? `${IMG}/w500${data.poster_path}` : "/movie.svg";
   const posterSrcset = hasPoster
     ? `${IMG}/w342${data.poster_path} 342w, ${IMG}/w500${data.poster_path} 500w, ` +
       `${IMG}/w780${data.poster_path} 780w, ${IMG}/w185${data.poster_path} 185w, ` +
@@ -132,7 +130,7 @@ export default function MovieDetails() {
               alt={data.title || "Movie banner"}
               srcSet={backdropSrcset}
               sizes="100vw"
-              onError={(e) => e.target.src = poster}
+              onError={(e) => (e.target.src = poster)}
               className="h-full w-full object-cover object-top brightness-50"
               fetchPriority="high"
               decoding="async"
