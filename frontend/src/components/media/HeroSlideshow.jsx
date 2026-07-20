@@ -256,7 +256,8 @@ export default function HeroSlideshow({ data, loading }) {
 
               <button
                 type="button"
-                aria-label={`Add ${title} to watchlist`}
+                aria-label={`Add "${title}" to watchlist`}
+                title={`Add "${title}" to watchlist`}
                 className="flex items-center justify-center rounded-full w-8 h-8 bg-white/10 
                   border border-white/20 text-white cursor-pointer transition-colors 
                   duration-150 hover:bg-white/20 lg:w-12 lg:h-12"
