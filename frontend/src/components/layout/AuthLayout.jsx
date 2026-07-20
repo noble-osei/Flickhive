@@ -36,25 +36,8 @@ export default function AuthLayout() {
 
         {/* Footer */}
         <footer className="px-4 py-6 lg:px-16 xl:px-0">
-          <div className="mx-auto flex max-w-7xl flex-col items-center gap-2 text-center text-sm 
-            text-base-content/55 md:flex-row md:justify-between">
+          <div className="mx-auto max-w-7xl text-center text-sm text-base-content/55">
             <span>© {new Date().getFullYear()} Flickhive</span>
-
-            <div className="flex items-center gap-4">
-              <Link
-                to="/privacy"
-                className="transition-colors hover:text-primary"
-              >
-                Privacy
-              </Link>
-
-              <Link
-                to="/terms"
-                className="transition-colors hover:text-primary"
-              >
-                Terms
-              </Link>
-            </div>
           </div>
         </footer>
       </div>
