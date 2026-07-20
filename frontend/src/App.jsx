@@ -18,17 +18,21 @@ const PersonDetails = lazy(() => import("./pages/PersonDetails.jsx"));
 const PageNotFound = lazy(() => import("./pages/PageNotFound.jsx"));
 const SearchResults = lazy(() => import("./pages/SearchResults.jsx"));
 const Login = lazy(() => import("./pages/Login.jsx"));
+const Signup = lazy(() => import("./pages/Signup.jsx"));
 const AuthLayout = lazy(() => import("./components/layout/AuthLayout.jsx"));
 
 function App() {
   return (
     <Routes>
       <Route element={<Layout />}>
-        <Route path="/" element={
-          <Suspense fallback={<HomeSkeleton />}>
-            <Home />
-          </Suspense>
-        } />
+        <Route
+          path="/"
+          element={
+            <Suspense fallback={<HomeSkeleton />}>
+              <Home />
+            </Suspense>
+          }
+        />
         <Route path="/search" element={<SearchResults />} />
 
         <Route
@@ -47,11 +51,14 @@ function App() {
           path="/movies/now-playing"
           element={<BrowsePage pageKey="movies-now-playing" />}
         />
-        <Route path="/movies/:movieId" element={
-          <Suspense fallback={<DetailsSkeleton />}>
-            <MovieDetails />
-          </Suspense>
-        } />
+        <Route
+          path="/movies/:movieId"
+          element={
+            <Suspense fallback={<DetailsSkeleton />}>
+              <MovieDetails />
+            </Suspense>
+          }
+        />
 
         <Route
           path="/tv/popular"
@@ -65,11 +72,14 @@ function App() {
           path="/tv/on-tv"
           element={<BrowsePage pageKey="tv-on-the-air" />}
         />
-        <Route path="/tv/:tvShowId" element={
-          <Suspense fallback={<DetailsSkeleton />}>
-            <TVShowDetails />
-          </Suspense>
-        } />
+        <Route
+          path="/tv/:tvShowId"
+          element={
+            <Suspense fallback={<DetailsSkeleton />}>
+              <TVShowDetails />
+            </Suspense>
+          }
+        />
         <Route
           path="/tv/:tvShowId/season/:seasonNumber"
           element={
@@ -83,23 +93,30 @@ function App() {
           path="/people/popular"
           element={<BrowsePage pageKey="people-popular" />}
         />
-        <Route path="/people/:personId" element={
-          <Suspense fallback={<PersonDetailsSkeleton />}>
-            <PersonDetails />
-          </Suspense>
-        } />
+        <Route
+          path="/people/:personId"
+          element={
+            <Suspense fallback={<PersonDetailsSkeleton />}>
+              <PersonDetails />
+            </Suspense>
+          }
+        />
 
-        <Route path="/:mediaType/:mediaId/cast" element={
-          <Suspense fallback={<FullCastCrewSkeleton />}>
-            <FullCastCrew />
-          </Suspense>
-        } />
+        <Route
+          path="/:mediaType/:mediaId/cast"
+          element={
+            <Suspense fallback={<FullCastCrewSkeleton />}>
+              <FullCastCrew />
+            </Suspense>
+          }
+        />
 
         <Route path="*" element={<PageNotFound />} />
       </Route>
 
       <Route element={<AuthLayout />}>
         <Route path="/login" element={<Login />} />
+        <Route path="/signup" element={<Signup />} />
       </Route>
     </Routes>
   );
