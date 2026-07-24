@@ -3,9 +3,12 @@ import watchlistService from "../services/watchlist.js";
 
 class WatchlistController {
   addToWatchlist = asyncHandler(async (req, res) => {
-    await watchlistService.addToWatchlist(req.user?.id, req.body?.mediaData);
+    const watchlistItem = await watchlistService.addToWatchlist(
+      req.user?.id,
+      req.body,
+    );
 
-    res.status(201).end();
+    res.status(201).json(watchlistItem);
   });
 
   getWatchlist = asyncHandler(async (req, res) => {
