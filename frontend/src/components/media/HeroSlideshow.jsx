@@ -5,10 +5,12 @@ import {
   LuChevronLeft,
   LuChevronRight,
   LuPlus,
+  LuBookmarkCheck,
   LuStar,
 } from "react-icons/lu";
 
 import useGenres from "../../hooks/useGenres.jsx";
+import useWatch from "../../hooks/useWatch.jsx";
 import HeroSlideSkeleton from "../ui/skeletons/Home.jsx";
 
 const IMG = import.meta.env.VITE_IMG;
@@ -76,6 +78,11 @@ export default function HeroSlideshow({ data, loading }) {
     }
   }, [active, itemsLength]);
 
+  const safeActive = itemsLength > 0 ? Math.min(active, itemsLength - 1) : 0;
+  const item = items[safeActive];
+
+  const { isWatching, toggle } = useWatch(item?.id, item?.media_type);
+
   if (loading) return <HeroSlideSkeleton />;
   if (itemsLength === 0) {
     return (
@@ -88,9 +95,6 @@ export default function HeroSlideshow({ data, loading }) {
       </section>
     );
   }
-
-  const safeActive = Math.min(active, itemsLength - 1);
-  const item = items[safeActive];
 
   const title = item.title ?? item.name;
   const date = item.release_date ?? item.first_air_date;
@@ -256,13 +260,35 @@ export default function HeroSlideshow({ data, loading }) {
 
               <button
                 type="button"
-                aria-label={`Add "${title}" to watchlist`}
-                title={`Add "${title}" to watchlist`}
-                className="flex items-center justify-center rounded-full w-8 h-8 bg-white/10 
-                  border border-white/20 text-white cursor-pointer transition-colors 
+                aria-label={
+                  isWatching
+                    ? `Remove "${title}" from watchlist`
+                    : `Add "${title}" to watchlist`
+                }
+                title={
+                  isWatching
+                    ? `Remove "${title}" from watchlist`
+                    : `Add "${title}" to watchlist`
+                }
+                onClick={() =>
+                  toggle({
+                    title: item.title,
+                    name: item.name,
+                    poster_path: item.poster_path,
+                    release_date: item.release_date,
+                    first_air_date: item.first_air_date,
+                    vote_average: item.vote_average,
+                  })
+                }
+                className="flex items-center justify-center rounded-full w-8 h-8 bg-white/10
+                  border border-white/20 text-white cursor-pointer transition-colors
                   duration-150 hover:bg-white/20 lg:w-12 lg:h-12"
               >
-                <LuPlus size={15} />
+                {isWatching ? (
+                  <LuBookmarkCheck size={15} />
+                ) : (
+                  <LuPlus size={15} />
+                )}
               </button>
 
               {rating && (

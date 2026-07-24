@@ -3,6 +3,7 @@ import { useMemo, useState } from "react";
 import { Helmet } from "react-helmet-async";
 
 import useFetch from "../hooks/useFetch.jsx";
+import useWatch from "../hooks/useWatch.jsx";
 import Carousel from "../components/media/Carousel.jsx";
 import VideoPlayer from "../components/media/VideoPlayer.jsx";
 import {
@@ -169,6 +170,8 @@ function HeroSection({
   mainTrailer,
   onPlayTrailer,
 }) {
+  const { isWatching, toggle } = useWatch(data.id, "tv");
+
   const hasPoster = !!poster;
   const posterSrc = hasPoster ? `${IMG}/w500${poster}` : "/tv.svg";
   const posterSrcset = hasPoster
@@ -261,6 +264,15 @@ function HeroSection({
               title={title}
               mainTrailer={mainTrailer}
               onPlayTrailer={onPlayTrailer}
+              isWatching={isWatching}
+              onToggleWatchlist={() =>
+                toggle({
+                  name: data.name,
+                  poster_path: data.poster_path,
+                  first_air_date: data.first_air_date,
+                  vote_average: data.vote_average,
+                })
+              }
               desktop
             />
           </div>
@@ -270,6 +282,15 @@ function HeroSection({
           title={title}
           mainTrailer={mainTrailer}
           onPlayTrailer={onPlayTrailer}
+          isWatching={isWatching}
+          onToggleWatchlist={() =>
+            toggle({
+              name: data.name,
+              poster_path: data.poster_path,
+              first_air_date: data.first_air_date,
+              vote_average: data.vote_average,
+            })
+          }
           mobile
         />
       </div>

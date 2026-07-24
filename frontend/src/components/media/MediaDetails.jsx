@@ -1,5 +1,11 @@
 import { Link } from "react-router-dom";
-import { LuPlus, LuPlay, LuChevronLeft, LuChevronRight } from "react-icons/lu";
+import {
+  LuPlus,
+  LuPlay,
+  LuBookmarkCheck,
+  LuChevronLeft,
+  LuChevronRight,
+} from "react-icons/lu";
 
 import Carousel from "./Carousel.jsx";
 import MovieCard from "./MovieCard.jsx";
@@ -11,6 +17,8 @@ export function ActionButtons({
   title,
   mainTrailer,
   onPlayTrailer,
+  isWatching,
+  onToggleWatchlist,
   desktop,
   mobile,
 }) {
@@ -33,18 +41,28 @@ export function ActionButtons({
       <button
         type="button"
         className="btn btn-outline rounded-full hidden lg:inline-flex"
-        aria-label={`Add ${title} to watchlist`}
+        aria-label={
+          isWatching
+            ? `Remove ${title} from watchlist`
+            : `Add ${title} to watchlist`
+        }
+        onClick={onToggleWatchlist}
       >
-        <LuPlus />
-        Watchlist
+        {isWatching ? <LuBookmarkCheck /> : <LuPlus />}
+        {isWatching ? "In Watchlist" : "Watchlist"}
       </button>
 
       <button
         type="button"
         className="btn btn-circle btn-outline lg:hidden"
-        aria-label={`Add ${title} to Watchlist`}
+        aria-label={
+          isWatching
+            ? `Remove ${title} from Watchlist`
+            : `Add ${title} to Watchlist`
+        }
+        onClick={onToggleWatchlist}
       >
-        <LuPlus />
+        {isWatching ? <LuBookmarkCheck /> : <LuPlus />}
       </button>
     </div>
   );

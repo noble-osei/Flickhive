@@ -1,9 +1,10 @@
 import { Link } from "react-router-dom";
+import { LuX } from "react-icons/lu";
 import { formatDate } from "../../helpers/media.js";
 
 const IMG = import.meta.env.VITE_IMG;
 
-export default function MovieCard({ item }) {
+export default function MovieCard({ item, onRemove }) {
   const hasPoster = !!item.poster_path;
   const poster = hasPoster
     ? `${IMG}/w342${item.poster_path}`
@@ -21,7 +22,7 @@ export default function MovieCard({ item }) {
     >
       <div className="relative overflow-hidden rounded-lg bg-base-200 aspect-2/3 mb-4">
         <img
-          className="w-full h-full object-cover rounded-lg transition-all duration-300 
+          className="w-full h-full object-cover rounded-lg transition-all duration-300
             group-hover:scale-105"
           src={poster}
           alt={item.title ?? item.name}
@@ -33,6 +34,23 @@ export default function MovieCard({ item }) {
             (e.target.src = `/${item.media_type === "tv" ? "tv" : "movie"}.svg`)
           }
         />
+
+        {onRemove && (
+          <button
+            type="button"
+            onClick={(e) => {
+              e.preventDefault()
+              e.stopPropagation();
+              onRemove();
+            }}
+            aria-label={`Remove ${item.title ?? item.name} from watchlist`}
+            className="absolute top-2 right-2 flex items-center justify-center w-7 h-7
+              rounded-full bg-black/60 text-white cursor-pointer transition-colors
+              duration-150 hover:bg-error"
+          >
+            <LuX size={14} />
+          </button>
+        )}
       </div>
 
       <h3 className="text-sm font-bold line-clamp-2 group-hover:link-primary">

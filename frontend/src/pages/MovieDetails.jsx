@@ -4,6 +4,7 @@ import { LuStar } from "react-icons/lu";
 import { Helmet } from "react-helmet-async";
 
 import useFetch from "../hooks/useFetch.jsx";
+import useWatch from "../hooks/useWatch.jsx";
 import VideoPlayer from "../components/media/VideoPlayer.jsx";
 import {
   ActionButtons,
@@ -80,6 +81,8 @@ export default function MovieDetails() {
       cast,
     };
   }, [data]);
+
+  const { isWatching, toggle } = useWatch(data?.id, "movie");
 
   if (loading) return <DetailsSkeleton />;
   if (error) {
@@ -208,6 +211,15 @@ export default function MovieDetails() {
                   title={data.title}
                   mainTrailer={details.mainTrailer}
                   onPlayTrailer={setActiveVideo}
+                  isWatching={isWatching}
+                  onToggleWatchlist={() =>
+                    toggle({
+                      title: data.title,
+                      poster_path: data.poster_path,
+                      release_date: data.release_date,
+                      vote_average: data.vote_average,
+                    })
+                  }
                   desktop
                 />
               </div>
@@ -217,6 +229,15 @@ export default function MovieDetails() {
               title={data.title}
               mainTrailer={details.mainTrailer}
               onPlayTrailer={setActiveVideo}
+              isWatching={isWatching}
+              onToggleWatchlist={() =>
+                toggle({
+                  title: data.title,
+                  poster_path: data.poster_path,
+                  release_date: data.release_date,
+                  vote_average: data.vote_average,
+                })
+              }
               mobile
             />
           </div>
