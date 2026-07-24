@@ -17,6 +17,7 @@ const BrowsePage = lazy(() => import("./pages/Browse.jsx"));
 const PersonDetails = lazy(() => import("./pages/PersonDetails.jsx"));
 const PageNotFound = lazy(() => import("./pages/PageNotFound.jsx"));
 const SearchResults = lazy(() => import("./pages/SearchResults.jsx"));
+const Watchlist = lazy(() => import("./pages/Watchlist.jsx"));
 const Login = lazy(() => import("./pages/Login.jsx"));
 const Signup = lazy(() => import("./pages/Signup.jsx"));
 const AuthLayout = lazy(() => import("./components/layout/AuthLayout.jsx"));
@@ -34,6 +35,7 @@ function App() {
           }
         />
         <Route path="/search" element={<SearchResults />} />
+        <Route path="/watchlist" element={<Watchlist />} />
 
         <Route
           path="/movies/popular"
