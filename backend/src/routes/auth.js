@@ -6,18 +6,25 @@ import {
   validateAccessToken,
   validateRefreshToken,
 } from "../middlewares/auth.js";
+import { loginLimiter, signupLimiter } from "../middlewares/rateLimiter.js";
 
 const router = express.Router();
 
 router.post(
   "/signup",
+  signupLimiter,
   validateBody(userSchema.userSignup),
   authController.signup,
 );
 
 router.get("/me", validateAccessToken, authController.me);
 
-router.post("/login", validateBody(userSchema.userLogin), authController.login);
+router.post(
+  "/login",
+  loginLimiter,
+  validateBody(userSchema.userLogin),
+  authController.login,
+);
 
 router.post("/logout", validateAccessToken, authController.logout);
 
