@@ -9,11 +9,12 @@ class UserSchema {
       "string.email": "Invalid email format",
       "any.required": "Email is required",
     }),
-    password: Joi.string().min(8).max(30).trim().messages({
+    password: Joi.string().min(8).max(30).trim().required().messages({
       "string.base": "Password should be text",
       "string.empty": "Password cannot be empty",
       "string.min": "Password must be at least {#limit} characters",
       "string.max": "Password cannot exceed {#limit} characters",
+      "any.required": "Password is required",
     }),
   };
 
