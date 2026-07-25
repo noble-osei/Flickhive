@@ -1,11 +1,10 @@
 # Current Task
 
 ## Current goal
-Wire up the **Watchlist** feature end-to-end. The backend API is fully built
-(`/api/watchlist` — add/list/delete), and the frontend already has UI elements
-that *reference* it (nav link, "Add to Watchlist" buttons), but none of them
-are actually connected. Authentication (signup/login/logout/refresh) was just
-finished across the last ~15 commits and is the foundation this depends on.
+**Watchlist feature is now wired end-to-end** (backend + frontend). Next up
+is working through the Known Issues / Cleanup Backlog below — nothing is
+currently blocking, so pick whichever item is most relevant to what you're
+about to touch.
 
 ## Done
 - **Backend** (`backend/src/`) — layered `routes → controllers → services →
@@ -14,8 +13,24 @@ finished across the last ~15 commits and is the foundation this depends on.
     refresh, `/auth/me`. JWT access token (15m, httpOnly cookie) + refresh
     token (7d, httpOnly cookie, bcrypt-hashed at rest, rotated on refresh).
   - Watchlist: `POST/GET /api/watchlist`, `DELETE /api/watchlist/:mediaId`
-    (all behind `validateAccessToken`). Stores arbitrary `mediaData`
-    (`Mixed` type) per user.
+    (all behind `validateAccessToken`). `POST` body (`tmdbId`, `mediaType`,
+    `mediaData`) is Joi-validated; `mediaData` is a real subschema now
+    (title/name/poster_path/release_date/first_air_date/vote_average), not
+    `Mixed`. Unique compound index on `(userId, tmdbId, mediaType)` blocks
+    duplicates at the DB level; the service catches the Mongo 11000 error
+    and turns it into a clean `409 Already in watchlist`. `password` is now
+    `.required()` in the shared Joi `baseSchema`
+    (`backend/src/schemas/user.js`), so signup/login without one return a
+    clean 400 instead of an uncaught Mongoose `ValidationError` (500).
+    `/auth/login` and `/auth/signup` are now rate-limited via
+    `express-rate-limit` (`backend/src/middlewares/rateLimiter.js`) — login
+    allows 10 failed attempts / 15 min per IP (`skipSuccessfulRequests`, so
+    legitimate rapid successful logins aren't penalized), signup allows 10
+    requests / hour per IP. Both return a `429` through the existing
+    `AppError`/`errorHandler` pipeline. CORS origin (`backend/src/server.js`)
+    now reads from `process.env.CORS_ORIGIN` instead of being hardcoded to
+    `http://localhost:5173`, so it's configurable per environment ahead of
+    deployment.
 - **Frontend auth** — `AuthProvider`/`useAuth` context, axios interceptor that
   auto-refreshes on 401 and queues concurrent requests, `Login`/`Signup`
   pages + `AuthForm`/`SignupForm`, `AuthLayout` with background art,
@@ -25,40 +40,35 @@ finished across the last ~15 commits and is the foundation this depends on.
   Search, Movie/TV/Season/Person details, Full Cast & Crew — all reading
   directly from TMDB via `tmdbInstance` (client-side, `VITE_TMDB_TOKEN`).
   Route-level code splitting + skeleton loaders throughout.
-- Nav already has a `/watchlist` link and "Add to Watchlist" buttons
-  scattered across `HeroSlideshow`, `MediaDetails` (`ActionButtons`) — these
-  are placeholders with no `onClick` / no route yet.
+- **Frontend watchlist** — fully wired:
+  - `api/watchlist.js` — thin axios wrapper (`getWatchlist`/`addToWatchlist`/
+    `removeFromWatchlist`) over `FlickhiveInstance`.
+  - `context/Watchlist.jsx` — `WatchlistProvider`/`useWatchlist`, fetches
+    the list once on login (race-guarded against overlapping fetches via a
+    `cancelled` flag, since a fast user swap can leave a stale request
+    in flight), exposes `items`/`loading`/`addItem`/`removeItem`.
+  - `hooks/useWatch.jsx` — per-item `useWatch(tmdbId, mediaType)` derives
+    `isWatching`/`add`/`remove`/`toggle` from context state, used by every
+    "Add to Watchlist" button so they don't each refetch.
+  - `pages/Watchlist.jsx` + `/watchlist` route in `App.jsx` — grid of
+    `MovieCard`s built from stored `mediaData`, with a remove button, an
+    empty state, and a logged-out prompt to log in.
+  - "Add to Watchlist" buttons in `HeroSlideshow` and `MediaDetails`
+    `ActionButtons` (used by `MovieDetails`/`TvShowDetails`) now call
+    `toggle()` and swap icon/label between add and in-watchlist states.
+  - `MovieCard`'s remove button calls `preventDefault`/`stopPropagation`
+    since the card itself is a `react-router` `Link` — otherwise removing
+    an item would also navigate to its details page.
 
 ## Next
-1. Build a `Watchlist` page (`frontend/src/pages/Watchlist.jsx`) + route in
-   `App.jsx` so the existing nav link resolves instead of 404-ing.
-2. Wire "Add to Watchlist" buttons (`HeroSlideshow.jsx`, `MediaDetails.jsx`
-   `ActionButtons`) to call `POST /api/watchlist` via `FlickhiveInstance`,
-   with optimistic UI / toast feedback (pattern already used in `Auth.jsx`).
-3. Add a way to remove items (call existing `DELETE /api/watchlist/:mediaId`)
-   and reflect current watchlist state on buttons (e.g. filled vs outline
-   icon) — needs a way to know "is this item already saved" cheaply (likely
-   fetch watchlist once into context/state rather than per-card).
-4. Decide what `mediaData` shape to store (see Decisions below) before
-   wiring the add call, since backend just persists whatever is sent.
-5. Work through the Known Issues / Cleanup Backlog below — not blocking the
-   watchlist work, but fix opportunistically while touching nearby files.
+Work through the Known Issues / Cleanup Backlog below opportunistically —
+none of it is currently blocking. The Security section is now clear; the
+Correctness and Duplicated-code items are the highest-value next targets if
+picking where to start.
 
 ## Known Issues / Cleanup Backlog
 
 ### Security
-- [ ] `backend/src/schemas/user.js` — `password` isn't `.required()` in the
-      shared Joi `baseSchema`, so signup can currently pass without a
-      password and blow up as an uncaught Mongoose `ValidationError` (500)
-      instead of a clean 400.
-- [ ] CORS origin is hardcoded to `http://localhost:5173`
-      (`backend/src/server.js:16-21`) — needs to come from an env var
-      before any deployment.
-- [ ] No rate limiting on `/auth/login` or `/auth/signup` — brute-forceable.
-- [ ] `Watchlist.mediaData` is unvalidated `Schema.Types.Mixed`
-      (`backend/src/models/Watchlist.js:10`) — any JSON blob can be stored,
-      no shape/size constraints. Should get a real schema once we decide
-      what to store (see Decisions).
 - [ ] `VITE_TMDB_TOKEN` is bundled client-side (any `VITE_`-prefixed var
       ships to the browser) — anyone can pull it from devtools and burn our
       TMDB quota. Fine for now, but if this goes further, proxy TMDB calls
@@ -68,12 +78,6 @@ finished across the last ~15 commits and is the foundation this depends on.
       unknown email/bad token → 401 (line 33) — pick one convention.
 
 ### Correctness / dead code
-- [ ] Watchlist nav link (`Layout.jsx:197`) points to `/watchlist`, which
-      has no route in `App.jsx` — currently falls through to the 404 page.
-      (Covered by the Next steps above, tracked here so it isn't lost.)
-- [ ] Every "Add to Watchlist" button (`HeroSlideshow.jsx:257-266`,
-      `MediaDetails.jsx` `ActionButtons`) has no `onClick` — pure UI
-      placeholder.
 - [ ] `repositories/common.js`'s `validateQueryOptions` doesn't validate
       anything, it applies query modifiers (select/populate/sort/lean) —
       rename to something like `applyQueryOptions` to stop the confusion.
