@@ -20,9 +20,13 @@ import {
 import DetailsSkeleton from "../components/ui/skeletons/Details.jsx";
 import PageError from "../components/ui/PageError.jsx";
 import EmptyState from "../components/ui/EmptyState.jsx";
-import { formatDate } from "../helpers/media.js";
-
-const IMG = import.meta.env.VITE_IMG;
+import {
+  BACKDROP_WIDTHS,
+  buildImageProps,
+  formatDate,
+  IMG,
+  POSTER_WIDTHS,
+} from "../helpers/media.js";
 
 export default function MovieDetails() {
   const { movieId } = useParams();
@@ -98,19 +102,16 @@ export default function MovieDetails() {
 
   const year = data.release_date?.slice(0, 4);
 
-  const hasPoster = !!data.poster_path;
-  const poster = hasPoster ? `${IMG}/w500${data.poster_path}` : "/movie.svg";
-  const posterSrcset = hasPoster
-    ? `${IMG}/w342${data.poster_path} 342w, ${IMG}/w500${data.poster_path} 500w, ` +
-      `${IMG}/w780${data.poster_path} 780w, ${IMG}/w185${data.poster_path} 185w, ` +
-      `${IMG}/w154${data.poster_path} 154w`
-    : undefined;
-
-  const hasBackdrop = !!data.backdrop_path;
-  const backdropSrcset = hasBackdrop
-    ? `${IMG}/w300${data.backdrop_path} 300w, ${IMG}/w780${data.backdrop_path} 780w, ` +
-      `${IMG}/w1280${data.backdrop_path} 1280w`
-    : undefined;
+  const posterProps = buildImageProps(data.poster_path, {
+    widths: POSTER_WIDTHS,
+    srcWidth: 500,
+    fallback: "/movie.svg",
+  });
+  const backdropProps = buildImageProps(data.backdrop_path, {
+    widths: BACKDROP_WIDTHS,
+    srcWidth: 780,
+    fallback: posterProps.src,
+  });
 
   return (
     <>
@@ -129,11 +130,9 @@ export default function MovieDetails() {
         <section className="relative">
           <div className="relative h-56 lg:h-96 overflow-hidden">
             <img
-              src={hasBackdrop ? `${IMG}/w780${data.backdrop_path}` : poster}
+              {...backdropProps}
               alt={data.title || "Movie banner"}
-              srcSet={backdropSrcset}
               sizes="100vw"
-              onError={(e) => (e.target.src = poster)}
               className="h-full w-full object-cover object-top brightness-50"
               fetchPriority="high"
               decoding="async"
@@ -147,15 +146,13 @@ export default function MovieDetails() {
           <div className="relative max-w-7xl mx-auto px-4 lg:px-16 xl:px-0">
             <div className="flex gap-4 lg:gap-6 -mt-16 lg:-mt-28 relative z-10">
               <img
-                src={poster}
+                {...posterProps}
                 alt={`${data.title} poster`}
-                srcSet={posterSrcset}
                 sizes="(max-width: 1024px) 112px, 208px"
-                className="w-28 h-42 lg:w-52 lg:h-78 object-cover rounded-xl shadow-2xl border 
+                className="w-28 h-42 lg:w-52 lg:h-78 object-cover rounded-xl shadow-2xl border
                   border-white/10 shrink-0"
                 fetchPriority="high"
                 decoding="async"
-                onError={(e) => (e.target.src = "/movie.svg")}
               />
 
               <div className="pt-16 lg:pt-30 min-w-0 flex-1">
