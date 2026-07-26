@@ -8,8 +8,12 @@ import PageError from "../components/ui/PageError.jsx";
 import FullCastCrewSkeleton from "../components/ui/skeletons/FullCastCrew.jsx";
 import EmptyState from "../components/ui/EmptyState.jsx";
 import { Helmet } from "react-helmet-async";
-
-const IMG = import.meta.env.VITE_IMG;
+import {
+  AVATAR_WIDTHS,
+  BACKDROP_WIDTHS,
+  buildImageProps,
+  POSTER_WIDTHS,
+} from "../helpers/media.js";
 
 export default function FullCastCrewPage() {
   const { mediaType, mediaId } = useParams();
@@ -212,31 +216,24 @@ function CastCrewHero({
   detailsPath,
 }) {
 
-  const hasPoster = !!poster;
-  const posterSrc = hasPoster
-    ? `${IMG}/w500${poster}`
-    : `/${isMovie ? "movie" : "tv"}.svg`;
-  const posterSrcset = hasPoster
-    ? `${IMG}/w342${poster} 342w, ${IMG}/w500${poster} 500w, ` +
-      `${IMG}/w780${poster} 780w, ${IMG}/w185${poster} 185w, ` +
-      `${IMG}/w154${poster} 154w`
-    : undefined;
-
-  const hasBackdrop = !!backdrop;
-  const backdropSrcset = hasBackdrop
-    ? `${IMG}/w300${backdrop} 300w, ${IMG}/w780${backdrop} 780w, ` +
-      `${IMG}/w1280${backdrop} 1280w`
-    : undefined;
+  const posterProps = buildImageProps(poster, {
+    widths: POSTER_WIDTHS,
+    srcWidth: 500,
+    fallback: `/${isMovie ? "movie" : "tv"}.svg`,
+  });
+  const backdropProps = buildImageProps(backdrop, {
+    widths: BACKDROP_WIDTHS,
+    srcWidth: 780,
+    fallback: posterProps.src,
+  });
 
   return (
     <section className="relative">
       <div className="relative h-56 lg:h-96 overflow-hidden">
         <img
-          src={hasBackdrop ? `${IMG}/w780${backdrop}` : posterSrc}
+          {...backdropProps}
           alt={title || `${isMovie ? "Movie" : "TV Show"} banner`}
-          srcSet={backdropSrcset}
           sizes="100vw"
-          onError={(e) => (e.target.src = posterSrc)}
           className="h-full w-full object-cover object-top brightness-50"
           fetchPriority="high"
           decoding="async"
@@ -247,10 +244,8 @@ function CastCrewHero({
       <div className="relative max-w-7xl mx-auto px-4 lg:px-16 xl:px-0">
         <div className="flex gap-4 lg:gap-6 -mt-16 lg:-mt-28 relative z-10">
           <img
-            src={posterSrc}
+            {...posterProps}
             alt={`${title} poster`}
-            srcSet={posterSrcset}
-            onError={(e) => e.target.src = `/${isMovie ? "movie" : "tv"}.svg`}
             sizes="(max-width: 1024px) 112px, 208px"
             className="w-28 h-42 lg:w-52 lg:h-78 object-cover rounded-xl shadow-2xl border border-white/10 shrink-0"
             fetchPriority="high"
@@ -389,13 +384,11 @@ function CrewSection({ title, groupedCrew }) {
 }
 
 function PersonCreditCard({ person }) {
-  const image = person.profile_path
-    ? `${IMG}/w185${person.profile_path}`
-    : "/person.svg";
-  const imageSrcset = person.profile_path
-    ? `${IMG}/w92${person.profile_path} 92w, ${IMG}/w154${person.profile_path} 154w, ` +
-      `${IMG}/w185${person.profile_path} 185w, ${IMG}/w342${person.profile_path} 342w`
-    : undefined;
+  const imageProps = buildImageProps(person.profile_path, {
+    widths: AVATAR_WIDTHS,
+    srcWidth: 185,
+    fallback: "/person.svg",
+  });
 
   return (
     <Link
@@ -403,14 +396,12 @@ function PersonCreditCard({ person }) {
       className="group rounded-box bg-primary/12 border border-white/10 p-3 flex gap-3 hover:bg-primary/20 transition"
     >
       <img
-        src={image}
+        {...imageProps}
         alt={person.name}
         sizes="64px"
         className="w-16 h-16 rounded-full object-cover object-top border border-white/10 shrink-0"
         loading="lazy"
         decoding="async"
-        onError={(e) => e.target.src = "/person.svg"}
-        srcSet={imageSrcset}
       />
 
       <div className="min-w-0">
