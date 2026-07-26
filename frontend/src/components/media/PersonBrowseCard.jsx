@@ -1,18 +1,12 @@
 import { Link } from "react-router-dom";
-import { formatProfession } from "../../helpers/media.js";
-
-const IMG = import.meta.env.VITE_IMG;
+import { buildImageProps, formatProfession, POSTER_WIDTHS } from "../../helpers/media.js";
 
 export default function PersonBrowseCard({ person, i }) {
-  const hasProfile = !!person.profile_path;
-  const profile = hasProfile
-    ? `${IMG}/w342${person.profile_path}`
-    : `/person.svg`;
-  const profileSrcset = hasProfile
-    ? `${IMG}/w342${person.profile_path} 342w, ${IMG}/w500${person.profile_path} 500w, ` +
-      `${IMG}/w780${person.profile_path} 780w, ${IMG}/w185${person.profile_path} 185w, ` +
-      `${IMG}/w154${person.profile_path} 154w`
-    : undefined;
+  const profileProps = buildImageProps(person.profile_path, {
+    widths: POSTER_WIDTHS,
+    srcWidth: 342,
+    fallback: "/person.svg",
+  });
 
   const knownFor = person.known_for?.[0];
   const knownForTitle = knownFor?.title ?? knownFor?.name;
@@ -21,15 +15,13 @@ export default function PersonBrowseCard({ person, i }) {
     <Link to={`/people/${person.id}`} className="group min-w-0">
       <div className="overflow-hidden rounded-lg bg-base-200 aspect-2/3">
         <img
-          src={profile}
+          {...profileProps}
           alt={person.name}
           sizes="(max-width: 640px) 50vw, (max-width: 768px) 33vw, (max-width: 1024px) 25vw, 20vw"
-          srcSet={profileSrcset}
           loading={i < 5 ? "eager" : "lazy"}
           decoding={i < 5 ? "sync" : "async"}
           fetchPriority={i < 5 ? "auto" : "low"}
           className="w-full h-full object-cover object-top transition duration-300 group-hover:scale-105"
-          onError={(e) => (e.target.src = "/person.svg")}
         />
       </div>
 
