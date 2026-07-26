@@ -13,9 +13,14 @@ import {
   StatCard,
 } from "../components/media/MediaDetails.jsx";
 import PersonDetailsSkeleton from "../components/ui/skeletons/PersonDetails.jsx";
-import { formatDate, formatProfession } from "../helpers/media.js";
-
-const IMG = import.meta.env.VITE_IMG;
+import {
+  AVATAR_WIDTHS,
+  buildImageProps,
+  formatDate,
+  formatProfession,
+  IMG,
+  POSTER_WIDTHS,
+} from "../helpers/media.js";
 
 const GENDERS = {
   0: "Not specified",
@@ -386,29 +391,25 @@ function CreditCard({ credit }) {
   const date = credit.release_date ?? credit.first_air_date;
   const isMovie = credit.media_type === "movie";
 
-  const poster = credit.poster_path
-    ? `${IMG}/w154${credit.poster_path}`
-    : `/${isMovie ? "movie" : "tv"}.svg`;
-  const posterSrcset = credit.poster_path
-    ? `${IMG}/w154${credit.poster_path} 154w, ${IMG}/w185${credit.poster_path} 185w, ` +
-      `${IMG}/w342${credit.poster_path} 342w, ${IMG}/w92${credit.poster_path} 92w`
-    : undefined;
+  const posterProps = buildImageProps(credit.poster_path, {
+    widths: AVATAR_WIDTHS,
+    srcWidth: 154,
+    fallback: `/${isMovie ? "movie" : "tv"}.svg`,
+  });
 
   return (
     <Link
       to={`/${isMovie ? "movies" : "tv"}/${credit.id}`}
-      className="group flex gap-3 rounded-box bg-primary/12 border border-white/10 
+      className="group flex gap-3 rounded-box bg-primary/12 border border-white/10
         p-3 hover:bg-primary/20 transition"
     >
       <img
-        src={poster}
+        {...posterProps}
         alt={`${title} poster`}
         sizes="64px"
         className="w-16 h-24 rounded-lg object-cover bg-base-200 shrink-0"
         loading="lazy"
         decoding="async"
-        srcSet={posterSrcset}
-        onError={(e) => e.target.src = `${isMovie ? "movie" : "tv"}.svg`}
       />
 
       <div className="min-w-0">
@@ -510,17 +511,17 @@ function ImageGallery({ images = [], personName }) {
         {images.slice(0, 10).map((image) => (
           <img
             key={image.file_path}
-            src={`${IMG}/w342${image.file_path}`}
+            {...buildImageProps(image.file_path, {
+              widths: POSTER_WIDTHS,
+              srcWidth: 342,
+              fallback: "/person.svg",
+            })}
             alt={`${personName} profile`}
             sizes="160px"
-            srcSet={`${IMG}/w342${image.file_path} 342w, ${IMG}/w500${image.file_path} 500w, ` +
-              `${IMG}/w780${image.file_path} 780w, ${IMG}/w185${image.file_path} 185w, ` +
-              `${IMG}/w154${image.file_path} 154w`}
-            className="w-40 h-60 rounded-xl object-cover object-top flex-none 
+            className="w-40 h-60 rounded-xl object-cover object-top flex-none
               bg-base-200"
             loading="lazy"
             decoding="async"
-            onError={(e) => e.target.src = `${image.media_type === "movie" ? "movie" : "tv"}.svg`}
           />
         ))}
       </Carousel>
