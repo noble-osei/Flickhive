@@ -6,11 +6,9 @@ import useFetch from "../hooks/useFetch.jsx";
 import Carousel from "../components/media/Carousel.jsx";
 import { InfoBox, InfoRow, OverviewSection, StatCard } from "../components/media/MediaDetails.jsx";
 import SeasonDetailsSkeleton from "../components/ui/skeletons/SeasonDetails.jsx";
-import { formatDate } from "../helpers/media.js";
+import { BACKDROP_WIDTHS, buildImageProps, formatDate, POSTER_WIDTHS } from "../helpers/media.js";
 import PageError from "../components/ui/PageError.jsx";
 import { Helmet } from "react-helmet-async";
-
-const IMG = import.meta.env.VITE_IMG;
 
 export default function SeasonDetails() {
   const { tvShowId, seasonNumber } = useParams();
@@ -114,33 +112,26 @@ export default function SeasonDetails() {
 }
 
 function SeasonHero({ show, season, poster, backdrop, averageRating }) {
-  const hasPoster = !!poster;
-  const posterSrc = hasPoster
-    ? `${IMG}/w500${poster}`
-    : "/tv.svg";
-  const posterSrcset = hasPoster
-    ? `${IMG}/w342${poster} 342w, ${IMG}/w500${poster} 500w, ` +
-      `${IMG}/w780${poster} 780w, ${IMG}/w185${poster} 185w, ` +
-      `${IMG}/w154${poster} 154w`
-    : undefined;
-
-  const hasBackdrop = !!backdrop;
-  const backdropSrcset = hasBackdrop
-    ? `${IMG}/w300${backdrop} 300w, ${IMG}/w780${backdrop} 780w, ` +
-      `${IMG}/w1280${backdrop} 1280w`
-    : undefined;
+  const posterProps = buildImageProps(poster, {
+    widths: POSTER_WIDTHS,
+    srcWidth: 500,
+    fallback: "/tv.svg",
+  });
+  const backdropProps = buildImageProps(backdrop, {
+    widths: BACKDROP_WIDTHS,
+    srcWidth: 780,
+    fallback: posterProps.src,
+  });
 
   return (
     <section className="relative">
       <div className="relative h-56 lg:h-96 overflow-hidden">
         <img
-          src={hasBackdrop ? `${IMG}/w780${backdrop}` : posterSrc}
+          {...backdropProps}
           alt={season.name || "Season Banner"}
-          srcSet={backdropSrcset}
           sizes="100vw"
           className="h-full w-full object-cover object-top brightness-50"
           fetchPriority="high"
-          onError={(e) => (e.target.src = posterSrc)}
         />
         <div className="absolute inset-0 bg-linear-to-t from-base-300 via-base-300/70 to-transparent" />
       </div>
@@ -148,13 +139,11 @@ function SeasonHero({ show, season, poster, backdrop, averageRating }) {
       <div className="relative max-w-7xl mx-auto px-4 lg:px-16 xl:px-0">
         <div className="flex gap-4 lg:gap-6 -mt-16 lg:-mt-28 relative z-10">
           <img
-            src={posterSrc}
+            {...posterProps}
             alt={`${season.name} poster`}
-            srcSet={posterSrcset}
             sizes="(max-width: 1024px) 112px, 208px"
             className="w-28 h-42 lg:w-52 lg:h-78 object-cover rounded-xl shadow-2xl border border-white/10 shrink-0"
             fetchPriority="high"
-            onError={(e) => e.target.src = "/tv.svg"}
           />
 
           <div className="pt-16 lg:pt-30 min-w-0 flex-1">
@@ -238,27 +227,22 @@ function EpisodesSection({ episodes }) {
 }
 
 function EpisodeCard({ episode }) {
-  const hasStill = !!episode.still_path;
-  const still = hasStill
-    ? `${IMG}/w342${episode.still_path}`
-    : `/tv.svg`;
-  const stillSrcset = hasStill
-    ? `${IMG}/w342${episode.still_path} 342w, ${IMG}/w500${episode.still_path} 500w, ` +
-      `${IMG}/w780${episode.still_path} 780w`
-    : undefined;
+  const stillProps = buildImageProps(episode.still_path, {
+    widths: [342, 500, 780],
+    srcWidth: 342,
+    fallback: "/tv.svg",
+  });
 
   return (
-    <article className="rounded-box overflow-hidden bg-primary/12 border border-white/10 flex 
+    <article className="rounded-box overflow-hidden bg-primary/12 border border-white/10 flex
       flex-col md:flex-row">
       <img
-        src={still}
+        {...stillProps}
         alt=""
-        srcSet={stillSrcset}
         sizes="(max-width: 768px) 100vw, 224px"
         className={`w-full md:w-56 h-44 object-cover bg-base-200
-          ${hasStill ? "md:h-auto" : "md:h-33"}`}
+          ${episode.still_path ? "md:h-auto" : "md:h-33"}`}
         loading="lazy"
-        onError={(e) => (e.target.src = "/tv.svg")}
       />
 
       <div className="p-4 flex-1">
