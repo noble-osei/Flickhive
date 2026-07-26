@@ -11,10 +11,8 @@ import { FaHome } from "react-icons/fa";
 import useFetch from "../hooks/useFetch.jsx";
 import PageError from "../components/ui/PageError.jsx";
 import BrowseGridSkeleton from "../components/ui/skeletons/BrowseGrid.jsx";
-import { formatProfession } from "../helpers/media.js";
+import { buildImageProps, formatProfession, POSTER_WIDTHS } from "../helpers/media.js";
 import { Pagination } from "../components/media/MediaDetails.jsx";
-
-const IMG = import.meta.env.VITE_IMG;
 
 const TMDB_ENDPOINT = {
   all: "multi",
@@ -274,15 +272,11 @@ function MediaResultCard({ item, mediaType, index }) {
   const title = isMovie ? item.title : item.name;
   const date = isMovie ? item.release_date : item.first_air_date;
 
-  const hasPoster = !!item.poster_path;
-  const poster = hasPoster
-    ? `${IMG}/w342${item.poster_path}`
-    : `/${isMovie ? "movie" : "tv"}.svg`;
-  const posterSrcset = hasPoster
-    ? `${IMG}/w342${item.poster_path} 342w, ${IMG}/w500${item.poster_path} 500w, ` +
-      `${IMG}/w780${item.poster_path} 780w, ${IMG}/w185${item.poster_path} 185w, ` +
-      `${IMG}/w154${item.poster_path} 154w`
-    : undefined;
+  const posterProps = buildImageProps(item.poster_path, {
+    widths: POSTER_WIDTHS,
+    srcWidth: 342,
+    fallback: `/${isMovie ? "movie" : "tv"}.svg`,
+  });
 
   return (
     <Link
@@ -291,15 +285,13 @@ function MediaResultCard({ item, mediaType, index }) {
     >
       <div className="relative overflow-hidden rounded-lg bg-base-200 aspect-2/3">
         <img
-          src={poster}
+          {...posterProps}
           alt={`${title} poster`}
           sizes="(max-width: 640px) 50vw, (max-width: 768px) 33vw, (max-width: 1344px) 25vw, 20vw"
-          srcSet={posterSrcset}
           className="w-full h-full object-cover transition duration-300 group-hover:scale-105"
           loading={index < 5 ? "eager" : "lazy"}
           fetchPriority={index < 5 ? "auto" : "low"}
           decoding={index < 5 ? "sync" : "async"}
-          onError={(e) => e.target.src = `/${isMovie ? "movie" : "tv"}.svg`}
         />
 
         <span className="absolute top-2 left-2 badge badge-neutral bg-black/65 border-white/10">
@@ -329,15 +321,11 @@ function MediaResultCard({ item, mediaType, index }) {
 }
 
 function PersonResultCard({ person, index }) {
-  const hasProfile = !!person.profile_path;
-  const profile = hasProfile
-    ? `${IMG}/w342${person.profile_path}`
-    : `/person.svg`;
-  const profileSrcset = hasProfile
-    ? `${IMG}/w342${person.profile_path} 342w, ${IMG}/w500${person.profile_path} 500w, ` +
-      `${IMG}/w780${person.profile_path} 780w, ${IMG}/w185${person.profile_path} 185w, ` +
-      `${IMG}/w154${person.profile_path} 154w`
-    : undefined;
+  const profileProps = buildImageProps(person.profile_path, {
+    widths: POSTER_WIDTHS,
+    srcWidth: 342,
+    fallback: "/person.svg",
+  });
 
   const knownFor = person.known_for?.[0];
   const knownForTitle = knownFor?.title ?? knownFor?.name;
@@ -346,15 +334,13 @@ function PersonResultCard({ person, index }) {
     <Link to={`/people/${person.id}`} className="group min-w-0">
       <div className="relative overflow-hidden rounded-lg bg-base-200 aspect-2/3">
         <img
-          src={profile}
+          {...profileProps}
           alt={person.name}
-          srcSet={profileSrcset}
           sizes="(max-width: 640px) 50vw, (max-width: 768px) 33vw, (max-width: 1344px) 25vw, 20vw"
           className="w-full h-full object-cover object-top transition duration-300 group-hover:scale-105"
           loading={index < 5 ? "eager" : "lazy"}
           fetchPriority={index < 5 ? "auto" : "low"}
           decoding={index < 5 ? "sync" : "async"}
-          onError={(e) => e.target.src = "/person.svg"}
         />
 
         <span className="absolute top-2 left-2 badge badge-neutral bg-black/65 border-white/10">
