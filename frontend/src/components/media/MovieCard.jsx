@@ -1,19 +1,14 @@
 import { Link } from "react-router-dom";
 import { LuX } from "react-icons/lu";
-import { formatDate } from "../../helpers/media.js";
-
-const IMG = import.meta.env.VITE_IMG;
+import { buildImageProps, formatDate, POSTER_WIDTHS } from "../../helpers/media.js";
 
 export default function MovieCard({ item, onRemove }) {
-  const hasPoster = !!item.poster_path;
-  const poster = hasPoster
-    ? `${IMG}/w342${item.poster_path}`
-    : `/${item.media_type === "tv" ? "tv" : "movie"}.svg`;
-  const posterSrcset = hasPoster
-    ? `${IMG}/w342${item.poster_path} 342w, ${IMG}/w500${item.poster_path} 500w, ` +
-      `${IMG}/w780${item.poster_path} 780w, ${IMG}/w185${item.poster_path} 185w, ` +
-      `${IMG}/w154${item.poster_path} 154w`
-    : undefined;
+  const posterFallback = `/${item.media_type === "tv" ? "tv" : "movie"}.svg`;
+  const posterProps = buildImageProps(item.poster_path, {
+    widths: POSTER_WIDTHS,
+    srcWidth: 342,
+    fallback: posterFallback,
+  });
 
   return (
     <Link
@@ -24,15 +19,11 @@ export default function MovieCard({ item, onRemove }) {
         <img
           className="w-full h-full object-cover rounded-lg transition-all duration-300
             group-hover:scale-105"
-          src={poster}
+          {...posterProps}
           alt={item.title ?? item.name}
           sizes="152px"
-          srcSet={posterSrcset}
           loading="lazy"
           decoding="async"
-          onError={(e) =>
-            (e.target.src = `/${item.media_type === "tv" ? "tv" : "movie"}.svg`)
-          }
         />
 
         {onRemove && (
