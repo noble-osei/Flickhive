@@ -20,9 +20,13 @@ import {
 import DetailsSkeleton from "../components/ui/skeletons/Details.jsx";
 import PageError from "../components/ui/PageError.jsx";
 import EmptyState from "../components/ui/EmptyState.jsx";
-import { formatDate } from "../helpers/media.js";
-
-const IMG = import.meta.env.VITE_IMG;
+import {
+  BACKDROP_WIDTHS,
+  buildImageProps,
+  formatDate,
+  IMG,
+  POSTER_WIDTHS,
+} from "../helpers/media.js";
 
 export default function TVShowDetailsPage() {
   const { tvShowId } = useParams();
@@ -172,32 +176,27 @@ function HeroSection({
 }) {
   const { isWatching, toggle } = useWatch(data.id, "tv");
 
-  const hasPoster = !!poster;
-  const posterSrc = hasPoster ? `${IMG}/w500${poster}` : "/tv.svg";
-  const posterSrcset = hasPoster
-    ? `${IMG}/w342${poster} 342w, ${IMG}/w500${poster} 500w, ` +
-      `${IMG}/w780${poster} 780w, ${IMG}/w185${poster} 185w, ` +
-      `${IMG}/w154${poster} 154w`
-    : undefined;
-
-  const hasBackdrop = !!backdrop;
-  const backdropSrcset = hasBackdrop
-    ? `${IMG}/w300${backdrop} 300w, ${IMG}/w780${backdrop} 780w, ` +
-      `${IMG}/w1280${backdrop} 1280w`
-    : undefined;
+  const posterProps = buildImageProps(poster, {
+    widths: POSTER_WIDTHS,
+    srcWidth: 500,
+    fallback: "/tv.svg",
+  });
+  const backdropProps = buildImageProps(backdrop, {
+    widths: BACKDROP_WIDTHS,
+    srcWidth: 780,
+    fallback: posterProps.src,
+  });
 
   return (
     <section className="relative">
       <div className="relative h-56 lg:h-96 overflow-hidden">
         <img
-          src={hasBackdrop ? `${IMG}/w780${backdrop}` : posterSrc}
+          {...backdropProps}
           alt={title || "TV Show banner"}
-          srcSet={backdropSrcset}
           sizes="100vw"
           className="h-full w-full object-cover object-top brightness-50"
           fetchPriority="high"
           decoding="async"
-          onError={(e) => (e.target.src = "/tv.svg")}
         />
         <div className="absolute inset-0 bg-linear-to-t from-base-300 via-base-300/70 to-transparent" />
       </div>
@@ -205,15 +204,13 @@ function HeroSection({
       <div className="relative max-w-7xl mx-auto px-4 lg:px-16 xl:px-0">
         <div className="flex gap-4 lg:gap-6 -mt-16 lg:-mt-28 relative z-10">
           <img
-            src={posterSrc}
+            {...posterProps}
             alt={`${title} poster`}
-            srcSet={posterSrcset}
             sizes="(max-width: 1024px) 112px, 208px"
-            className="w-28 h-42 lg:w-52 lg:h-78 object-cover rounded-xl shadow-2xl border 
+            className="w-28 h-42 lg:w-52 lg:h-78 object-cover rounded-xl shadow-2xl border
               border-white/10 shrink-0"
             fetchPriority="high"
             decoding="async"
-            onError={(e) => (e.target.src = "/tv.svg")}
           />
 
           <div className="pt-16 lg:pt-30 min-w-0 flex-1">
@@ -366,25 +363,17 @@ function SeasonsSection({ seasons, tvShowId }) {
             className="w-35 flex flex-none flex-col snap-start group"
           >
             <img
-              src={
-                season.poster_path
-                  ? `${IMG}/w342${season.poster_path}`
-                  : "/tv.svg"
-              }
+              {...buildImageProps(season.poster_path, {
+                widths: POSTER_WIDTHS,
+                srcWidth: 342,
+                fallback: "/tv.svg",
+              })}
               alt={`${season.name} poster`}
               sizes="140px"
-              srcSet={
-                season.poster_path
-                  ? `${IMG}/w342${season.poster_path} 342w, ${IMG}/w500${season.poster_path} 500w, ` +
-                    `${IMG}/w780${season.poster_path} 780w, ${IMG}/w185${season.poster_path} 185w, ` +
-                    `${IMG}/w154${season.poster_path} 154w`
-                  : undefined
-              }
-              className="w-full h-52 object-cover rounded-lg shadow-lg group-hover:scale-105 
+              className="w-full h-52 object-cover rounded-lg shadow-lg group-hover:scale-105
                 transition"
               loading="lazy"
               decoding="async"
-              onError={(e) => (e.target.src = "/tv.svg")}
             />
 
             <h3 className="text-sm font-bold mt-3 line-clamp-2 group-hover:link-primary">
