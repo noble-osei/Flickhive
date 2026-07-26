@@ -1,10 +1,10 @@
 import Watchlist from "../models/Watchlist.js";
-import { validateQueryOptions } from "./common.js";
+import { applyQueryOptions } from "./common.js";
 
 class WatchlistRepository {
   findWatchlist = async (filters, options = {}) => {
     let query = Watchlist.find(filters);
-    query = validateQueryOptions(query, options);
+    query = applyQueryOptions(query, options);
     return await query.exec();
   };
 

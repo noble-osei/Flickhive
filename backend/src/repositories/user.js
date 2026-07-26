@@ -1,10 +1,10 @@
 import User from "../models/User.js";
-import { validateQueryOptions } from "./common.js";
+import { applyQueryOptions } from "./common.js";
 
 class UserRepository {
   findOneUser = async (filters, options = {}) => {
     let query = User.findOne(filters);
-    query = validateQueryOptions(query, options);
+    query = applyQueryOptions(query, options);
     return await query.exec();
   };
 

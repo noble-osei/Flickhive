@@ -1,4 +1,4 @@
-export const validateQueryOptions = (query, options = {}) => {
+export const applyQueryOptions = (query, options = {}) => {
   if (options.select) {
     query = query.select(options.select);
   }

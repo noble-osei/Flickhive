@@ -73,17 +73,23 @@ picking where to start.
       ships to the browser) — anyone can pull it from devtools and burn our
       TMDB quota. Fine for now, but if this goes further, proxy TMDB calls
       through the backend so the token isn't public.
-- [ ] Inconsistent error status codes for the same failure class in
-      `backend/src/services/auth.js` — wrong password → 400 (line 73),
-      unknown email/bad token → 401 (line 33) — pick one convention.
+- [x] ~~Inconsistent error status codes for the same failure class in
+      `backend/src/services/auth.js`~~ — `validatePassword` now throws `401`
+      (was `400`) so wrong password and unknown email both return `401` +
+      "Invalid credentials", closing a status-code-based user-enumeration
+      side channel. Verified against `frontend/src/context/Auth.jsx` and the
+      401-triggered refresh interceptor in `frontend/src/api/axios.js` —
+      both already treat this consistently.
 
 ### Correctness / dead code
-- [ ] `repositories/common.js`'s `validateQueryOptions` doesn't validate
-      anything, it applies query modifiers (select/populate/sort/lean) —
-      rename to something like `applyQueryOptions` to stop the confusion.
-- [ ] `SignupForm.jsx:19-26` — `handleConfirmPasswordChange` has an empty
-      branch with a "silently check" comment that does nothing. Either
-      remove the dead branch or implement the inline validation it implies.
+- [x] ~~`repositories/common.js`'s `validateQueryOptions` doesn't validate
+      anything~~ — renamed to `applyQueryOptions` (and its two call sites in
+      `repositories/user.js`/`repositories/watchlist.js`) to match what it
+      actually does.
+- [x] ~~`SignupForm.jsx:19-26` — `handleConfirmPasswordChange` has an empty
+      branch~~ — removed the dead branch; the existing `passwordsMatch`-driven
+      `border-error`/"Passwords do not match" UI already covers this, no new
+      logic needed.
 
 ### Duplicated code
 - [ ] **TMDB image URL / `srcSet` construction** — copy-pasted near-verbatim

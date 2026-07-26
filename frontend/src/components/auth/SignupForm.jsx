@@ -17,12 +17,7 @@ export default function SignupForm({
   const passwordsMatch = password === confirmPassword && password.length > 0;
 
   const handleConfirmPasswordChange = (e) => {
-    const value = e.target.value;
-    setConfirmPassword(value);
-
-    if (password && value && value !== password) {
-      // Silently check without showing error - UX will show visual feedback
-    }
+    setConfirmPassword(e.target.value);
   };
 
   return (

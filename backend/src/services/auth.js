@@ -70,7 +70,7 @@ class AuthService {
   validatePassword = async (user, password) => {
     const isMatch = await user.comparePassword(password);
     if (!isMatch) {
-      throw new AppError("Invalid credentials", 400);
+      throw new AppError("Invalid credentials", 401);
     }
   };
 
