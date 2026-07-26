@@ -12,8 +12,8 @@ import {
 import useGenres from "../../hooks/useGenres.jsx";
 import useWatch from "../../hooks/useWatch.jsx";
 import HeroSlideSkeleton from "../ui/skeletons/Home.jsx";
+import { buildImageProps, BACKDROP_WIDTHS, POSTER_WIDTHS } from "../../helpers/media.js";
 
-const IMG = import.meta.env.VITE_IMG;
 const AUTOPLAY_DELAY = 6000;
 const HERO_HEIGHT = "h-115 lg:h-screen lg:max-h-215 lg:min-h-150";
 
@@ -102,15 +102,11 @@ export default function HeroSlideshow({ data, loading }) {
   const detailsPath = `/${item.media_type === "movie" ? "movies" : "tv"}/${item.id}`;
   const rating = item.vote_average ? item.vote_average.toFixed(1) : null;
 
-  const hasPoster = !!item.poster_path;
-  const poster = hasPoster
-    ? `${IMG}/w500${item.poster_path}`
-    : `/${item.media_type}.svg`;
-  const posterSrcset = hasPoster
-    ? `${IMG}/w342${item.poster_path} 342w, ${IMG}/w500${item.poster_path} 500w, ` +
-      `${IMG}/w780${item.poster_path} 780w, ${IMG}/w185${item.poster_path} 185w, ` +
-      `${IMG}/w154${item.poster_path} 154w`
-    : undefined;
+  const posterProps = buildImageProps(item.poster_path, {
+    widths: POSTER_WIDTHS,
+    srcWidth: 500,
+    fallback: `/${item.media_type}.svg`,
+  });
 
   return (
     <section
@@ -123,11 +119,11 @@ export default function HeroSlideshow({ data, loading }) {
         const slideTitle = slide.title ?? slide.name;
         const isActive = index === safeActive;
 
-        const hasBackdrop = !!slide.backdrop_path;
-        const backdropSrcset = hasBackdrop
-          ? `${IMG}/w300${slide.backdrop_path} 300w, ${IMG}/w780${slide.backdrop_path} 780w, ` +
-            `${IMG}/w1280${slide.backdrop_path} 1280w`
-          : undefined;
+        const backdropProps = buildImageProps(slide.backdrop_path, {
+          widths: BACKDROP_WIDTHS,
+          srcWidth: 780,
+          fallback: posterProps.src,
+        });
 
         return (
           <div
@@ -138,15 +134,13 @@ export default function HeroSlideshow({ data, loading }) {
             aria-hidden={!isActive}
           >
             <img
-              src={`${IMG}/w780${slide.backdrop_path}`}
+              {...backdropProps}
               alt={`${slideTitle} banner`}
-              srcSet={backdropSrcset}
               sizes="100vw"
               className="absolute inset-0 w-full h-full object-cover object-top scale-105"
               loading={index === 0 ? "eager" : "lazy"}
               fetchPriority={index === 0 ? "high" : "auto"}
               decoding={index === 0 ? "sync" : "auto"}
-              onError={(e) => (e.target.src = poster)}
             />
 
             <div
@@ -187,15 +181,13 @@ export default function HeroSlideshow({ data, loading }) {
             />
 
             <img
-              src={poster}
+              {...posterProps}
               alt={`${title} poster`}
-              srcSet={posterSrcset}
               sizes="80px"
-              className="shrink-0 rounded-xl shadow-2xl shadow-black/70 border border-white/13 
+              className="shrink-0 rounded-xl shadow-2xl shadow-black/70 border border-white/13
                 w-20 h-28 object-cover"
               loading="eager"
               decoding="async"
-              onError={(e) => (e.target.src = `/${item.media_type}.svg`)}
             />
           </div>
 
