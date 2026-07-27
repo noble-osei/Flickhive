@@ -3,11 +3,20 @@ import { useEffect, useMemo, useRef } from "react";
 import { LuArrowLeft, LuStar } from "react-icons/lu";
 
 import useFetch from "../hooks/useFetch.jsx";
+import useFetchGuard from "../hooks/useFetchGuard.jsx";
 import Carousel from "../components/media/Carousel.jsx";
-import { InfoBox, InfoRow, OverviewSection, StatCard } from "../components/media/MediaDetails.jsx";
+import {
+  HeroBackLink,
+  HeroMeta,
+  HeroSection,
+  HeroTitle,
+  InfoBox,
+  InfoRow,
+  OverviewSection,
+  StatCard,
+} from "../components/media/MediaDetails.jsx";
 import SeasonDetailsSkeleton from "../components/ui/skeletons/SeasonDetails.jsx";
-import { BACKDROP_WIDTHS, buildImageProps, formatDate, POSTER_WIDTHS } from "../helpers/media.js";
-import PageError from "../components/ui/PageError.jsx";
+import { buildImageProps, formatDate } from "../helpers/media.js";
 import { Helmet } from "react-helmet-async";
 
 export default function SeasonDetails() {
@@ -49,18 +58,20 @@ export default function SeasonDetails() {
     };
   }, [show, season]);
 
-  if (loading) return <SeasonDetailsSkeleton />;
-  if (error) {
-    return (
-      <PageError
-        onRetry={() => {
-          showQuery.refetch();
-          seasonQuery.refetch();
-        }}
-      />
-    )
-  };
-  if ( !show || !season || !details) return <PageError title="No data found" />;
+  const guard = useFetchGuard({
+    loading,
+    error,
+    refetch: () => {
+      showQuery.refetch();
+      seasonQuery.refetch();
+    },
+    isEmpty: !show || !season || !details,
+    skeleton: <SeasonDetailsSkeleton />,
+    errorTitle: "Season not found",
+    errorMessage:
+      "We couldn't load this season. It may have been removed or your connection failed.",
+  });
+  if (guard) return guard;
 
   return (
     <>
@@ -112,79 +123,32 @@ export default function SeasonDetails() {
 }
 
 function SeasonHero({ show, season, poster, backdrop, averageRating }) {
-  const posterProps = buildImageProps(poster, {
-    widths: POSTER_WIDTHS,
-    srcWidth: 500,
-    fallback: "/tv.svg",
-  });
-  const backdropProps = buildImageProps(backdrop, {
-    widths: BACKDROP_WIDTHS,
-    srcWidth: 780,
-    fallback: posterProps.src,
-  });
-
   return (
-    <section className="relative">
-      <div className="relative h-56 lg:h-96 overflow-hidden">
-        <img
-          {...backdropProps}
-          alt={season.name || "Season Banner"}
-          sizes="100vw"
-          className="h-full w-full object-cover object-top brightness-50"
-          fetchPriority="high"
-        />
-        <div className="absolute inset-0 bg-linear-to-t from-base-300 via-base-300/70 to-transparent" />
-      </div>
+    <HeroSection
+      backdrop={backdrop}
+      backdropAlt={season.name || "Season banner"}
+      poster={poster}
+      posterAlt={`${season.name} poster`}
+      posterFallback="/tv.svg"
+      mobileActions={
+        <HeroBackLink to={`/tv/${show.id}`} label="Back to Show" mobile />
+      }
+    >
+      <HeroTitle eyebrow={show.name} title={season.name} />
 
-      <div className="relative max-w-7xl mx-auto px-4 lg:px-16 xl:px-0">
-        <div className="flex gap-4 lg:gap-6 -mt-16 lg:-mt-28 relative z-10">
-          <img
-            {...posterProps}
-            alt={`${season.name} poster`}
-            sizes="(max-width: 1024px) 112px, 208px"
-            className="w-28 h-42 lg:w-52 lg:h-78 object-cover rounded-xl shadow-2xl border border-white/10 shrink-0"
-            fetchPriority="high"
-          />
+      <HeroMeta>
+        {season.air_date && <span>{season.air_date.slice(0, 4)}</span>}
+        <span>{season.episodes?.length ?? 0} Episodes</span>
+        {averageRating && (
+          <span className="inline-flex items-center gap-1 text-accent font-semibold">
+            <LuStar size={15} fill="currentColor" />
+            {averageRating}/10
+          </span>
+        )}
+      </HeroMeta>
 
-          <div className="pt-16 lg:pt-30 min-w-0 flex-1">
-            <p className="text-primary font-semibold text-sm lg:text-base">
-              {show.name}
-            </p>
-
-            <h1 className="text-2xl lg:text-5xl font-bold leading-tight tracking-tight">
-              {season.name}
-            </h1>
-
-            <div className="mt-2 flex flex-wrap text-sm text-base-content/70 [&_span]:after:content-['•'] [&_span]:after:mx-2 [&_span]:last:after:content-none">
-              {season.air_date && <span>{season.air_date.slice(0, 4)}</span>}
-              <span>{season.episodes?.length ?? 0} Episodes</span>
-              {averageRating && (
-                <span className="inline-flex items-center gap-1 text-accent font-semibold">
-                  <LuStar size={15} fill="currentColor" />
-                  {averageRating}/10
-                </span>
-              )}
-            </div>
-
-            <Link
-              to={`/tv/${show.id}`}
-              className="btn btn-outline rounded-full mt-5 hidden lg:inline-flex"
-            >
-              <LuArrowLeft />
-              Back to Show
-            </Link>
-          </div>
-        </div>
-
-        <Link
-          to={`/tv/${show.id}`}
-          className="btn btn-outline rounded-full mt-4 lg:hidden"
-        >
-          <LuArrowLeft />
-          Back to Show
-        </Link>
-      </div>
-    </section>
+      <HeroBackLink to={`/tv/${show.id}`} label="Back to Show" desktop />
+    </HeroSection>
   );
 }
 
