@@ -3,12 +3,18 @@ import { useMemo, useState } from "react";
 import { Helmet } from "react-helmet-async";
 
 import useFetch from "../hooks/useFetch.jsx";
+import useFetchGuard from "../hooks/useFetchGuard.jsx";
 import useWatch from "../hooks/useWatch.jsx";
 import Carousel from "../components/media/Carousel.jsx";
 import VideoPlayer from "../components/media/VideoPlayer.jsx";
 import {
   ActionButtons,
   CastSection,
+  HeroGenres,
+  HeroMeta,
+  HeroSection,
+  HeroTagline,
+  HeroTitle,
   InfoBox,
   InfoRow,
   OverviewSection,
@@ -18,10 +24,8 @@ import {
   VideosSection,
 } from "../components/media/MediaDetails.jsx";
 import DetailsSkeleton from "../components/ui/skeletons/Details.jsx";
-import PageError from "../components/ui/PageError.jsx";
 import EmptyState from "../components/ui/EmptyState.jsx";
 import {
-  BACKDROP_WIDTHS,
   buildImageProps,
   formatDate,
   IMG,
@@ -76,17 +80,19 @@ export default function TVShowDetailsPage() {
     };
   }, [data]);
 
-  if (loading) return <DetailsSkeleton />;
-  if (error) {
-    return (
-      <PageError
-        title="TV Show not found"
-        message="We couldn't load this tv show. It may have been removed or your connection failed."
-        onRetry={refetch}
-      />
-    );
-  }
-  if (!data || !details) return <PageError title="No data found" />;
+  const { isWatching, toggle } = useWatch(data?.id, "tv");
+
+  const guard = useFetchGuard({
+    loading,
+    error,
+    refetch,
+    isEmpty: !data || !details,
+    skeleton: <DetailsSkeleton />,
+    errorTitle: "TV Show not found",
+    errorMessage:
+      "We couldn't load this tv show. It may have been removed or your connection failed.",
+  });
+  if (guard) return guard;
 
   const title = data.name;
   const year = data.first_air_date?.slice(0, 4);
@@ -106,15 +112,60 @@ export default function TVShowDetailsPage() {
 
       <main className="bg-base-300/30 pb-10">
         <HeroSection
-          data={data}
-          title={title}
-          year={year}
-          poster={data.poster_path}
           backdrop={data.backdrop_path}
-          rating={details.usRating}
-          mainTrailer={details.mainTrailer}
-          onPlayTrailer={setActiveVideo}
-        />
+          backdropAlt={title || "TV Show banner"}
+          poster={data.poster_path}
+          posterAlt={`${title} poster`}
+          posterFallback="/tv.svg"
+          mobileActions={
+            <ActionButtons
+              title={title}
+              mainTrailer={details.mainTrailer}
+              onPlayTrailer={setActiveVideo}
+              isWatching={isWatching}
+              onToggleWatchlist={() =>
+                toggle({
+                  name: data.name,
+                  poster_path: data.poster_path,
+                  first_air_date: data.first_air_date,
+                  vote_average: data.vote_average,
+                })
+              }
+              mobile
+            />
+          }
+        >
+          <HeroTitle title={title} year={year} />
+
+          <HeroMeta>
+            {data.first_air_date && (
+              <span>{formatDate(data.first_air_date)}</span>
+            )}
+            {details.usRating && <span>{details.usRating}</span>}
+            <span>{data.number_of_seasons} Seasons</span>
+            <span>{data.number_of_episodes} Episodes</span>
+            {data.status && <span>{data.status}</span>}
+          </HeroMeta>
+
+          <HeroGenres genres={data.genres} />
+          <HeroTagline tagline={data.tagline} />
+
+          <ActionButtons
+            title={title}
+            mainTrailer={details.mainTrailer}
+            onPlayTrailer={setActiveVideo}
+            isWatching={isWatching}
+            onToggleWatchlist={() =>
+              toggle({
+                name: data.name,
+                poster_path: data.poster_path,
+                first_air_date: data.first_air_date,
+                vote_average: data.vote_average,
+              })
+            }
+            desktop
+          />
+        </HeroSection>
 
         <div className="max-w-7xl mx-auto px-4 lg:px-16 xl:px-0 mt-6 grid grid-cols-1 lg:grid-cols-5 gap-6">
           <div className="lg:col-span-4 space-y-8">
@@ -161,137 +212,6 @@ export default function TVShowDetailsPage() {
         <VideoPlayer video={activeVideo} onClose={() => setActiveVideo(null)} />
       </main>
     </>
-  );
-}
-
-function HeroSection({
-  data,
-  title,
-  year,
-  poster,
-  backdrop,
-  rating,
-  mainTrailer,
-  onPlayTrailer,
-}) {
-  const { isWatching, toggle } = useWatch(data.id, "tv");
-
-  const posterProps = buildImageProps(poster, {
-    widths: POSTER_WIDTHS,
-    srcWidth: 500,
-    fallback: "/tv.svg",
-  });
-  const backdropProps = buildImageProps(backdrop, {
-    widths: BACKDROP_WIDTHS,
-    srcWidth: 780,
-    fallback: posterProps.src,
-  });
-
-  return (
-    <section className="relative">
-      <div className="relative h-56 lg:h-96 overflow-hidden">
-        <img
-          {...backdropProps}
-          alt={title || "TV Show banner"}
-          sizes="100vw"
-          className="h-full w-full object-cover object-top brightness-50"
-          fetchPriority="high"
-          decoding="async"
-        />
-        <div className="absolute inset-0 bg-linear-to-t from-base-300 via-base-300/70 to-transparent" />
-      </div>
-
-      <div className="relative max-w-7xl mx-auto px-4 lg:px-16 xl:px-0">
-        <div className="flex gap-4 lg:gap-6 -mt-16 lg:-mt-28 relative z-10">
-          <img
-            {...posterProps}
-            alt={`${title} poster`}
-            sizes="(max-width: 1024px) 112px, 208px"
-            className="w-28 h-42 lg:w-52 lg:h-78 object-cover rounded-xl shadow-2xl border
-              border-white/10 shrink-0"
-            fetchPriority="high"
-            decoding="async"
-          />
-
-          <div className="pt-16 lg:pt-30 min-w-0 flex-1">
-            <div className="flex flex-wrap items-baseline gap-x-3">
-              <h1 className="text-2xl lg:text-5xl font-bold leading-tight tracking-tight">
-                {title}
-              </h1>
-
-              {year && (
-                <span className="text-base-content/50 text-lg lg:text-2xl">
-                  ({year})
-                </span>
-              )}
-            </div>
-
-            <div
-              className="mt-2 flex flex-wrap text-sm text-base-content/70 
-              [&_span]:after:content-['•'] [&_span]:after:mx-2 [&_span]:last:after:content-none"
-            >
-              {data.first_air_date && (
-                <span>{formatDate(data.first_air_date)}</span>
-              )}
-              {rating && <span>{rating}</span>}
-              <span>{data.number_of_seasons} Seasons</span>
-              <span>{data.number_of_episodes} Episodes</span>
-              {data.status && <span>{data.status}</span>}
-            </div>
-
-            <div className="mt-3 flex gap-1.5 overflow-x-auto no-scrollbar">
-              {data.genres?.map((genre) => (
-                <span
-                  key={genre.id}
-                  className="shrink-0 text-[10px] lg:text-xs font-bold uppercase tracking-wider px-3
-                    py-1 rounded-full bg-primary/15 text-primary border border-primary/25"
-                >
-                  {genre.name}
-                </span>
-              ))}
-            </div>
-
-            {data.tagline && (
-              <p className="mt-3 hidden lg:block italic text-base-content/50">
-                “{data.tagline}”
-              </p>
-            )}
-
-            <ActionButtons
-              title={title}
-              mainTrailer={mainTrailer}
-              onPlayTrailer={onPlayTrailer}
-              isWatching={isWatching}
-              onToggleWatchlist={() =>
-                toggle({
-                  name: data.name,
-                  poster_path: data.poster_path,
-                  first_air_date: data.first_air_date,
-                  vote_average: data.vote_average,
-                })
-              }
-              desktop
-            />
-          </div>
-        </div>
-
-        <ActionButtons
-          title={title}
-          mainTrailer={mainTrailer}
-          onPlayTrailer={onPlayTrailer}
-          isWatching={isWatching}
-          onToggleWatchlist={() =>
-            toggle({
-              name: data.name,
-              poster_path: data.poster_path,
-              first_air_date: data.first_air_date,
-              vote_average: data.vote_average,
-            })
-          }
-          mobile
-        />
-      </div>
-    </section>
   );
 }
 
