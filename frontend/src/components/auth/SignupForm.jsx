@@ -89,7 +89,10 @@ export default function SignupForm({
 
       {/* Confirm Password Field */}
       <div>
-        <label htmlFor="confirmPassword" className="mb-2 block text-sm font-medium">
+        <label
+          htmlFor="confirmPassword"
+          className="mb-2 block text-sm font-medium"
+        >
           Confirm Password
         </label>
 
