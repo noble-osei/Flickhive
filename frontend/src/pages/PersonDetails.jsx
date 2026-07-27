@@ -4,9 +4,9 @@ import { LuChevronDown, LuChevronUp, LuExternalLink } from "react-icons/lu";
 import { Helmet } from "react-helmet-async";
 
 import useFetch from "../hooks/useFetch.jsx";
+import useFetchGuard from "../hooks/useFetchGuard.jsx";
 import Carousel from "../components/media/Carousel.jsx";
 import MovieCard from "../components/media/MovieCard.jsx";
-import PageError from "../components/ui/PageError.jsx";
 import {
   InfoBox,
   InfoRow,
@@ -71,24 +71,17 @@ export default function PersonDetails() {
     };
   }, [data]);
 
-  if (loading) {
-    return <PersonDetailsSkeleton />;
-  }
+  const guard = useFetchGuard({
+    loading,
+    error,
+    refetch,
+    isEmpty: !data || !credits,
+    skeleton: <PersonDetailsSkeleton />,
+    errorTitle: "Couldn't load person details",
+    errorMessage: "Please check your connection and try again.",
+  });
+  if (guard) return guard;
 
-  if (error) {
-    return (
-      <PageError
-      title="Couldn't load person details"
-      message="Please check your connection and try again."
-      onRetry={refetch}
-      />
-    );
-  }
-  
-  if (!data || !credits) {
-    return <PageError title="No data found" />;
-  }
-  
   return (
     <>
       <Helmet>
