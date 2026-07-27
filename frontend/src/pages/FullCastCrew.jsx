@@ -14,6 +14,7 @@ import {
 } from "../components/media/MediaDetails.jsx";
 import FullCastCrewSkeleton from "../components/ui/skeletons/FullCastCrew.jsx";
 import EmptyState from "../components/ui/EmptyState.jsx";
+import Tabs, { Tab } from "../components/ui/Tabs.jsx";
 import { Helmet } from "react-helmet-async";
 import { AVATAR_WIDTHS, buildImageProps } from "../helpers/media.js";
 
@@ -142,50 +143,42 @@ export default function FullCastCrewPage() {
           <div className="lg:col-span-4 space-y-8">
             <SearchBox query={query} setQuery={setQuery} />
 
-            <div className="tabs tabs-border">
-              <input
-                type="radio"
+            <Tabs>
+              <Tab
                 name="cast-crew-tabs"
-                className="tab"
-                aria-label={`Cast ${filteredCredits.cast.length}`}
+                label="Cast"
+                count={filteredCredits.cast.length}
                 defaultChecked
-              />
-              <div className="tab-content pt-5">
+              >
                 <PeopleSection
                   title="Cast"
                   people={filteredCredits.cast}
                   emptyMessage="No cast members match your search."
                 />
-              </div>
+              </Tab>
 
-              <input
-                type="radio"
+              <Tab
                 name="cast-crew-tabs"
-                className="tab"
-                aria-label={`Crew ${filteredCredits.crew.length}`}
-              />
-              <div className="tab-content pt-5">
+                label="Crew"
+                count={filteredCredits.crew.length}
+              >
                 <CrewSection title="Crew" groupedCrew={filteredCredits.groupedCrew} />
-              </div>
+              </Tab>
 
               {!isMovie && (
-                <>
-                  <input
-                    type="radio"
-                    name="cast-crew-tabs"
-                    className="tab"
-                    aria-label={`Creators ${filteredCredits.creators.length}`}
+                <Tab
+                  name="cast-crew-tabs"
+                  label="Creators"
+                  count={filteredCredits.creators.length}
+                >
+                  <PeopleSection
+                    title="Creators"
+                    people={filteredCredits.creators}
+                    emptyMessage="No creators match your search."
                   />
-                  <div className="tab-content pt-5">
-                    <PeopleSection
-                      title="Creators"
-                      people={filteredCredits.creators}
-                      emptyMessage="No creators match your search."
-                    />
-                  </div>
-                </>
+                </Tab>
               )}
-            </div>
+            </Tabs>
           </div>
 
           <CastCrewSidebar
