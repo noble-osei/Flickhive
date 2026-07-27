@@ -1,18 +1,20 @@
+const baseCookieOptions = () => ({
+  httpOnly: true,
+  secure: process.env.NODE_ENV === "production", // Only sent over HTTPS in production
+  sameSite: "lax",
+});
+
 class AuthHelpers {
   sendRefreshTokenCookie = (res, refreshToken) => {
     return res.cookie("refreshToken", refreshToken, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production", // Only sent over HTTPS in production
-      sameSite: "lax",
+      ...baseCookieOptions(),
       maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
     });
   };
 
   sendAccessTokenCookie = (res, accessToken) => {
     return res.cookie("accessToken", accessToken, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production", // Only sent over HTTPS in production
-      sameSite: "lax",
+      ...baseCookieOptions(),
       maxAge: 15 * 60 * 1000, // 15 mins
     });
   };
