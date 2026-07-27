@@ -13,6 +13,7 @@ import {
   StatCard,
 } from "../components/media/MediaDetails.jsx";
 import PersonDetailsSkeleton from "../components/ui/skeletons/PersonDetails.jsx";
+import Tabs, { Tab } from "../components/ui/Tabs.jsx";
 import {
   AVATAR_WIDTHS,
   buildImageProps,
@@ -294,32 +295,25 @@ function CreditsSection({ credits }) {
         Credits
       </h2>
 
-      <div className="tabs tabs-border">
-        <CreditsTab label="All" credits={credits.all} defaultChecked />
+      <Tabs>
+        <Tab
+          name="person-credits"
+          label="All"
+          count={credits.all.length}
+          defaultChecked
+        >
+          <CreditTimeline credits={credits.all} />
+        </Tab>
 
-        <CreditsTab label="Movies" credits={credits.movies} />
+        <Tab name="person-credits" label="Movies" count={credits.movies.length}>
+          <CreditTimeline credits={credits.movies} />
+        </Tab>
 
-        <CreditsTab label="TV Shows" credits={credits.tv} />
-      </div>
+        <Tab name="person-credits" label="TV Shows" count={credits.tv.length}>
+          <CreditTimeline credits={credits.tv} />
+        </Tab>
+      </Tabs>
     </section>
-  );
-}
-
-function CreditsTab({ label, credits, defaultChecked = false }) {
-  return (
-    <>
-      <input
-        type="radio"
-        name="person-credits"
-        className="tab"
-        aria-label={`${label} ${credits.length}`}
-        defaultChecked={defaultChecked}
-      />
-
-      <div className="tab-content pt-5">
-        <CreditTimeline credits={credits} />
-      </div>
-    </>
   );
 }
 
