@@ -1,19 +1,21 @@
 import { Link, useParams } from "react-router-dom";
 import { useMemo, useState } from "react";
-import { LuArrowLeft, LuSearch } from "react-icons/lu";
+import { LuSearch } from "react-icons/lu";
 
 import useFetch from "../hooks/useFetch.jsx";
-import { InfoBox, InfoRow } from "../components/media/MediaDetails.jsx";
-import PageError from "../components/ui/PageError.jsx";
+import useFetchGuard from "../hooks/useFetchGuard.jsx";
+import {
+  HeroBackLink,
+  HeroMeta,
+  HeroSection,
+  HeroTitle,
+  InfoBox,
+  InfoRow,
+} from "../components/media/MediaDetails.jsx";
 import FullCastCrewSkeleton from "../components/ui/skeletons/FullCastCrew.jsx";
 import EmptyState from "../components/ui/EmptyState.jsx";
 import { Helmet } from "react-helmet-async";
-import {
-  AVATAR_WIDTHS,
-  BACKDROP_WIDTHS,
-  buildImageProps,
-  POSTER_WIDTHS,
-} from "../helpers/media.js";
+import { AVATAR_WIDTHS, buildImageProps } from "../helpers/media.js";
 
 export default function FullCastCrewPage() {
   const { mediaType, mediaId } = useParams();
@@ -98,22 +100,16 @@ export default function FullCastCrewPage() {
     return { cast, crew, creators, groupedCrew };
   }, [credits, query]);
 
-  if (loading) return <FullCastCrewSkeleton />;
-  if (error) {
-    return (
-      <PageError 
-        title="Couldn't load cast and crew"
-        message="Please check your connection and try again."
-        onRetry={refetch}
-      />
-    );
-  };
-  if ( !data || !credits || !filteredCredits) {
-    return (
-      <PageError title="No data found" />
-    );
-  }
-
+  const guard = useFetchGuard({
+    loading,
+    error,
+    refetch,
+    isEmpty: !data || !credits || !filteredCredits,
+    skeleton: <FullCastCrewSkeleton />,
+    errorTitle: "Couldn't load cast and crew",
+    errorMessage: "Please check your connection and try again.",
+  });
+  if (guard) return guard;
 
   const title = isMovie ? data.title : data.name;
   const date = isMovie ? data.release_date : data.first_air_date;
@@ -215,89 +211,41 @@ function CastCrewHero({
   isMovie,
   detailsPath,
 }) {
-
-  const posterProps = buildImageProps(poster, {
-    widths: POSTER_WIDTHS,
-    srcWidth: 500,
-    fallback: `/${isMovie ? "movie" : "tv"}.svg`,
-  });
-  const backdropProps = buildImageProps(backdrop, {
-    widths: BACKDROP_WIDTHS,
-    srcWidth: 780,
-    fallback: posterProps.src,
-  });
+  const backLabel = `Back to ${isMovie ? "Movie" : "Show"}`;
 
   return (
-    <section className="relative">
-      <div className="relative h-56 lg:h-96 overflow-hidden">
-        <img
-          {...backdropProps}
-          alt={title || `${isMovie ? "Movie" : "TV Show"} banner`}
-          sizes="100vw"
-          className="h-full w-full object-cover object-top brightness-50"
-          fetchPriority="high"
-          decoding="async"
-        />
-        <div className="absolute inset-0 bg-linear-to-t from-base-300 via-base-300/70 to-transparent" />
-      </div>
+    <HeroSection
+      backdrop={backdrop}
+      backdropAlt={title || `${isMovie ? "Movie" : "TV Show"} banner`}
+      poster={poster}
+      posterAlt={`${title} poster`}
+      posterFallback={`/${isMovie ? "movie" : "tv"}.svg`}
+      mobileActions={
+        <HeroBackLink to={detailsPath} label={backLabel} mobile />
+      }
+    >
+      <HeroTitle title={title} subtitle="Full Cast & Crew" />
 
-      <div className="relative max-w-7xl mx-auto px-4 lg:px-16 xl:px-0">
-        <div className="flex gap-4 lg:gap-6 -mt-16 lg:-mt-28 relative z-10">
-          <img
-            {...posterProps}
-            alt={`${title} poster`}
-            sizes="(max-width: 1024px) 112px, 208px"
-            className="w-28 h-42 lg:w-52 lg:h-78 object-cover rounded-xl shadow-2xl border border-white/10 shrink-0"
-            fetchPriority="high"
-            decoding="async"
-          />
+      <HeroMeta>
+        {year && <span>{year}</span>}
+        <span>{isMovie ? "Movie" : "TV Show"}</span>
 
-          <div className="pt-16 lg:pt-30 min-w-0 flex-1">
-            <h1 className="text-2xl lg:text-5xl font-bold leading-tight tracking-tight line-clamp-2">
-              {title}
-            </h1>
+        {isMovie && data.runtime > 0 && (
+          <span>
+            {`${Math.floor(data.runtime / 60)}h ${data.runtime % 60}m`}
+          </span>
+        )}
 
-            <p className="mt-1 text-primary font-semibold">Full Cast & Crew</p>
+        {!isMovie && data.number_of_seasons > 0 && (
+          <span>
+            {data.number_of_seasons}{" "}
+            {data.number_of_seasons === 1 ? "Season" : "Seasons"}
+          </span>
+        )}
+      </HeroMeta>
 
-            <div className="mt-2 flex flex-wrap text-sm text-base-content/70 [&_span]:after:content-['•'] [&_span]:after:mx-2 [&_span]:last:after:content-none">
-              {year && <span>{year}</span>}
-              <span>{isMovie ? "Movie" : "TV Show"}</span>
-
-              {isMovie && data.runtime > 0 && (
-                <span>
-                  {data.runtime > 0
-                    ? `${Math.floor(data.runtime / 60)}h ${data.runtime % 60}m`
-                    : null}
-                </span>
-              )}
-
-              {!isMovie && data.number_of_seasons > 0 && (
-                <span>
-                  {data.number_of_seasons}{" "}
-                  {data.number_of_seasons === 1 ? "Season" : "Seasons"}
-                </span>
-              )}
-            </div>
-
-            <Link
-              to={detailsPath}
-              className="btn btn-outline rounded-full mt-5 hidden lg:inline-flex"
-            >
-              <LuArrowLeft />
-              Back to {isMovie ? "Movie" : "Show"}
-            </Link>
-          </div>
-        </div>
-
-        <Link
-          to={detailsPath}
-          className="btn btn-outline rounded-full mt-4 lg:hidden"
-        >
-          <LuArrowLeft />
-          Back to {isMovie ? "Movie" : "Show"}
-        </Link>
-      </div>
-    </section>
+      <HeroBackLink to={detailsPath} label={backLabel} desktop />
+    </HeroSection>
   );
 }
 
