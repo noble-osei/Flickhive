@@ -151,13 +151,50 @@ about to touch.
   attempted but blocked by a slow/flaky Chromium binary download in this
   environment — same DOM output (classes, `aria-label` text, conditional
   tab count) confirmed by direct code comparison instead.
+- **TMDB fetch caching added (Performance items 1+2 closed)** —
+  `frontend/src/hooks/useFetch.jsx` now has a module-level `cache`
+  (`url -> { data, timestamp }`, 5-minute `STALE_TIME`) and `inFlight`
+  (`url -> { promise, controller, refCount }`) Map. A fresh cache hit for
+  a URL is derived directly at render time (no fetch, no re-render churn);
+  concurrent callers for the same URL share one in-flight request via
+  `refCount`, and the shared `AbortController` is only aborted once every
+  subscriber has unmounted, so one component leaving doesn't cancel
+  another's still-pending fetch. `refetch()` deletes the URL's cache entry
+  before bumping `retryKey`, so it always forces a real network call.
+  Errors are never written to `cache`, so a failed request can't poison
+  later retries. Public signature `useFetch(url, enabled)` → `{ data,
+  loading, error, refetch }` is unchanged — all 11 existing call sites
+  (`Home.jsx` ×6, `MovieDetails`, `TvShowDetails`, `SeasonDetails` ×2,
+  `PersonDetails`, `FullCastCrew`, `SearchResults`, `Browse`, `SearchBar`)
+  needed zero changes, including `SearchBar`'s `enabled`-gated debounce
+  and `Browse`'s null-url-on-person-tab pattern. Verified manually against
+  a running dev server: navigating away from `/` and back no longer
+  refetches any of Home's 6 TMDB requests. Cache/in-flight Maps are
+  intentionally unbounded (no LRU eviction) — a deliberate scoping choice
+  for a single-session browsing SPA, not an oversight.
+- **`useGenres` TTL added (Performance item 3 closed)** —
+  `frontend/src/hooks/useGenres.jsx`'s `localStorage` cache now stores
+  `{ version, timestamp, data }` instead of a bare merged-genres object.
+  A missing/version-mismatched/expired (>24h `TTL`) entry is treated as a
+  cache miss and refetched, fixing the old `if (genres) return` behavior
+  that cached forever. `CACHE_VERSION` bump transparently migrates old
+  unwrapped blobs (they fail the version check and get rewritten). Public
+  API (`useGenres()` → `genres | null`) unchanged; its only consumer,
+  `HeroSlideshow.jsx`, needed no changes.
+- **Vendor-chunk duplication (Performance item 4) intentionally deferred**
+  — investigated during the caching work above: `vite.config.js` has no
+  `build.rollupOptions.manualChunks` at all, so the ~9 near-duplicate
+  `dist/assets/react-*.js` chunks are Rollup's default auto-chunking
+  interacting with `App.jsx`'s 13 `React.lazy()` route imports, not a
+  caching issue. Confirmed unrelated to the `useFetch`/`useGenres` work
+  above; left as a separate follow-up needing a bundle visualizer.
 
 ## Next
 Work through the Known Issues / Cleanup Backlog below opportunistically —
-none of it is currently blocking. Security and all Duplicated-code items
-are now clear. Performance backlog (Home.jsx refetching, no TMDB
-cache/dedup, useGenres TTL, duplicate vendor chunks) is the highest-value
-next area if picking where to start.
+none of it is currently blocking. Security, Duplicated-code, and three of
+four Performance items are now clear. The one remaining Performance item
+— the vendor-chunk/`manualChunks` investigation — is the last thing on
+the backlog if picking where to start next.
 
 ## Known Issues / Cleanup Backlog
 
@@ -180,13 +217,13 @@ next area if picking where to start.
       shared `Tabs` component if a fourth instance shows up.
 
 ### Performance
-- [ ] `Home.jsx` fires 6 independent TMDB requests on every mount with no
+- [x] `Home.jsx` fires 6 independent TMDB requests on every mount with no
       caching — revisiting `/` always refetches everything.
-- [ ] No caching/dedup layer for TMDB calls in general (`useFetch` has no
+- [x] No caching/dedup layer for TMDB calls in general (`useFetch` has no
       stale-time or cache) — navigating back to an already-fetched page
       always refetches. Consider React Query or a simple in-memory
       URL-keyed cache.
-- [ ] `useGenres`'s `localStorage` cache (`frontend/src/hooks/useGenres.jsx:16`)
+- [x] `useGenres`'s `localStorage` cache (`frontend/src/hooks/useGenres.jsx:16`)
       never expires — no TTL/versioning, so genre renames on TMDB's side
       never show up until the user clears storage.
 - [ ] Bundle has an unusually high number of near-duplicate vendor chunks
@@ -208,6 +245,8 @@ next area if picking where to start.
 - **Styling**: Tailwind v4 + DaisyUI, single `flickhive` theme
   (`main.jsx`), no CSS modules/styled-components — stay consistent with
   that.
-- **Data fetching**: plain `useFetch` hook (abort-controller based, no
-  cache/dedup layer, no React Query). Known limitation, not yet worth
-  fixing unless refetching becomes a visible perf problem.
+- **Data fetching**: plain `useFetch` hook (abort-controller based), now
+  with a hand-rolled module-level cache + in-flight dedup (5-minute
+  stale-time, no LRU eviction) rather than React Query — proportionate to
+  the app's current size (no mutations/pagination/offline needs yet that
+  would justify a library). Revisit if those needs show up.
