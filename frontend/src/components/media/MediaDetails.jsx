@@ -5,13 +5,157 @@ import {
   LuBookmarkCheck,
   LuChevronLeft,
   LuChevronRight,
+  LuArrowLeft,
 } from "react-icons/lu";
 
 import Carousel from "./Carousel.jsx";
 import MovieCard from "./MovieCard.jsx";
-import { AVATAR_WIDTHS, buildImageProps } from "../../helpers/media.js";
+import {
+  AVATAR_WIDTHS,
+  BACKDROP_WIDTHS,
+  buildImageProps,
+  POSTER_WIDTHS,
+} from "../../helpers/media.js";
 
 const YOUTUBE_IMG = import.meta.env.VITE_YOUTUBE_THUMBNAIL;
+
+export function HeroSection({
+  backdrop,
+  backdropAlt,
+  poster,
+  posterAlt,
+  posterFallback,
+  children,
+  mobileActions,
+}) {
+  const posterProps = buildImageProps(poster, {
+    widths: POSTER_WIDTHS,
+    srcWidth: 500,
+    fallback: posterFallback,
+  });
+  const backdropProps = buildImageProps(backdrop, {
+    widths: BACKDROP_WIDTHS,
+    srcWidth: 780,
+    fallback: posterProps.src,
+  });
+
+  return (
+    <section className="relative">
+      <div className="relative h-56 lg:h-96 overflow-hidden">
+        <img
+          {...backdropProps}
+          alt={backdropAlt}
+          sizes="100vw"
+          className="h-full w-full object-cover object-top brightness-50"
+          fetchPriority="high"
+          decoding="async"
+        />
+        <div
+          className="absolute inset-0 bg-linear-to-t from-base-300 via-base-300/70
+          to-transparent"
+        />
+      </div>
+
+      <div className="relative max-w-7xl mx-auto px-4 lg:px-16 xl:px-0">
+        <div className="flex gap-4 lg:gap-6 -mt-16 lg:-mt-28 relative z-10">
+          <img
+            {...posterProps}
+            alt={posterAlt}
+            sizes="(max-width: 1024px) 112px, 208px"
+            className="w-28 h-42 lg:w-52 lg:h-78 object-cover rounded-xl shadow-2xl border
+              border-white/10 shrink-0"
+            fetchPriority="high"
+            decoding="async"
+          />
+
+          <div className="pt-16 lg:pt-30 min-w-0 flex-1">{children}</div>
+        </div>
+
+        {mobileActions}
+      </div>
+    </section>
+  );
+}
+
+export function HeroTitle({ eyebrow, title, year, subtitle }) {
+  return (
+    <>
+      {eyebrow && (
+        <p className="text-primary font-semibold text-sm lg:text-base">
+          {eyebrow}
+        </p>
+      )}
+
+      <div className="flex flex-wrap items-baseline gap-x-3">
+        <h1 className="text-2xl lg:text-5xl font-bold leading-tight tracking-tight line-clamp-2">
+          {title}
+        </h1>
+        {year && (
+          <span className="text-base-content/50 text-lg lg:text-2xl">
+            ({year})
+          </span>
+        )}
+      </div>
+
+      {subtitle && (
+        <p className="mt-1 text-primary font-semibold">{subtitle}</p>
+      )}
+    </>
+  );
+}
+
+export function HeroMeta({ children }) {
+  return (
+    <div
+      className="mt-2 flex flex-wrap text-sm text-base-content/70
+      [&_span]:after:content-['•'] [&_span]:after:mx-2 [&_span]:last:after:content-none"
+    >
+      {children}
+    </div>
+  );
+}
+
+export function HeroGenres({ genres }) {
+  if (!genres || genres.length === 0) return null;
+
+  return (
+    <div className="mt-3 flex gap-1.5 overflow-x-auto no-scrollbar">
+      {genres.map((genre) => (
+        <span
+          key={genre.id}
+          className="shrink-0 text-[10px] lg:text-xs font-bold uppercase tracking-wider
+            px-3 py-1 rounded-full bg-primary/15 text-primary border border-primary/25"
+        >
+          {genre.name}
+        </span>
+      ))}
+    </div>
+  );
+}
+
+export function HeroTagline({ tagline }) {
+  if (!tagline) return null;
+
+  return (
+    <p className="mt-3 hidden lg:block italic text-base-content/50">
+      “{tagline}”
+    </p>
+  );
+}
+
+export function HeroBackLink({ to, label, desktop, mobile }) {
+  return (
+    <Link
+      to={to}
+      className={`btn btn-outline rounded-full ${
+        desktop ? "mt-5 hidden lg:inline-flex" : ""
+      } ${mobile ? "mt-4 lg:hidden" : ""}`}
+    >
+      <LuArrowLeft />
+      {label}
+    </Link>
+  );
+}
 
 export function ActionButtons({
   title,
