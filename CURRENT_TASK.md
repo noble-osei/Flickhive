@@ -59,12 +59,66 @@ about to touch.
   - `MovieCard`'s remove button calls `preventDefault`/`stopPropagation`
     since the card itself is a `react-router` `Link` — otherwise removing
     an item would also navigate to its details page.
+- **Security backlog closed** — `validatePassword` (`backend/src/services/auth.js`)
+  now throws `401` (was `400`) so wrong password and unknown email both
+  return `401` + "Invalid credentials", closing a status-code-based
+  user-enumeration side channel. Verified against `frontend/src/context/Auth.jsx`
+  and the 401-triggered refresh interceptor in `frontend/src/api/axios.js` —
+  both already treat this consistently.
+- **Correctness / dead code backlog closed**:
+  - `repositories/common.js`'s `validateQueryOptions` (which didn't validate
+    anything) renamed to `applyQueryOptions` (and its two call sites in
+    `repositories/user.js`/`repositories/watchlist.js`) to match what it
+    actually does.
+  - `SignupForm.jsx`'s `handleConfirmPasswordChange` empty branch removed;
+    the existing `passwordsMatch`-driven `border-error`/"Passwords do not
+    match" UI already covers this, no new logic needed.
+- **TMDB image URL / `srcSet` duplication resolved** — extracted a single
+  `buildImageProps(path, fallback)` helper into `helpers/media.js` and
+  migrated all ~12 call sites (`MovieCard.jsx`, `BrowseMediaCard.jsx`,
+  `PersonBrowseCard.jsx`, `SearchMediaCard.jsx`, `SearchResults.jsx`
+  (`MediaResultCard`/`PersonResultCard`), `HeroSlideshow.jsx`,
+  `MovieDetails.jsx`, `TvShowDetails.jsx`, `SeasonDetails.jsx`,
+  `PersonDetails.jsx`, `FullCastCrew.jsx`, `MediaDetails.jsx`
+  `CastSection`) over to it.
+- **Hero/banner section markup duplication resolved** — extracted
+  `HeroSection`/`HeroTitle`/`HeroMeta`/`HeroGenres`/`HeroTagline`/
+  `HeroBackLink` into `components/media/MediaDetails.jsx` and migrated
+  `MovieDetails`, `TvShowDetails`, `SeasonDetails`, `FullCastCrew` over to
+  them. `HeroSection` owns the backdrop+gradient+poster wrapper and takes a
+  `children` slot for the varying title/meta/genre content plus a
+  `mobileActions` slot for the responsive action row (`ActionButtons` or
+  `HeroBackLink`) — net -88 lines across the five files despite adding the
+  new shared components. Verified visually with Playwright screenshots
+  (desktop + mobile) against a running dev server for all four pages; no
+  console errors beyond the expected backend-not-running ones.
+- **Loading/error/empty-data guard block duplication resolved** — extracted
+  `useFetchGuard` (`frontend/src/hooks/useFetchGuard.jsx`), a plain
+  function (not a true hook internally, just named/called like one) that
+  takes `{ loading, error, refetch, isEmpty, skeleton, errorTitle,
+  errorMessage, emptyTitle, emptyMessage }` and returns either the
+  skeleton, a `PageError`, or `null`. Migrated `MovieDetails`,
+  `TvShowDetails`, `SeasonDetails`, `FullCastCrew`, `PersonDetails` to
+  `const guard = useFetchGuard({...}); if (guard) return guard;`,
+  preserving each page's existing custom error copy verbatim.
+  `SeasonDetails` previously had no custom error copy (relied on
+  `PageError`'s generic defaults) — gave it matching "Season not found"
+  copy for consistency with the other four, a deliberate small behavior
+  change bundled into the refactor. `Browse.jsx`, `SearchResults.jsx`,
+  `Home.jsx`, `Watchlist.jsx` were surveyed but left alone — they have a
+  meaningfully different shape (inline loading, no empty-data guard, or a
+  different data source via `useAuth`/`useWatchlist`) and forcing them
+  into this abstraction would have changed their UX. Verified via lint,
+  build, and Playwright screenshots of both the happy path and a forced
+  error path (bad movie ID, bad season number) for all 5 pages.
 
 ## Next
 Work through the Known Issues / Cleanup Backlog below opportunistically —
-none of it is currently blocking. The Security section is now clear; the
-Correctness and Duplicated-code items are the highest-value next targets if
-picking where to start.
+none of it is currently blocking. Security, Correctness, and the
+Duplicated-code items involving TMDB images / hero markup / fetch guards
+are now clear; the remaining Duplicated-code items (auth middleware
+factory, cookie-options factory, shared Tabs component) are the
+highest-value next targets if picking where to start.
 
 ## Known Issues / Cleanup Backlog
 
@@ -73,41 +127,8 @@ picking where to start.
       ships to the browser) — anyone can pull it from devtools and burn our
       TMDB quota. Fine for now, but if this goes further, proxy TMDB calls
       through the backend so the token isn't public.
-- [x] ~~Inconsistent error status codes for the same failure class in
-      `backend/src/services/auth.js`~~ — `validatePassword` now throws `401`
-      (was `400`) so wrong password and unknown email both return `401` +
-      "Invalid credentials", closing a status-code-based user-enumeration
-      side channel. Verified against `frontend/src/context/Auth.jsx` and the
-      401-triggered refresh interceptor in `frontend/src/api/axios.js` —
-      both already treat this consistently.
-
-### Correctness / dead code
-- [x] ~~`repositories/common.js`'s `validateQueryOptions` doesn't validate
-      anything~~ — renamed to `applyQueryOptions` (and its two call sites in
-      `repositories/user.js`/`repositories/watchlist.js`) to match what it
-      actually does.
-- [x] ~~`SignupForm.jsx:19-26` — `handleConfirmPasswordChange` has an empty
-      branch~~ — removed the dead branch; the existing `passwordsMatch`-driven
-      `border-error`/"Passwords do not match" UI already covers this, no new
-      logic needed.
 
 ### Duplicated code
-- [ ] **TMDB image URL / `srcSet` construction** — copy-pasted near-verbatim
-      in ~10 files: `MovieCard.jsx`, `BrowseMediaCard.jsx`,
-      `PersonBrowseCard.jsx`, `SearchMediaCard.jsx`, `SearchResults.jsx`
-      (x2: `MediaResultCard`/`PersonResultCard`), `HeroSlideshow.jsx`,
-      `MovieDetails.jsx`, `TvShowDetails.jsx`, `SeasonDetails.jsx`,
-      `PersonDetails.jsx`, `FullCastCrew.jsx`, `MediaDetails.jsx`
-      (`CastSection`). Extract a single `buildImageProps(path, fallback)`
-      helper into `helpers/media.js`. Biggest single cleanup win in the repo.
-- [ ] **Hero/banner section markup** (backdrop + gradient overlays + poster
-      + title/meta row) reimplemented separately in `MovieDetails`,
-      `TvShowDetails`, `SeasonDetails`, `FullCastCrew` — collapse into one
-      parameterized `HeroSection` component.
-- [ ] **Loading/error/empty-data guard block**
-      (`if (loading) return <Skeleton/>; if (error) return <PageError/>; ...`)
-      repeated identically at the top of every details/browse page — pull
-      into a shared hook or wrapper component.
 - [ ] `validateAccessToken` / `validateRefreshToken`
       (`backend/src/middlewares/auth.js`) are identical except for cookie
       name and secret — collapse into one factory function.
@@ -151,7 +172,3 @@ picking where to start.
 - **Data fetching**: plain `useFetch` hook (abort-controller based, no
   cache/dedup layer, no React Query). Known limitation, not yet worth
   fixing unless refetching becomes a visible perf problem.
-- Known duplicated pattern across ~10 files: manual TMDB `srcSet`/poster
-  fallback construction (`hasPoster ? ... : "/movie.svg"`). Not blocking
-  anything — worth extracting to a helper only if touching several of
-  those files in the same change; not a prerequisite for the watchlist work.
