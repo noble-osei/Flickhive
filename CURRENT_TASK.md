@@ -111,14 +111,53 @@ about to touch.
   into this abstraction would have changed their UX. Verified via lint,
   build, and Playwright screenshots of both the happy path and a forced
   error path (bad movie ID, bad season number) for all 5 pages.
+- **Auth middleware duplication resolved** — `validateAccessToken` and
+  `validateRefreshToken` (`backend/src/middlewares/auth.js`) now share a
+  `createTokenValidator({ cookieName, secretEnvVar, attachToken })`
+  factory; only the cookie name, JWT secret env var, and whether
+  `req.token` gets attached (refresh only) differ. The secret is still
+  looked up as `process.env[secretEnvVar]` inside the per-request
+  handler rather than resolved at factory-call time, since `dotenv.config()`
+  in `server.js` runs after route/middleware imports are evaluated (ESM
+  import hoisting) — resolving eagerly would have baked in `undefined`.
+  Exported names/behavior unchanged; verified with `node --check`.
+- **Cookie-options duplication resolved** — `sendAccessTokenCookie` and
+  `sendRefreshTokenCookie` (`backend/src/utils/authHelper.js`) now spread
+  a shared `baseCookieOptions()` (`httpOnly`/`secure`/`sameSite`) and only
+  set their own `maxAge`. Kept as a function (not a plain object) so
+  `secure: process.env.NODE_ENV === "production"` is still evaluated
+  per-call rather than baked in at module load. Method names/signatures
+  unchanged; verified with `node --check`.
+- **Shared `Tabs` component extracted** — new
+  `frontend/src/components/ui/Tabs.jsx` exports `Tabs` (the
+  `tabs tabs-border` wrapper) and `Tab` (the `input[type=radio].tab` +
+  `tab-content` pair, with the `aria-label="{label} {count}"` convention
+  centralized). Migrated all three hand-rolled instances:
+  `VideosSection`'s `VideoTab` (`components/media/MediaDetails.jsx`),
+  `CreditsSection`'s `CreditsTab` (`pages/PersonDetails.jsx`), and the
+  previously-never-extracted inline cast/crew tabs
+  (`pages/FullCastCrew.jsx`) — the latter's conditional third `Creators`
+  tab (TV only, `{!isMovie && <Tab>...}`) works unchanged since `Tab` is
+  just a normal child. `VideoTab`/`CreditsTab` wrapper functions removed
+  entirely (they added nothing beyond forwarding to the shared shell);
+  each page's own content shape and empty-state markup stayed untouched,
+  passed as `Tab`'s `children`. `contentClassName` prop preserves the one
+  real markup difference (`pt-4` in videos vs `pt-5` elsewhere).
+  `pages/SearchResults.jsx`'s `tabs tabs-border` usage was surveyed and
+  deliberately left alone — it's `<button role="tab">`s driven by
+  `useSearchParams`, not radio inputs, with no `tab-content` panels, a
+  structurally different pattern. Verified with lint and build (both
+  clean); Playwright visual verification against a running dev server
+  attempted but blocked by a slow/flaky Chromium binary download in this
+  environment — same DOM output (classes, `aria-label` text, conditional
+  tab count) confirmed by direct code comparison instead.
 
 ## Next
 Work through the Known Issues / Cleanup Backlog below opportunistically —
-none of it is currently blocking. Security, Correctness, and the
-Duplicated-code items involving TMDB images / hero markup / fetch guards
-are now clear; the remaining Duplicated-code items (auth middleware
-factory, cookie-options factory, shared Tabs component) are the
-highest-value next targets if picking where to start.
+none of it is currently blocking. Security and all Duplicated-code items
+are now clear. Performance backlog (Home.jsx refetching, no TMDB
+cache/dedup, useGenres TTL, duplicate vendor chunks) is the highest-value
+next area if picking where to start.
 
 ## Known Issues / Cleanup Backlog
 
@@ -129,13 +168,13 @@ highest-value next targets if picking where to start.
       through the backend so the token isn't public.
 
 ### Duplicated code
-- [ ] `validateAccessToken` / `validateRefreshToken`
+- [x] `validateAccessToken` / `validateRefreshToken`
       (`backend/src/middlewares/auth.js`) are identical except for cookie
       name and secret — collapse into one factory function.
-- [ ] `sendAccessTokenCookie` / `sendRefreshTokenCookie`
+- [x] `sendAccessTokenCookie` / `sendRefreshTokenCookie`
       (`backend/src/utils/authHelper.js`) share the same cookie-options
       shape — factor out the common options.
-- [ ] Three separate hand-rolled implementations of the same DaisyUI
+- [x] Three separate hand-rolled implementations of the same DaisyUI
       radio-tab pattern: `VideoTab` (`MediaDetails.jsx`), `CreditsTab`
       (`PersonDetails.jsx`), cast/crew tabs (`FullCastCrew.jsx`) — worth a
       shared `Tabs` component if a fourth instance shows up.
