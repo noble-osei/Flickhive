@@ -10,6 +10,7 @@ import {
 
 import Carousel from "./Carousel.jsx";
 import MovieCard from "./MovieCard.jsx";
+import Tabs, { Tab } from "../ui/Tabs.jsx";
 import {
   AVATAR_WIDTHS,
   BACKDROP_WIDTHS,
@@ -349,89 +350,69 @@ export function VideosSection({
   featurettes,
   setActiveVideo,
 }) {
+  const videoGroups = [
+    { label: "Trailers", videos: trailers, defaultChecked: true },
+    { label: "Teasers", videos: teasers },
+    { label: "Clips", videos: clips },
+    { label: "Featurettes", videos: featurettes },
+  ];
+
   return (
     <section className="max-w-7xl mx-auto px-4 lg:px-16 xl:px-0 mt-10">
       <h2 className="text-xl font-semibold mb-2">Videos</h2>
 
-      <div className="tabs tabs-border">
-        <VideoTab
-          label="Trailers"
-          videos={trailers}
-          setActiveVideo={setActiveVideo}
-          defaultChecked
-        />
-        <VideoTab
-          label="Teasers"
-          videos={teasers}
-          setActiveVideo={setActiveVideo}
-        />
-        <VideoTab
-          label="Clips"
-          videos={clips}
-          setActiveVideo={setActiveVideo}
-        />
-        <VideoTab
-          label="Featurettes"
-          videos={featurettes}
-          setActiveVideo={setActiveVideo}
-        />
-      </div>
-    </section>
-  );
-}
-
-function VideoTab({ label, videos, setActiveVideo, defaultChecked = false }) {
-  return (
-    <>
-      <input
-        type="radio"
-        name="videos"
-        className="tab"
-        aria-label={`${label} ${videos.length}`}
-        defaultChecked={defaultChecked}
-      />
-
-      <div className="tab-content pt-4">
-        {videos.length > 0 ? (
-          <Carousel mediaWidthNum={320} title={label}>
-            {videos.map((video) => (
-              <button
-                key={video.id}
-                type="button"
-                onClick={() => setActiveVideo(video)}
-                className="relative w-80 flex-none text-left rounded-xl overflow-hidden group"
-                aria-label={`Play ${video.name}`}
-              >
-                <img
-                  src={`${YOUTUBE_IMG}/${video.key}/sddefault.jpg`}
-                  alt=""
-                  className="w-full aspect-video object-cover group-hover:scale-105 transition"
-                  loading="lazy"
-                  decoding="async"
-                  onError={(e) => {
-                    e.currentTarget.onerror = null;
-                    e.currentTarget.src = `${YOUTUBE_IMG}/${video.key}/hqdefault.jpg`;
-                  }}
-                />
-
-                <span className="absolute inset-0 flex items-center justify-center bg-black/20">
-                  <span
-                    className="w-14 h-14 rounded-full bg-black/60 flex items-center 
-                    justify-center"
+      <Tabs>
+        {videoGroups.map(({ label, videos, defaultChecked }) => (
+          <Tab
+            key={label}
+            name="videos"
+            label={label}
+            count={videos.length}
+            defaultChecked={defaultChecked}
+            contentClassName="pt-4"
+          >
+            {videos.length > 0 ? (
+              <Carousel mediaWidthNum={320} title={label}>
+                {videos.map((video) => (
+                  <button
+                    key={video.id}
+                    type="button"
+                    onClick={() => setActiveVideo(video)}
+                    className="relative w-80 flex-none text-left rounded-xl overflow-hidden group"
+                    aria-label={`Play ${video.name}`}
                   >
-                    <LuPlay size={28} fill="currentColor" />
-                  </span>
-                </span>
-              </button>
-            ))}
-          </Carousel>
-        ) : (
-          <p className="h-32 flex items-center justify-center text-base-content/50">
-            No {label.toLowerCase()} available.
-          </p>
-        )}
-      </div>
-    </>
+                    <img
+                      src={`${YOUTUBE_IMG}/${video.key}/sddefault.jpg`}
+                      alt=""
+                      className="w-full aspect-video object-cover group-hover:scale-105 transition"
+                      loading="lazy"
+                      decoding="async"
+                      onError={(e) => {
+                        e.currentTarget.onerror = null;
+                        e.currentTarget.src = `${YOUTUBE_IMG}/${video.key}/hqdefault.jpg`;
+                      }}
+                    />
+
+                    <span className="absolute inset-0 flex items-center justify-center bg-black/20">
+                      <span
+                        className="w-14 h-14 rounded-full bg-black/60 flex items-center
+                        justify-center"
+                      >
+                        <LuPlay size={28} fill="currentColor" />
+                      </span>
+                    </span>
+                  </button>
+                ))}
+              </Carousel>
+            ) : (
+              <p className="h-32 flex items-center justify-center text-base-content/50">
+                No {label.toLowerCase()} available.
+              </p>
+            )}
+          </Tab>
+        ))}
+      </Tabs>
+    </section>
   );
 }
 
