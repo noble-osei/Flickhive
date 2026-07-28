@@ -181,20 +181,38 @@ about to touch.
   unwrapped blobs (they fail the version check and get rewritten). Public
   API (`useGenres()` → `genres | null`) unchanged; its only consumer,
   `HeroSlideshow.jsx`, needed no changes.
-- **Vendor-chunk duplication (Performance item 4) intentionally deferred**
-  — investigated during the caching work above: `vite.config.js` has no
-  `build.rollupOptions.manualChunks` at all, so the ~9 near-duplicate
-  `dist/assets/react-*.js` chunks are Rollup's default auto-chunking
-  interacting with `App.jsx`'s 13 `React.lazy()` route imports, not a
-  caching issue. Confirmed unrelated to the `useFetch`/`useGenres` work
-  above; left as a separate follow-up needing a bundle visualizer.
+- **Vendor-chunk "duplication" (Performance item 4) investigated and closed
+  as a false alarm** — used `rollup-plugin-visualizer` plus a temporary
+  `build.sourcemap: true` to inspect the actual module contents of each
+  `dist/assets/react-*.js` chunk (both reverted after; `dist/` is
+  gitignored so nothing landed in git). Only one of the 9 chunks
+  (`react-DSvSf3Zy.js`, ~8kB) is the real `react` package. The other 8 are
+  unrelated per-provider packages pulled in by `react-player`
+  (`components/media/VideoPlayer.jsx`) — `youtube-video-element`,
+  `vimeo-video-element`, `hls-video-element`, `dash-video-element`,
+  `twitch-video-element`, `wistia-video-element`, `spotify-audio-element`,
+  `tiktok-video-element` — each of which ships its own tiny wrapper file
+  literally named `react.js`, which is what Vite's default chunk-naming
+  heuristic (derives the name from the facade module) latches onto,
+  producing the misleading `react-<hash>.js` names. `react-player` already
+  wraps each provider in its own `React.lazy(() => import(...))`
+  internally (`node_modules/react-player/dist/players.js`) and only
+  invokes the one whose `canPlay(src)` matches at render time — since
+  `VideoPlayer.jsx` only ever passes a `youtube.com/watch?v=` URL, only the
+  YouTube provider chunk is ever fetched by the browser in practice; the
+  other 7 exist in `dist/` but are dead weight that's never requested.
+  React is not duplicated across chunks. No `manualChunks` change needed;
+  eliminating the other 7 unused provider chunks entirely would require
+  reimplementing `react-player`'s internal (non-exported-API) player
+  wiring, which is fragile and disproportionate for build-output-only
+  clutter with no real user-facing cost — not worth doing unless it
+  becomes an actual network-transfer problem.
 
 ## Next
-Work through the Known Issues / Cleanup Backlog below opportunistically —
-none of it is currently blocking. Security, Duplicated-code, and three of
-four Performance items are now clear. The one remaining Performance item
-— the vendor-chunk/`manualChunks` investigation — is the last thing on
-the backlog if picking where to start next.
+All Duplicated-code and Performance backlog items are now closed. The one
+remaining open item is the Security one below (`VITE_TMDB_TOKEN` exposed
+client-side) — not urgent per the existing Decisions entry, but it's the
+last thing on the backlog if picking where to start next.
 
 ## Known Issues / Cleanup Backlog
 
@@ -226,7 +244,7 @@ the backlog if picking where to start next.
 - [x] `useGenres`'s `localStorage` cache (`frontend/src/hooks/useGenres.jsx:16`)
       never expires — no TTL/versioning, so genre renames on TMDB's side
       never show up until the user clears storage.
-- [ ] Bundle has an unusually high number of near-duplicate vendor chunks
+- [x] Bundle has an unusually high number of near-duplicate vendor chunks
       (`dist/assets/react-*.js` × 9) — worth checking `vite.config.js`
       manual chunking to confirm React isn't being duplicated across
       chunks. Not yet root-caused, needs a bundle visualizer.
