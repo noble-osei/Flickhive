@@ -77,7 +77,7 @@ cp frontend/.env.example frontend/.env
 |---|---|
 | `PORT` | Port the API listens on (default `5004`) |
 | `MONGO_URI` | MongoDB connection string |
-| `CORS_ORIGIN` | Allowed frontend origin, e.g. `http://localhost:5173` |
+| `CORS_ORIGIN` | Allowed frontend origin(s), comma-separated, e.g. `http://localhost:5173` or `https://app.vercel.app,https://app-git-preview.vercel.app` |
 | `SECRET_ACCESS_TOKEN` | JWT signing secret for the access token |
 | `SECRET_REFRESH_TOKEN` | JWT signing secret for the refresh token |
 | `NODE_ENV` | `development` or `production` |
@@ -86,7 +86,7 @@ cp frontend/.env.example frontend/.env
 
 | Variable | Description |
 |---|---|
-| `VITE_API_BASE_URL` | Base URL of the backend API, e.g. `http://localhost:5004` |
+| `VITE_API_BASE_URL` | Base URL of the backend API, including `/api`, e.g. `http://localhost:5004/api` |
 | `VITE_TMDB_BASE_URL` | TMDB API base URL, e.g. `https://api.themoviedb.org/3` |
 | `VITE_TMDB_TOKEN` | TMDB API Read Access Token |
 | `VITE_IMG` | TMDB image base URL |
@@ -166,7 +166,27 @@ require a valid access token cookie.
 
 ## Deployment
 
-Not yet deployed. This section will be updated with a live URL once it is.
+**Backend (Render)** — deployed as a web service with root directory
+`backend`, build command `npm install`, start command `npm start`. Set
+`NODE_ENV=production`, `MONGO_URI`, `SECRET_ACCESS_TOKEN`,
+`SECRET_REFRESH_TOKEN`, and `CORS_ORIGIN` (comma-separated list of allowed
+frontend origins) as environment variables in the Render dashboard. `PORT`
+is provided automatically by Render. A `render.yaml` is included for
+Blueprint-based setup.
+
+**Frontend (Vercel)** — deployed with root directory `frontend`, framework
+preset Vite, build command `npm run build`, output directory `dist`. Set
+`VITE_API_BASE_URL` (pointing at the deployed backend, including `/api`),
+`VITE_TMDB_BASE_URL`, `VITE_TMDB_TOKEN`, `VITE_IMG`, and
+`VITE_YOUTUBE_THUMBNAIL` as environment variables in the Vercel dashboard. A
+`vercel.json` rewrite is included so client-side routes work on refresh/deep
+link.
+
+Because the frontend and backend live on different domains, auth cookies are
+cross-site: in production the backend sets them with `SameSite=None;
+Secure`, which requires HTTPS (provided by Render) on both sides.
+
+Live URLs: TBD once deployed.
 
 ## License
 

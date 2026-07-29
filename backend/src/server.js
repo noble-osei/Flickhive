@@ -13,9 +13,14 @@ dotenv.config({ quiet: true });
 const app = express();
 const PORT = process.env.PORT || 5004;
 
+const allowedOrigins = (process.env.CORS_ORIGIN || "").split(",").map((o) => o.trim());
+
 app.use(
   cors({
-    origin: process.env.CORS_ORIGIN,
+    origin: (origin, callback) => {
+      if (!origin || allowedOrigins.includes(origin)) return callback(null, true);
+      callback(new Error("Not allowed by CORS"));
+    },
     credentials: true,
   }),
 );

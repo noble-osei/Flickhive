@@ -1,7 +1,7 @@
 const baseCookieOptions = () => ({
   httpOnly: true,
   secure: process.env.NODE_ENV === "production", // Only sent over HTTPS in production
-  sameSite: "lax",
+  sameSite: process.env.NODE_ENV === "production" ? "none" : "lax", // "none" required for cross-site (Vercel <-> Render) cookies
 });
 
 class AuthHelpers {
