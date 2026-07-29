@@ -186,7 +186,7 @@ Because the frontend and backend live on different domains, auth cookies are
 cross-site: in production the backend sets them with `SameSite=None;
 Secure`, which requires HTTPS (provided by Render) on both sides.
 
-Live URLs: TBD once deployed.
+**Live app:** https://flickhive.vercel.app
 
 ## License
 
